@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2bdc0bab0af4ae04e99a3c3d641e6ee5, type: 3}
+  m_Name: New Scriptable Spell Data
+  m_EditorClassIdentifier: 
+  SpellName: 
+  ManaCost: 0
+  CastingType: 0
+  Cooldown: 0
+  CastingShape: 0
+  CastingQuantity: 0
+  CastingAreaSize: 0
+  IsDefensive: 0
+  UsesProjectile: 0
+  Damage: 0
+  MovementType: 0
+  MovementSpeed: 0
+  TargetingType: 0
+  ProjectilePrefab: {fileID: 0}
+  SpellSprite: {fileID: 0}

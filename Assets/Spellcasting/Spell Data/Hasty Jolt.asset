@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2bdc0bab0af4ae04e99a3c3d641e6ee5, type: 3}
+  m_Name: Hasty Jolt
+  m_EditorClassIdentifier: 
+  SpellName: Hasty Jolt
+  ManaCost: 0
+  Cooldown: 2
+  ProjectileQuantity: 1
+  ProjectileCastingArea: 1
+  ProjectileCastingAreaScale: 1
+  Damage: 10
+  MovementType: 1
+  MovementSpeed: 5
+  TargetingType: 1
+  ProjectilePrefab: {fileID: 1062348163457161292, guid: a12a2eac476853e4184718ce4ef910dc, type: 3}
+  ProjectileSprite: {fileID: 21300000, guid: 71d1ccf3fdf437f46970079808597970, type: 3}
