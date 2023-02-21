@@ -16,7 +16,8 @@ public class ControlCharacter : MonoBehaviour
     [SerializeField] private float maxHealth;
     [SerializeField] private float maxMana;
     [HideInInspector] public PlayerStats stats;
-    [SerializeField] private GameObject healthBar, manaBar;
+    [SerializeField] private GameObject healthBarObject, manaBarObject;
+    private ConsumableBarLogic healthBar, manaBar;
 
         [Header("Spellcasting")]
     [SerializeField] private GameObject spellManagerObject;
@@ -26,6 +27,9 @@ public class ControlCharacter : MonoBehaviour
     private void Awake() // called before all starts
     {
         PlayerStatSetup(maxHealth, maxMana);
+        healthBar = healthBarObject.GetComponent<ConsumableBarLogic>();
+        manaBar = manaBarObject.GetComponent<ConsumableBarLogic>();
+
         spellManager = spellManagerObject.GetComponent<SpellManager>();
         playerRigidbody = gameObject.GetComponent<Rigidbody2D>();
 
@@ -63,6 +67,24 @@ public class ControlCharacter : MonoBehaviour
             MaxManaStat = maximumMana,
             CurrentManaStat = maximumMana
         };
+    }
+
+    public enum Stat { Health, Mana }
+    public void ModifyStat(Stat statToModify, float amount)
+    {
+        if (statToModify == Stat.Health)
+        {
+            healthBar.ModifyStat(amount);
+        }
+        else if (statToModify == Stat.Mana)
+        {
+            manaBar.ModifyStat(amount);
+        }
+        else
+        {
+            Debug.LogError("Inputted stat enum invalid");
+        }
+
     }
 
     public class PlayerStats

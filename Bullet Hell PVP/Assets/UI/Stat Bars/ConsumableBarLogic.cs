@@ -26,13 +26,11 @@ public class ConsumableBarLogic : MonoBehaviour
         [SerializeField] private float statLostVelocityMod;
     
 
-    void Start()
+    private void Start()
     {
         character = characterObject.GetComponent<ControlCharacter>();
-
-        Debug.Log(character.stats);
-
         InitialHealthDisplay();
+        Debug.Log("Start");
     }
     private void FixedUpdate()
     {
@@ -44,7 +42,7 @@ public class ConsumableBarLogic : MonoBehaviour
         SetCurrentStat(GetCurrentStat() + statChange);
         UpdateStatDisplay(statRemainingObject, GetCurrentStat(), remainingEdgeLeft, remainingEdgeRight);
     }
-    public void UpdateStatDisplay(GameObject displayObject, float valueSet, int edgeLeft = 0, int edgeRight = 0)
+    private void UpdateStatDisplay(GameObject displayObject, float valueSet, int edgeLeft = 0, int edgeRight = 0)
     {
         float statMax = GetStatMax();
         float statPercentage = valueSet / statMax;

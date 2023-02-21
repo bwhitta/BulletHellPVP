@@ -42,7 +42,10 @@ public class SpellManager : MonoBehaviour
         //Checks if the player has enough mana
         if (attemptedSpellData.ManaCost <= characterControlScript.stats.CurrentManaStat)
         {
-            Debug.Log("Player has enough mana, continuing casting.");
+            Debug.Log("Mana deducted, continuing casting.");
+            //Spend Mana
+            characterControlScript.ModifyStat(ControlCharacter.Stat.Mana, -attemptedSpellData.ManaCost);
+
             // Eventually check if spell is on cooldown
 
             // Instantiate the spell
@@ -72,6 +75,7 @@ public class SpellManager : MonoBehaviour
             spellObject[0] = Instantiate(attemptedSpellData.ProjectilePrefab);
             SpellBehavior spellBehaviorScript = spellObject[0].GetComponent<SpellBehavior>();
             spellBehaviorScript.spellData = attemptedSpellData;
+            spellBehaviorScript.transform.parent = transform;
         }
         else if (attemptedSpellData.ProjectileCastingArea == ScriptableSpellData.ProjectileCastArea.Line)
         {
@@ -84,7 +88,7 @@ public class SpellManager : MonoBehaviour
                 spellObject[i] = Instantiate(attemptedSpellData.ProjectilePrefab);
                 SpellBehavior spellBehaviorScript = spellObject[i].GetComponent<SpellBehavior>();
                 spellBehaviorScript.spellData = attemptedSpellData;
-                
+                spellBehaviorScript.transform.parent = transform;
                 // Reposition spellObject here.
             }
         }

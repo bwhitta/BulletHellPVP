@@ -1197,8 +1197,8 @@ MonoBehaviour:
   AnimatorTreeParameterY: FacingY
   maxHealth: 100
   maxMana: 50
-  healthBar: {fileID: 466853234}
-  manaBar: {fileID: 433776964}
+  healthBarObject: {fileID: 466853234}
+  manaBarObject: {fileID: 433776964}
   spellManagerObject: {fileID: 746061121}
 --- !u!70 &1358301343
 CapsuleCollider2D:
