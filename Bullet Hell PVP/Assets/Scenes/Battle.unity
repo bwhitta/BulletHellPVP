@@ -551,6 +551,7 @@ GameObject:
   m_Component:
   - component: {fileID: 746061122}
   - component: {fileID: 746061123}
+  - component: {fileID: 746061124}
   m_Layer: 0
   m_Name: SpellcastingObjectL
   m_TagString: Untagged
@@ -588,6 +589,23 @@ MonoBehaviour:
   castingPlayerObject: {fileID: 1358301339}
   spellData:
   - {fileID: 11400000, guid: 1c21101c32748b945bbd912842cdb0ab, type: 2}
+--- !u!114 &746061124
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 746061121}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6fe3db9c16f8e6f4aa701b8453fab269, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  movementMultiplier: 2
+  acceleratedMovementMultiplier: 2.5
+  location: 0
+  squareTransform: {fileID: 972675302}
+  currentCursorSide: 0
 --- !u!1 &816503654
 GameObject:
   m_ObjectHideFlags: 0

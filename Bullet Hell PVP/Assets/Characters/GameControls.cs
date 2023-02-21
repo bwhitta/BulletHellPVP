@@ -44,6 +44,24 @@ public partial class @GameControls : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""CursorMovement"",
+                    ""type"": ""Value"",
+                    ""id"": ""b36df7a7-7d4e-4255-b078-fe31823de22c"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""AccelerateCursorMovement"",
+                    ""type"": ""Button"",
+                    ""id"": ""c1a37c90-1b0e-4af9-ad5c-90e11346f242"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -110,6 +128,50 @@ public partial class @GameControls : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Attack"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""1D Axis"",
+                    ""id"": ""7126e5ee-e0e8-4f02-a180-52376e240040"",
+                    ""path"": ""1DAxis"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""CursorMovement"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""negative"",
+                    ""id"": ""330ede60-acf3-4928-ba6d-4b973b19d330"",
+                    ""path"": ""<Keyboard>/leftArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse;Gamepad;Touch;Joystick;XR"",
+                    ""action"": ""CursorMovement"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""positive"",
+                    ""id"": ""ba01102b-79d3-4b5c-9389-e2df4b051e1d"",
+                    ""path"": ""<Keyboard>/rightArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""XR;Joystick;Touch;Gamepad;Keyboard&Mouse"",
+                    ""action"": ""CursorMovement"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""855ee115-cf60-4b2d-b573-7e7d6e92f3c6"",
+                    ""path"": ""<Keyboard>/shift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""AccelerateCursorMovement"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -659,6 +721,8 @@ public partial class @GameControls : IInputActionCollection2, IDisposable
         m_Player = asset.FindActionMap("Player", throwIfNotFound: true);
         m_Player_Movement = m_Player.FindAction("Movement", throwIfNotFound: true);
         m_Player_Attack = m_Player.FindAction("Attack", throwIfNotFound: true);
+        m_Player_CursorMovement = m_Player.FindAction("CursorMovement", throwIfNotFound: true);
+        m_Player_AccelerateCursorMovement = m_Player.FindAction("AccelerateCursorMovement", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -730,12 +794,16 @@ public partial class @GameControls : IInputActionCollection2, IDisposable
     private IPlayerActions m_PlayerActionsCallbackInterface;
     private readonly InputAction m_Player_Movement;
     private readonly InputAction m_Player_Attack;
+    private readonly InputAction m_Player_CursorMovement;
+    private readonly InputAction m_Player_AccelerateCursorMovement;
     public struct PlayerActions
     {
         private @GameControls m_Wrapper;
         public PlayerActions(@GameControls wrapper) { m_Wrapper = wrapper; }
         public InputAction @Movement => m_Wrapper.m_Player_Movement;
         public InputAction @Attack => m_Wrapper.m_Player_Attack;
+        public InputAction @CursorMovement => m_Wrapper.m_Player_CursorMovement;
+        public InputAction @AccelerateCursorMovement => m_Wrapper.m_Player_AccelerateCursorMovement;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -751,6 +819,12 @@ public partial class @GameControls : IInputActionCollection2, IDisposable
                 @Attack.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnAttack;
                 @Attack.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnAttack;
                 @Attack.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnAttack;
+                @CursorMovement.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCursorMovement;
+                @CursorMovement.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCursorMovement;
+                @CursorMovement.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCursorMovement;
+                @AccelerateCursorMovement.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnAccelerateCursorMovement;
+                @AccelerateCursorMovement.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnAccelerateCursorMovement;
+                @AccelerateCursorMovement.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnAccelerateCursorMovement;
             }
             m_Wrapper.m_PlayerActionsCallbackInterface = instance;
             if (instance != null)
@@ -761,6 +835,12 @@ public partial class @GameControls : IInputActionCollection2, IDisposable
                 @Attack.started += instance.OnAttack;
                 @Attack.performed += instance.OnAttack;
                 @Attack.canceled += instance.OnAttack;
+                @CursorMovement.started += instance.OnCursorMovement;
+                @CursorMovement.performed += instance.OnCursorMovement;
+                @CursorMovement.canceled += instance.OnCursorMovement;
+                @AccelerateCursorMovement.started += instance.OnAccelerateCursorMovement;
+                @AccelerateCursorMovement.performed += instance.OnAccelerateCursorMovement;
+                @AccelerateCursorMovement.canceled += instance.OnAccelerateCursorMovement;
             }
         }
     }
@@ -903,6 +983,8 @@ public partial class @GameControls : IInputActionCollection2, IDisposable
     {
         void OnMovement(InputAction.CallbackContext context);
         void OnAttack(InputAction.CallbackContext context);
+        void OnCursorMovement(InputAction.CallbackContext context);
+        void OnAccelerateCursorMovement(InputAction.CallbackContext context);
     }
     public interface IUIActions
     {
