@@ -651,7 +651,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 746061121}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -7.75, y: 4, z: 0}
+  m_LocalPosition: {x: -3.4499998, y: 4, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -688,7 +688,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   movementMultiplier: 5
   acceleratedMovementMultiplier: 2.5
-  location: 0
+  location: 4.3
   squareTransform: {fileID: 972675302}
   cursorMovement:
     m_Name: Cursor Movement

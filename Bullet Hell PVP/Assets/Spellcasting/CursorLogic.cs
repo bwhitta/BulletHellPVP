@@ -11,7 +11,7 @@ public class CursorLogic : MonoBehaviour
     [SerializeField] private float movementMultiplier;
     [SerializeField] private float acceleratedMovementMultiplier;
     GameControls controls;
-    [SerializeField][Range(0f, 30f)] private float location;
+    [SerializeField][Range(-30f, 30f)] private float location;
     [SerializeField] private Transform squareTransform;
 
     [SerializeField] private InputAction cursorMovement, cursorAccelerate;
@@ -56,21 +56,23 @@ public class CursorLogic : MonoBehaviour
         float squareSide = squareTransform.localScale.x;
         float squarePosX = squareTransform.localPosition.x;
         float squarePosY = squareTransform.localPosition.y;
-
         if (!Mathf.Approximately(squareSide, squareTransform.localScale.y))
         {
             Debug.LogError("Square transform discrepancy");
         }
 
-        float positionAlongSide = location % squareSide;
-        int sideNumber = (int)(Mathf.Floor(location / squareSide) % 4);
+        float locationAroundSquare = Modulo(location, squareSide * 4);
+        // location % (squareSide * 4);
+
+        int sideNumber = (int) Mathf.Floor(locationAroundSquare/squareSide);
+        float locationAroundSide = locationAroundSquare % squareSide;
 
         transform.rotation = Quaternion.Euler(0, 0, -90 * (sideNumber)); // Negative because it rotates counterclockwise
 
         Vector2[] corners = GetSquareCorners(squareSide, squarePosX, squarePosY);
 
         int[,] modifierDirection = { { 1, 0 }, { 0, -1 }, { -1, 0 }, { 0, 1 } }; // Starts in top left, continues clockwise
-        Vector2 positionModifier = new(positionAlongSide * modifierDirection[sideNumber, 0], positionAlongSide * modifierDirection[sideNumber, 1]);
+        Vector2 positionModifier = new(locationAroundSide * modifierDirection[sideNumber, 0], locationAroundSide * modifierDirection[sideNumber, 1]); 
 
         transform.position = corners[sideNumber] + positionModifier;
     }
@@ -87,5 +89,10 @@ public class CursorLogic : MonoBehaviour
             corners[i].y = posY + (sideLength * cornerDirection[i, 1] * 0.5f);
         }
         return corners;
+    }
+
+    private float Modulo(float numberToModify, float modifyingNumber)
+    {
+        return numberToModify - modifyingNumber * (Mathf.Floor(numberToModify / modifyingNumber));
     }
 }
