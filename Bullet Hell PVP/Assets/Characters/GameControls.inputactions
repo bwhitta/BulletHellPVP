@@ -126,7 +126,7 @@
                     "path": "<Keyboard>/leftArrow",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Keyboard&Mouse;Gamepad;Touch;Joystick;XR",
+                    "groups": "Keyboard&Mouse",
                     "action": "CursorMovement",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -137,7 +137,7 @@
                     "path": "<Keyboard>/rightArrow",
                     "interactions": "",
                     "processors": "",
-                    "groups": "XR;Joystick;Touch;Gamepad;Keyboard&Mouse",
+                    "groups": "Keyboard&Mouse",
                     "action": "CursorMovement",
                     "isComposite": false,
                     "isPartOfComposite": true
