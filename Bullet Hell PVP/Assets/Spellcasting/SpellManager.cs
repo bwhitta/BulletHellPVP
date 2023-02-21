@@ -42,7 +42,6 @@ public class SpellManager : MonoBehaviour
         //Checks if the player has enough mana
         if (attemptedSpellData.ManaCost <= characterControlScript.stats.CurrentManaStat)
         {
-            Debug.Log("Mana deducted, continuing casting.");
             //Spend Mana
             characterControlScript.ModifyStat(ControlCharacter.Stat.Mana, -attemptedSpellData.ManaCost);
 
@@ -52,18 +51,17 @@ public class SpellManager : MonoBehaviour
 
             GameObject[] spellObjects = InstantiateSpell(attemptedSpellData);
             SpellBehavior[] spellBehaviors = new SpellBehavior[spellObjects.Length];
-                        
+
             for (var i = 0; i < spellObjects.Length; i++)
             {
                 spellBehaviors[i] = spellObjects[i].GetComponent<SpellBehavior>();
             }
-            
+
             SpellTargets(attemptedSpellData, spellBehaviors);
-            
         }
         else
         {
-            Debug.Log("Casting cancelled, not enough mana available.");
+            return;
         }
     }
     

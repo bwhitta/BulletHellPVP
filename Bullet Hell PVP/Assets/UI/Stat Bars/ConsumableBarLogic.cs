@@ -30,7 +30,6 @@ public class ConsumableBarLogic : MonoBehaviour
     {
         character = characterObject.GetComponent<ControlCharacter>();
         InitialHealthDisplay();
-        Debug.Log("Start");
     }
     private void FixedUpdate()
     {
