@@ -85,7 +85,8 @@ public class SpellBehavior : MonoBehaviour
         }
 
         // Scaling
-        UpdateScaling();
+        if(spellData.ScalingAfterDistance)
+            UpdateScaling();
     }
     private void UpdateScaling()
     {

@@ -47,6 +47,8 @@ public class ScriptableSpellData : ScriptableObject
     public bool UseParticles;
     public GameObject ParticleSystemPrefab;
     public float SecondaryCastingArea;
+    [Space]
+    public bool ScalingAfterDistance;
     public float ScalingStart;
     public bool DestroyOnScalingCompleted;
 

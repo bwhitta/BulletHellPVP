@@ -44,6 +44,7 @@ public class SpellManager : MonoBehaviour
         {
             //Spend Mana
             characterControlScript.ModifyStat(ControlCharacter.Stat.Mana, -attemptedSpellData.ManaCost);
+            
             // Eventually check if spell is on cooldown
 
             // Instantiate the spell

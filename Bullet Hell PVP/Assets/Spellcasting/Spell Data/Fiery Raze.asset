@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Fiery Raze
   m_EditorClassIdentifier: 
   SpellName: Fiery Raze
-  ManaCost: 50
+  ManaCost: 5
   Cooldown: 2.5
   ProjectileQuantity: 2
   CastingArea: 3
@@ -28,5 +28,6 @@ MonoBehaviour:
   UseParticles: 0
   ParticleSystemPrefab: {fileID: 0}
   SecondaryCastingArea: 1.5
+  ScalingAfterDistance: 1
   ScalingStart: 0.75
   DestroyOnScalingCompleted: 1

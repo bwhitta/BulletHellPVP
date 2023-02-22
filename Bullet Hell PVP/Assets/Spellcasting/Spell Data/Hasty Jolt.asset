@@ -16,7 +16,7 @@ MonoBehaviour:
   ManaCost: 0
   Cooldown: 2
   ProjectileQuantity: 1
-  CastingArea: 0
+  CastingArea: 1
   CastingAreaScale: 0
   Damage: 10
   TypeOfSpell: 1
@@ -29,3 +29,4 @@ MonoBehaviour:
   ParticleSystemPrefab: {fileID: 0}
   SecondaryCastingArea: 0
   ScalingStart: 0
+  DestroyOnScalingCompleted: 0
