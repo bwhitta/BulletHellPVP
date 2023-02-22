@@ -44,11 +44,9 @@ public class SpellManager : MonoBehaviour
         {
             //Spend Mana
             characterControlScript.ModifyStat(ControlCharacter.Stat.Mana, -attemptedSpellData.ManaCost);
-
             // Eventually check if spell is on cooldown
 
             // Instantiate the spell
-
             GameObject[] spellObjects = InstantiateSpell(attemptedSpellData);
             SpellBehavior[] spellBehaviors = new SpellBehavior[spellObjects.Length];
 
@@ -56,7 +54,7 @@ public class SpellManager : MonoBehaviour
             {
                 spellBehaviors[i] = spellObjects[i].GetComponent<SpellBehavior>();
             }
-
+            
             SpellTargets(attemptedSpellData, spellBehaviors);
         }
         else
@@ -68,14 +66,18 @@ public class SpellManager : MonoBehaviour
     private GameObject[] InstantiateSpell(ScriptableSpellData attemptedSpellData)
     {
         GameObject[] spellObject = new GameObject[1];
-        if (attemptedSpellData.ProjectileCastingArea == ScriptableSpellData.ProjectileCastArea.Single)
+
+        if (attemptedSpellData.CastingArea == ScriptableSpellData.CastArea.Single)
         {
             spellObject[0] = Instantiate(attemptedSpellData.ProjectilePrefab);
             SpellBehavior spellBehaviorScript = spellObject[0].GetComponent<SpellBehavior>();
             spellBehaviorScript.spellData = attemptedSpellData;
-            spellBehaviorScript.transform.parent = transform;
+
+            // Reposition spell to manager
+            spellBehaviorScript.transform.position = transform.position;
+
         }
-        else if (attemptedSpellData.ProjectileCastingArea == ScriptableSpellData.ProjectileCastArea.Line)
+        else if (attemptedSpellData.CastingArea == ScriptableSpellData.CastArea.Stacked)
         {
             // Fix the length of the spellObject array
             spellObject = new GameObject[attemptedSpellData.ProjectileQuantity];
@@ -86,13 +88,45 @@ public class SpellManager : MonoBehaviour
                 spellObject[i] = Instantiate(attemptedSpellData.ProjectilePrefab);
                 SpellBehavior spellBehaviorScript = spellObject[i].GetComponent<SpellBehavior>();
                 spellBehaviorScript.spellData = attemptedSpellData;
-                spellBehaviorScript.transform.parent = transform;
-                // Reposition spellObject here.
+
+                // Reposition spell to manager
+                spellBehaviorScript.transform.position = transform.position;
+            }
+        }
+        else if (attemptedSpellData.CastingArea == ScriptableSpellData.CastArea.AdjacentCorners)
+        {
+            CursorLogic cursorLogic = this.GetComponent<CursorLogic>();
+            int cursorWall = cursorLogic.GetCurrentWall();
+            Vector2[] corners = cursorLogic.GetCurrentSquareCorners();
+            
+            // Points to instantiate at
+            Vector2[] instantiationPoints = new Vector2[]
+            {
+                corners[cursorWall],
+                corners[(cursorWall + 1) % 4]
+            };
+            
+            // Fix the length of the spellObject array
+            spellObject = new GameObject[2];
+
+            // Loop and instantiate
+            for (var i = 0; i < spellObject.Length; i++)
+            {
+                spellObject[i] = Instantiate(attemptedSpellData.ProjectilePrefab);
+                SpellBehavior spellBehaviorScript = spellObject[i].GetComponent<SpellBehavior>();
+                
+                spellBehaviorScript.spellData = attemptedSpellData;
+                spellBehaviorScript.positionInGroup = i;
+
+                spellBehaviorScript.distanceToMove = (cursorLogic.squareSide)/2;
+
+                // Reposition spell to corner
+                spellBehaviorScript.transform.SetPositionAndRotation(instantiationPoints[i], this.transform.rotation * Quaternion.Euler(0, 0, -90));
             }
         }
         else
         {
-            Debug.LogWarning("Projectile casting area is not yet implemented.");
+            Debug.LogWarning("This casting area is not yet implemented.");
         }
         return spellObject;
     }
@@ -104,6 +138,11 @@ public class SpellManager : MonoBehaviour
             {
                 spellBehaviors[i].targetedPlayer = castingPlayerObject;
             }
+        }
+        else if (attemptedSpellData.TargetingType == ScriptableSpellData.TargetType.NotApplicable)
+        {
+            // N/A, nothing should happen
+            return;
         }
         else
         {

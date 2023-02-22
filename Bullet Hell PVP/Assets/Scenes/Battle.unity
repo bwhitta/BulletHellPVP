@@ -182,7 +182,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 75f5f34dc1b5347e0b8351032682f224, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.69411767, g: 0.15294118, b: 0.14117648, a: 1}
   m_FlipX: 0
   m_FlipY: 1
   m_DrawMode: 0
@@ -650,8 +650,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 746061121}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -3.4499998, y: 4, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0.7071068, w: 0.7071068}
+  m_LocalPosition: {x: -0.25, y: -1.7000008, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -674,6 +674,7 @@ MonoBehaviour:
   castingPlayerObject: {fileID: 1358301339}
   spellData:
   - {fileID: 11400000, guid: 1c21101c32748b945bbd912842cdb0ab, type: 2}
+  - {fileID: 11400000, guid: 0ac8e34202f3aea4c82a25d8c2cf568f, type: 2}
 --- !u!114 &746061124
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -688,26 +689,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   movementMultiplier: 5
   acceleratedMovementMultiplier: 2.5
-  location: 4.3
+  location: -16.8
   squareTransform: {fileID: 972675302}
-  cursorMovement:
-    m_Name: Cursor Movement
-    m_Type: 0
-    m_ExpectedControlType: 
-    m_Id: 06e8cb64-2e17-413e-9a5f-976ebd1deef6
-    m_Processors: 
-    m_Interactions: 
-    m_SingletonActionBindings: []
-    m_Flags: 0
-  cursorAccelerate:
-    m_Name: Cursor Accelerate
-    m_Type: 0
-    m_ExpectedControlType: 
-    m_Id: 2e7a7a1a-c8b3-4ffe-a892-552d417a956b
-    m_Processors: 
-    m_Interactions: 
-    m_SingletonActionBindings: []
-    m_Flags: 0
+  squareSide: 7.5
 --- !u!1 &816503654
 GameObject:
   m_ObjectHideFlags: 0
@@ -1316,7 +1300,7 @@ MonoBehaviour:
   AnimatorTreeParameterX: FacingX
   AnimatorTreeParameterY: FacingY
   maxHealth: 100
-  maxMana: 50
+  maxMana: 1000
   healthBarObject: {fileID: 466853234}
   manaBarObject: {fileID: 433776964}
   spellManagerObject: {fileID: 746061121}

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -8,6 +9,9 @@ using static SpellManager;
 public class SpellBehavior : MonoBehaviour
 {
     public ScriptableSpellData spellData;
+    public int positionInGroup;
+    public float distanceToMove;
+    private float distanceMoved;
 
     // For target mode - player. 
     public GameObject targetedPlayer;
@@ -16,7 +20,6 @@ public class SpellBehavior : MonoBehaviour
     {
         GetComponent<SpriteRenderer>().sprite = spellData.ProjectileSprite;
         PointTowardsTarget();
-
     }
 
     private void Update()
@@ -47,6 +50,11 @@ public class SpellBehavior : MonoBehaviour
                 transform.right = targetedPlayer.transform.position - transform.position; // Point towards player
             }
         }
+        else if (spellData.TargetingType == ScriptableSpellData.TargetType.NotApplicable)
+        {
+            //Do nothing
+            return;
+        }
         else
         {
             Debug.LogWarning("Targeting type is not yet implemented.");
@@ -55,9 +63,51 @@ public class SpellBehavior : MonoBehaviour
 
     private void MoveSpell()
     {
-        if(spellData.MovementType == ScriptableSpellData.ProjectileMovementType.Linear)
+        // Move the spell
+        if (spellData.TypeOfSpell == ScriptableSpellData.SpellType.Linear)
         {
             transform.position += spellData.MovementSpeed * Time.deltaTime * transform.right;
+            distanceMoved += spellData.MovementSpeed * Time.deltaTime;
         }
+        else if (spellData.TypeOfSpell == ScriptableSpellData.SpellType.Wall)
+        {
+            switch (positionInGroup)
+            {
+                case 0:
+                    transform.position += transform.rotation * Vector3.up * Time.deltaTime * spellData.MovementSpeed;
+                    break;
+                case 1:
+                    transform.position += transform.rotation * Vector3.down * Time.deltaTime * spellData.MovementSpeed;
+                    break;
+            }
+
+            distanceMoved += Time.deltaTime * spellData.MovementSpeed;
+        }
+
+        // Scaling
+        UpdateScaling();
+    }
+    private void UpdateScaling()
+    {
+        float distanceForScaling = distanceToMove * spellData.ScalingStart;
+        if (distanceMoved >= distanceForScaling)
+        {
+            float currentScale = Scaling(distanceToMove, spellData.ScalingStart, distanceMoved, spellData.SecondaryCastingArea - 1);
+
+            transform.localScale = new Vector3(spellData.SpriteScale * currentScale, spellData.SpriteScale * currentScale, 1);
+        }
+
+        if (distanceMoved >= distanceToMove && spellData.DestroyOnScalingCompleted)
+            Destroy(gameObject);
+    }
+
+    private float Scaling(float totalMove, float totalMoveScalingStartPercent, float currentlyMoved, float scaleTargetPercentage)
+    {
+        // The position along totalMove at which scaling starts
+        float scalingStart = totalMove * totalMoveScalingStartPercent;
+        // The percentage (0.0 to 1.0) of scaling completed
+        float scalingCompletionPercentage = (currentlyMoved - scalingStart) / (totalMove - scalingStart);
+
+        return (scaleTargetPercentage * scalingCompletionPercentage) + 1;
     }
 }

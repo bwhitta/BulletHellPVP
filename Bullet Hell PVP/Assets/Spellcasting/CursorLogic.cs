@@ -13,16 +13,20 @@ public class CursorLogic : MonoBehaviour
     GameControls controls;
     [SerializeField][Range(-30f, 30f)] private float location;
     [SerializeField] private Transform squareTransform;
+    public float squareSide;
 
-    [SerializeField] private InputAction cursorMovement, cursorAccelerate;
+    private InputAction cursorMovement, cursorAccelerate;
 
     private void OnValidate()
     {
+        squareSide = squareTransform.localScale.x;
         UpdateCursor();
     }
 
     private void Start()
     {
+        squareSide = squareTransform.localScale.x;
+        
         controls = GameControlsMaster.GameControls;
 
         cursorMovement = controls.Player.CursorMovement;
@@ -53,23 +57,15 @@ public class CursorLogic : MonoBehaviour
 
     private void UpdateCursor()
     {
-        float squareSide = squareTransform.localScale.x;
-        float squarePosX = squareTransform.localPosition.x;
-        float squarePosY = squareTransform.localPosition.y;
-        if (!Mathf.Approximately(squareSide, squareTransform.localScale.y))
-        {
-            Debug.LogError("Square transform discrepancy");
-        }
 
         float locationAroundSquare = Modulo(location, squareSide * 4);
-        // location % (squareSide * 4);
 
-        int sideNumber = (int) Mathf.Floor(locationAroundSquare/squareSide);
+        int sideNumber = GetCurrentWall();
         float locationAroundSide = locationAroundSquare % squareSide;
 
         transform.rotation = Quaternion.Euler(0, 0, -90 * (sideNumber)); // Negative because it rotates counterclockwise
 
-        Vector2[] corners = GetSquareCorners(squareSide, squarePosX, squarePosY);
+        Vector2[] corners = GetCurrentSquareCorners();
 
         int[,] modifierDirection = { { 1, 0 }, { 0, -1 }, { -1, 0 }, { 0, 1 } }; // Starts in top left, continues clockwise
         Vector2 positionModifier = new(locationAroundSide * modifierDirection[sideNumber, 0], locationAroundSide * modifierDirection[sideNumber, 1]); 
@@ -79,6 +75,7 @@ public class CursorLogic : MonoBehaviour
 
     private Vector2[] GetSquareCorners(float sideLength, float posX, float posY)
     {
+
         Vector2[] corners = new Vector2[4];
         
         int[,] cornerDirection = {{-1, 1},{1, 1},{1, -1},{-1, -1}}; // Starts in top left, continues clockwise
@@ -90,9 +87,28 @@ public class CursorLogic : MonoBehaviour
         }
         return corners;
     }
+    
+    /// <summary> Gets the current corners of the CursorLogic's attatched square this method is called for </summary>
+    /// <returns> A list of the coordinates of the square. Starts in top left, continues clockwise </returns>
+    public Vector2[] GetCurrentSquareCorners()
+    {
+        if (!Mathf.Approximately(squareTransform.localScale.x, squareTransform.localScale.y))
+        {
+            Debug.LogError("Square transform discrepancy");
+        }
+        return GetSquareCorners(squareTransform.localScale.x, squareTransform.localPosition.x, squareTransform.localPosition.y);
+    }
 
     private float Modulo(float numberToModify, float modifyingNumber)
     {
         return numberToModify - modifyingNumber * (Mathf.Floor(numberToModify / modifyingNumber));
+    }
+
+    public int GetCurrentWall()
+    {
+        float squareSide = squareTransform.localScale.x;
+        float locationAroundSquare = Modulo(location, squareSide * 4);
+
+        return (int)Mathf.Floor(locationAroundSquare / squareSide);
     }
 }

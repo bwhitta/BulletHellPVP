@@ -43,7 +43,7 @@ public class ControlCharacter : MonoBehaviour
 
         attack = playerControls.Player.Attack;
         attack.Enable();
-        attack.performed += context => spellManager.CastSpell("Hasty Jolt");
+        attack.performed += context => spellManager.CastSpell("Fiery Raze");
     }
     
     private void Update()
