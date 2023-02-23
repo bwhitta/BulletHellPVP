@@ -13,12 +13,12 @@ public class SpellManager : MonoBehaviour
     private ControlCharacter characterControlScript;
     
         [Header("Spells")]
-    [SerializeField] private ScriptableSpellData[] spellData;
+    [SerializeField] private ScriptableSpellData[] fullSpellData;
     private string[] spellNames;
 
     private void Start()
     {
-        spellNames = new string[spellData.Length];
+        spellNames = new string[fullSpellData.Length];
         
         characterControlScript = castingPlayerObject.GetComponent<ControlCharacter>();
         
@@ -26,9 +26,9 @@ public class SpellManager : MonoBehaviour
     }
     private void GetSpellNames()
     {
-        for(var i = 0; i < spellData.Length; i++)
+        for(var i = 0; i < fullSpellData.Length; i++)
         {
-            spellNames[i] = spellData[i].name;
+            spellNames[i] = fullSpellData[i].name;
         }
     }
 
@@ -37,7 +37,7 @@ public class SpellManager : MonoBehaviour
     public void CastSpell(string attemptedSpellName)
     {
         Debug.Log($"Casting spell {attemptedSpellName}");
-        ScriptableSpellData attemptedSpellData = spellData[Array.IndexOf(spellNames, attemptedSpellName)];
+        ScriptableSpellData attemptedSpellData = fullSpellData[Array.IndexOf(spellNames, attemptedSpellName)];
 
         //Checks if the player has enough mana
         if (attemptedSpellData.ManaCost <= characterControlScript.stats.CurrentManaStat)
@@ -64,37 +64,40 @@ public class SpellManager : MonoBehaviour
         }
     }
     
-    private GameObject[] InstantiateSpell(ScriptableSpellData attemptedSpellData)
+    private GameObject[] InstantiateSpell(ScriptableSpellData spellData)
     {
         GameObject[] spellObject = new GameObject[1];
 
-        if (attemptedSpellData.CastingArea == ScriptableSpellData.CastArea.Single)
+        if (spellData.CastingArea == ScriptableSpellData.CastArea.Single)
         {
-            spellObject[0] = Instantiate(attemptedSpellData.ProjectilePrefab);
+            spellObject[0] = Instantiate(spellData.ProjectilePrefab);
             SpellBehavior spellBehaviorScript = spellObject[0].GetComponent<SpellBehavior>();
-            spellBehaviorScript.spellData = attemptedSpellData;
+            spellBehaviorScript.spellData = spellData;
 
             // Reposition spell to manager
             spellBehaviorScript.transform.position = transform.position;
 
+            AnimatedChildrenSetup(spellObject[0], spellData);
         }
-        else if (attemptedSpellData.CastingArea == ScriptableSpellData.CastArea.Stacked)
+        else if (spellData.CastingArea == ScriptableSpellData.CastArea.Stacked)
         {
             // Fix the length of the spellObject array
-            spellObject = new GameObject[attemptedSpellData.ProjectileQuantity];
+            spellObject = new GameObject[spellData.ProjectileQuantity];
 
             // Loop and instantiate
-            for (var i = 0; i < attemptedSpellData.ProjectileQuantity; i++)
+            for (var i = 0; i < spellData.ProjectileQuantity; i++)
             {
-                spellObject[i] = Instantiate(attemptedSpellData.ProjectilePrefab);
+                spellObject[i] = Instantiate(spellData.ProjectilePrefab);
                 SpellBehavior spellBehaviorScript = spellObject[i].GetComponent<SpellBehavior>();
-                spellBehaviorScript.spellData = attemptedSpellData;
+                spellBehaviorScript.spellData = spellData;
 
                 // Reposition spell to manager
                 spellBehaviorScript.transform.position = transform.position;
+
+                AnimatedChildrenSetup(spellObject[i], spellData);
             }
         }
-        else if (attemptedSpellData.CastingArea == ScriptableSpellData.CastArea.AdjacentCorners)
+        else if (spellData.CastingArea == ScriptableSpellData.CastArea.AdjacentCorners)
         {
             CursorLogic cursorLogic = this.GetComponent<CursorLogic>();
             int cursorWall = cursorLogic.GetCurrentWall();
@@ -109,20 +112,24 @@ public class SpellManager : MonoBehaviour
             
             // Fix the length of the spellObject array
             spellObject = new GameObject[2];
-
             // Loop and instantiate
             for (var i = 0; i < spellObject.Length; i++)
             {
-                spellObject[i] = Instantiate(attemptedSpellData.ProjectilePrefab);
-                SpellBehavior spellBehaviorScript = spellObject[i].GetComponent<SpellBehavior>();
-                
-                spellBehaviorScript.spellData = attemptedSpellData;
-                spellBehaviorScript.positionInGroup = i;
+                //Instantiate the spell
+                spellObject[i] = Instantiate(spellData.ProjectilePrefab);
 
+                // The script on the instantiated spell
+                SpellBehavior spellBehaviorScript = spellObject[i].GetComponent<SpellBehavior>(); 
+                
+                // Send data to the spell's script
+                spellBehaviorScript.spellData = spellData;
+                spellBehaviorScript.positionInGroup = i;
                 spellBehaviorScript.distanceToMove = (cursorLogic.squareSide)/2;
 
                 // Reposition spell to corner
                 spellBehaviorScript.transform.SetPositionAndRotation(instantiationPoints[i], this.transform.rotation * Quaternion.Euler(0, 0, -90));
+
+                AnimatedChildrenSetup(spellObject[i], spellData);
             }
         }
         else
@@ -148,6 +155,25 @@ public class SpellManager : MonoBehaviour
         else
         {
             Debug.Log("Targeting type not yet implemented");
+        }
+    }
+
+    private void AnimatedChildrenSetup(GameObject spellPrefabObject, ScriptableSpellData spellData)
+    {
+        if(spellData.AnimateSpell == false)
+        {
+            return;
+        }
+        // SpellBehavior spellPrefabScript = spellPrefabObject.GetComponent<SpellBehavior>();
+        for(var i = 0; i < spellData.MultipartAnimationPrefabs.Length; i++)
+        {
+            GameObject currentAnimationPrefab = Instantiate(spellData.MultipartAnimationPrefabs[i]);
+            currentAnimationPrefab.transform.parent = spellPrefabObject.transform;
+
+            currentAnimationPrefab.transform.SetPositionAndRotation(spellPrefabObject.transform.position, spellPrefabObject.transform.rotation);
+
+            // Animator does not work with changed name, so this line resets the name.
+            currentAnimationPrefab.name = spellData.MultipartAnimationPrefabs[i].name;
         }
     }
 }

@@ -23,10 +23,17 @@ MonoBehaviour:
   MovementSpeed: 5
   TargetingType: 1
   ProjectilePrefab: {fileID: 1062348163457161292, guid: a12a2eac476853e4184718ce4ef910dc, type: 3}
-  ProjectileSprite: {fileID: 21300000, guid: 71d1ccf3fdf437f46970079808597970, type: 3}
+  HasSprite: 0
+  ProjectileSprite: {fileID: 0}
   SpriteScale: 0.07
   UseParticles: 0
   ParticleSystemPrefab: {fileID: 0}
   SecondaryCastingArea: 0
+  AnimateSpell: 1
+  SpellAnimatorController: {fileID: 9100000, guid: 8456e04db8d577746aab1099fc21ee10, type: 2}
+  MultipartAnimationPrefabs:
+  - {fileID: 6875562524064102678, guid: bd654d109af0f0f4cbb6bb3a3103c2ab, type: 3}
+  - {fileID: 1315184325858685254, guid: 28fa8b636c1e7ff438e1664159b8b936, type: 3}
+  ScalingAfterDistance: 0
   ScalingStart: 0
   DestroyOnScalingCompleted: 0

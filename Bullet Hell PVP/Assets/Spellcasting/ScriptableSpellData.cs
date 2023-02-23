@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
+using UnityEditor.Animations;
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "Scriptable Spell")]
@@ -39,6 +41,8 @@ public class ScriptableSpellData : ScriptableObject
         [Header("Prefab")]
     /// <summary> The prefab object for the projectile. </summary>
     public GameObject ProjectilePrefab; // Should always use a simple prefab with SpellBehavior and a sprite renderer.
+    /// <summary> If the spell has a sprite </summary>
+    public bool HasSprite;
     /// <summary> The sprite for the projectile to use </summary>
     public Sprite ProjectileSprite;
     public float SpriteScale;
@@ -47,7 +51,11 @@ public class ScriptableSpellData : ScriptableObject
     public bool UseParticles;
     public GameObject ParticleSystemPrefab;
     public float SecondaryCastingArea;
-    [Space]
+    [Space] // Animation
+    public bool AnimateSpell;
+    public AnimatorController SpellAnimatorController;
+    public GameObject[] MultipartAnimationPrefabs;
+    [Space] // Scaling
     public bool ScalingAfterDistance;
     public float ScalingStart;
     public bool DestroyOnScalingCompleted;

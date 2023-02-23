@@ -672,7 +672,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   castingPlayerObject: {fileID: 1358301339}
-  spellData:
+  fullSpellData:
   - {fileID: 11400000, guid: 1c21101c32748b945bbd912842cdb0ab, type: 2}
   - {fileID: 11400000, guid: 0ac8e34202f3aea4c82a25d8c2cf568f, type: 2}
 --- !u!114 &746061124

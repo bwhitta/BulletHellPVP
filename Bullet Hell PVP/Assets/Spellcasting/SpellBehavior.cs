@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using Unity.VisualScripting;
+using UnityEditor.Animations;
 using UnityEngine;
 using UnityEngine.UIElements;
 using static SpellManager;
@@ -18,10 +19,19 @@ public class SpellBehavior : MonoBehaviour
 
     private void Start()
     {
-        GetComponent<SpriteRenderer>().sprite = spellData.ProjectileSprite;
+        if (spellData.HasSprite)
+        {
+            GetComponent<SpriteRenderer>().sprite = spellData.ProjectileSprite;
+        }
+        else
+        {
+            gameObject.GetComponent<SpriteRenderer>().enabled = false;
+        }
+
+
+        AnimatorSetup();
         PointTowardsTarget();
     }
-
     private void Update()
     {
         // Move based on movement
@@ -60,7 +70,6 @@ public class SpellBehavior : MonoBehaviour
             Debug.LogWarning("Targeting type is not yet implemented.");
         }
     }
-
     private void MoveSpell()
     {
         // Move the spell
@@ -101,7 +110,6 @@ public class SpellBehavior : MonoBehaviour
         if (distanceMoved >= distanceToMove && spellData.DestroyOnScalingCompleted)
             Destroy(gameObject);
     }
-
     private float Scaling(float totalMove, float totalMoveScalingStartPercent, float currentlyMoved, float scaleTargetPercentage)
     {
         // The position along totalMove at which scaling starts
@@ -110,5 +118,16 @@ public class SpellBehavior : MonoBehaviour
         float scalingCompletionPercentage = (currentlyMoved - scalingStart) / (totalMove - scalingStart);
 
         return (scaleTargetPercentage * scalingCompletionPercentage) + 1;
+    }
+    private void AnimatorSetup()
+    {
+        // Enables the animator if AnimateSpell is set to true
+        gameObject.GetComponent<Animator>().enabled = spellData.AnimateSpell;
+
+        if (spellData.AnimateSpell)
+        {
+            // Sets the animation
+            gameObject.GetComponent<Animator>().runtimeAnimatorController = spellData.SpellAnimatorController;
+        }
     }
 }
