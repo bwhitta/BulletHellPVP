@@ -11,25 +11,28 @@ using static ControlsManager;
 
 public class ConsumableBarLogic : MonoBehaviour
 {
-    [Header("Character")]
-        [SerializeField] private GameObject characterObject;
-        [SerializeField] private ControlCharacter character;
-    enum Stats { health, mana }
-    [Header("Stats")]
-        [SerializeField] Stats statToModify = new();
-        [SerializeField] private GameObject statRemainingObject, statLostObject;
-        [SerializeField] private int remainingEdgeLeft, remainingEdgeRight, lostEdgeLeft, lostEdgeRight;
+        [Header("Character")]
+    [SerializeField] private GameObject characterObject;
+    [SerializeField] private ControlCharacter character;
 
-    [Header("Stat loss bar")]
-        private float statLost;
-        private float statLostVelocity = 0;
-        [SerializeField] private float statLostVelocityMod;
+    enum Stats { health, mana }
+        [Header("Stats")]
+    [SerializeField] Stats statToModify = new();
+    [SerializeField] private GameObject statRemainingObject, statLostObject;
+    [SerializeField] private int remainingEdgeLeft, remainingEdgeRight, lostEdgeLeft, lostEdgeRight;
+    [SerializeField] private Text valueText;
+
+        [Header("Stat loss bar")]
+    private float statLost;
+    private float statLostVelocity = 0;
+    [SerializeField] private float statLostVelocityMod;
     
 
     private void Start()
     {
         character = characterObject.GetComponent<ControlCharacter>();
-        InitialHealthDisplay();
+        InitialStatDisplay();
+        UpdateText();
     }
     private void FixedUpdate()
     {
@@ -44,21 +47,21 @@ public class ConsumableBarLogic : MonoBehaviour
     private void UpdateStatDisplay(GameObject displayObject, float valueSet, int edgeLeft = 0, int edgeRight = 0)
     {
         float statMax = GetStatMax();
-        float statPercentage = valueSet / statMax;
         
         Image displayImage = displayObject.GetComponent<Image>();
-                
+        
+        // Update divider bar
+        float statPercentage = valueSet / statMax;
         float divMin = (-displayImage.preferredWidth / 2) + edgeLeft; // The left-most point of the bar
         float divLocation = divMin + ((displayImage.preferredWidth - (edgeLeft + edgeRight)) * statPercentage); // The divider's X along the bar
 
 
         GameObject div = displayImage.transform.GetChild(0).gameObject; // Divider game object
-
         div.GetComponent<RectTransform>().anchoredPosition = new Vector2(divLocation, 0); // Moves the divider into location
         displayImage.fillAmount = statPercentage;
     }
 
-    private void InitialHealthDisplay()
+    private void InitialStatDisplay()
     {
         statLost = GetStatMax();
         UpdateStatDisplay(statRemainingObject, GetCurrentStat(), remainingEdgeLeft, remainingEdgeRight);
@@ -131,6 +134,19 @@ public class ConsumableBarLogic : MonoBehaviour
         else
         {
             Debug.LogError("No valid stat assigned");
+        }
+        UpdateText();
+    }
+
+    private void UpdateText()
+    {
+        if (statToModify == Stats.health)
+        {
+            valueText.text = character.stats.CurrentHealthStat.ToString();
+        }
+        else if (statToModify == Stats.mana)
+        {
+            valueText.text = character.stats.CurrentManaStat.ToString();
         }
     }
 }

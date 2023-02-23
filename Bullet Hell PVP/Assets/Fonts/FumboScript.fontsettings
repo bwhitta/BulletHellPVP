@@ -8,14 +8,14 @@ Font:
   m_PrefabAsset: {fileID: 0}
   m_Name: FumboScript
   serializedVersion: 5
-  m_LineSpacing: 0.1
+  m_LineSpacing: 500
   m_DefaultMaterial: {fileID: 2100000, guid: 77f454e33f3b24446ac3017b8d079be4, type: 2}
   m_FontSize: 0
   m_Texture: {fileID: 0}
   m_AsciiStartOffset: 0
   m_Tracking: 1
   m_CharacterSpacing: 0
-  m_CharacterPadding: 1
+  m_CharacterPadding: 0
   m_ConvertCase: 0
   m_CharacterRects:
   - serializedVersion: 2
@@ -29,10 +29,10 @@ Font:
     vert:
       serializedVersion: 2
       x: 0
-      y: 0
+      y: 256
       width: 512
       height: -512
-    advance: 512
+    advance: 350
     flipped: 0
   - serializedVersion: 2
     index: 49
@@ -45,10 +45,10 @@ Font:
     vert:
       serializedVersion: 2
       x: 0
-      y: 0
+      y: 256
       width: 512
       height: -512
-    advance: 512
+    advance: 300
     flipped: 0
   - serializedVersion: 2
     index: 50
@@ -61,10 +61,10 @@ Font:
     vert:
       serializedVersion: 2
       x: 0
-      y: 0
+      y: 240
       width: 512
       height: -512
-    advance: 512
+    advance: 400
     flipped: 0
   - serializedVersion: 2
     index: 51
@@ -77,10 +77,10 @@ Font:
     vert:
       serializedVersion: 2
       x: 0
-      y: 0
+      y: 256
       width: 512
       height: -512
-    advance: 512
+    advance: 350
     flipped: 0
   - serializedVersion: 2
     index: 52
@@ -93,10 +93,10 @@ Font:
     vert:
       serializedVersion: 2
       x: 0
-      y: 0
+      y: 256
       width: 512
       height: -512
-    advance: 512
+    advance: 350
     flipped: 0
   - serializedVersion: 2
     index: 53
@@ -109,10 +109,10 @@ Font:
     vert:
       serializedVersion: 2
       x: 0
-      y: 0
+      y: 256
       width: 512
       height: -512
-    advance: 512
+    advance: 375
     flipped: 0
   - serializedVersion: 2
     index: 54
@@ -125,10 +125,10 @@ Font:
     vert:
       serializedVersion: 2
       x: 0
-      y: 0
+      y: 272
       width: 512
       height: -512
-    advance: 512
+    advance: 384
     flipped: 0
   - serializedVersion: 2
     index: 55
@@ -141,10 +141,10 @@ Font:
     vert:
       serializedVersion: 2
       x: 0
-      y: 0
+      y: 256
       width: 512
       height: -512
-    advance: 512
+    advance: 375
     flipped: 0
   - serializedVersion: 2
     index: 56
@@ -157,10 +157,10 @@ Font:
     vert:
       serializedVersion: 2
       x: 0
-      y: 0
+      y: 256
       width: 512
       height: -512
-    advance: 512
+    advance: 325
     flipped: 0
   - serializedVersion: 2
     index: 57
@@ -173,10 +173,10 @@ Font:
     vert:
       serializedVersion: 2
       x: 0
-      y: 0
+      y: 256
       width: 512
       height: -512
-    advance: 512
+    advance: 300
     flipped: 0
   m_KerningValues: []
   m_PixelScale: 0.1
