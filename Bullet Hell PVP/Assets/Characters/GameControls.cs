@@ -37,15 +37,6 @@ public partial class @GameControls : IInputActionCollection2, IDisposable
                     ""initialStateCheck"": true
                 },
                 {
-                    ""name"": ""Attack"",
-                    ""type"": ""Button"",
-                    ""id"": ""13bb904e-039b-449f-9fa2-6be30544cb35"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
                     ""name"": ""CursorMovement"",
                     ""type"": ""Value"",
                     ""id"": ""b36df7a7-7d4e-4255-b078-fe31823de22c"",
@@ -62,6 +53,15 @@ public partial class @GameControls : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SpellcastingSelection"",
+                    ""type"": ""Value"",
+                    ""id"": ""868e8d7c-40fc-48bd-bfa5-306e3d89ab5c"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -82,7 +82,7 @@ public partial class @GameControls : IInputActionCollection2, IDisposable
                     ""path"": ""<Keyboard>/w"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Keyboard&Mouse;Gamepad;Touch;Joystick;XR"",
+                    ""groups"": ""Keyboard&Mouse"",
                     ""action"": ""Movement"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
@@ -93,7 +93,7 @@ public partial class @GameControls : IInputActionCollection2, IDisposable
                     ""path"": ""<Keyboard>/s"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Keyboard&Mouse;Gamepad;Touch;Joystick;XR"",
+                    ""groups"": ""Keyboard&Mouse"",
                     ""action"": ""Movement"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
@@ -104,7 +104,7 @@ public partial class @GameControls : IInputActionCollection2, IDisposable
                     ""path"": ""<Keyboard>/a"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Keyboard&Mouse;Gamepad;Touch;XR;Joystick"",
+                    ""groups"": ""Keyboard&Mouse"",
                     ""action"": ""Movement"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
@@ -115,21 +115,10 @@ public partial class @GameControls : IInputActionCollection2, IDisposable
                     ""path"": ""<Keyboard>/d"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Keyboard&Mouse;Gamepad;Touch;Joystick;XR"",
+                    ""groups"": ""Keyboard&Mouse"",
                     ""action"": ""Movement"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""f353582b-a05a-45b0-903d-2b47210e0150"",
-                    ""path"": ""<Keyboard>/r"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Attack"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
                 },
                 {
                     ""name"": ""1D Axis"",
@@ -170,8 +159,85 @@ public partial class @GameControls : IInputActionCollection2, IDisposable
                     ""path"": ""<Keyboard>/shift"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": """",
+                    ""groups"": ""Keyboard&Mouse"",
                     ""action"": ""AccelerateCursorMovement"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""7640a3bd-3685-4233-ba6e-d300d420b0c3"",
+                    ""path"": ""<Keyboard>/1"",
+                    ""interactions"": """",
+                    ""processors"": ""Scale"",
+                    ""groups"": """",
+                    ""action"": ""SpellcastingSelection"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""88e7ce91-4a69-4b70-9529-a1eb69ca7382"",
+                    ""path"": ""<Keyboard>/2"",
+                    ""interactions"": """",
+                    ""processors"": ""Scale(factor=2)"",
+                    ""groups"": """",
+                    ""action"": ""SpellcastingSelection"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""79d9b7aa-21a7-4500-a858-253044890868"",
+                    ""path"": ""<Keyboard>/3"",
+                    ""interactions"": """",
+                    ""processors"": ""Scale(factor=3)"",
+                    ""groups"": """",
+                    ""action"": ""SpellcastingSelection"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""797447ee-d432-41d1-8cb0-124857bad064"",
+                    ""path"": ""<Keyboard>/4"",
+                    ""interactions"": """",
+                    ""processors"": ""Scale(factor=4)"",
+                    ""groups"": """",
+                    ""action"": ""SpellcastingSelection"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c50b11e5-8cc7-482c-8e87-fd4522ee0f5b"",
+                    ""path"": ""<Keyboard>/5"",
+                    ""interactions"": """",
+                    ""processors"": ""Scale(factor=5)"",
+                    ""groups"": """",
+                    ""action"": ""SpellcastingSelection"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""bbaa798f-75ba-4634-919f-1aa3da991073"",
+                    ""path"": ""<Keyboard>/6"",
+                    ""interactions"": """",
+                    ""processors"": ""Scale(factor=6)"",
+                    ""groups"": """",
+                    ""action"": ""SpellcastingSelection"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""9d47b3f2-fb07-4846-b6c9-0f0154330e37"",
+                    ""path"": ""<Keyboard>/7"",
+                    ""interactions"": """",
+                    ""processors"": ""Scale"",
+                    ""groups"": """",
+                    ""action"": ""SpellcastingSelection"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -720,9 +786,9 @@ public partial class @GameControls : IInputActionCollection2, IDisposable
         // Player
         m_Player = asset.FindActionMap("Player", throwIfNotFound: true);
         m_Player_Movement = m_Player.FindAction("Movement", throwIfNotFound: true);
-        m_Player_Attack = m_Player.FindAction("Attack", throwIfNotFound: true);
         m_Player_CursorMovement = m_Player.FindAction("CursorMovement", throwIfNotFound: true);
         m_Player_AccelerateCursorMovement = m_Player.FindAction("AccelerateCursorMovement", throwIfNotFound: true);
+        m_Player_SpellcastingSelection = m_Player.FindAction("SpellcastingSelection", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -793,17 +859,17 @@ public partial class @GameControls : IInputActionCollection2, IDisposable
     private readonly InputActionMap m_Player;
     private IPlayerActions m_PlayerActionsCallbackInterface;
     private readonly InputAction m_Player_Movement;
-    private readonly InputAction m_Player_Attack;
     private readonly InputAction m_Player_CursorMovement;
     private readonly InputAction m_Player_AccelerateCursorMovement;
+    private readonly InputAction m_Player_SpellcastingSelection;
     public struct PlayerActions
     {
         private @GameControls m_Wrapper;
         public PlayerActions(@GameControls wrapper) { m_Wrapper = wrapper; }
         public InputAction @Movement => m_Wrapper.m_Player_Movement;
-        public InputAction @Attack => m_Wrapper.m_Player_Attack;
         public InputAction @CursorMovement => m_Wrapper.m_Player_CursorMovement;
         public InputAction @AccelerateCursorMovement => m_Wrapper.m_Player_AccelerateCursorMovement;
+        public InputAction @SpellcastingSelection => m_Wrapper.m_Player_SpellcastingSelection;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -816,15 +882,15 @@ public partial class @GameControls : IInputActionCollection2, IDisposable
                 @Movement.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMovement;
                 @Movement.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMovement;
                 @Movement.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMovement;
-                @Attack.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnAttack;
-                @Attack.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnAttack;
-                @Attack.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnAttack;
                 @CursorMovement.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCursorMovement;
                 @CursorMovement.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCursorMovement;
                 @CursorMovement.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCursorMovement;
                 @AccelerateCursorMovement.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnAccelerateCursorMovement;
                 @AccelerateCursorMovement.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnAccelerateCursorMovement;
                 @AccelerateCursorMovement.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnAccelerateCursorMovement;
+                @SpellcastingSelection.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSpellcastingSelection;
+                @SpellcastingSelection.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSpellcastingSelection;
+                @SpellcastingSelection.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSpellcastingSelection;
             }
             m_Wrapper.m_PlayerActionsCallbackInterface = instance;
             if (instance != null)
@@ -832,15 +898,15 @@ public partial class @GameControls : IInputActionCollection2, IDisposable
                 @Movement.started += instance.OnMovement;
                 @Movement.performed += instance.OnMovement;
                 @Movement.canceled += instance.OnMovement;
-                @Attack.started += instance.OnAttack;
-                @Attack.performed += instance.OnAttack;
-                @Attack.canceled += instance.OnAttack;
                 @CursorMovement.started += instance.OnCursorMovement;
                 @CursorMovement.performed += instance.OnCursorMovement;
                 @CursorMovement.canceled += instance.OnCursorMovement;
                 @AccelerateCursorMovement.started += instance.OnAccelerateCursorMovement;
                 @AccelerateCursorMovement.performed += instance.OnAccelerateCursorMovement;
                 @AccelerateCursorMovement.canceled += instance.OnAccelerateCursorMovement;
+                @SpellcastingSelection.started += instance.OnSpellcastingSelection;
+                @SpellcastingSelection.performed += instance.OnSpellcastingSelection;
+                @SpellcastingSelection.canceled += instance.OnSpellcastingSelection;
             }
         }
     }
@@ -982,9 +1048,9 @@ public partial class @GameControls : IInputActionCollection2, IDisposable
     public interface IPlayerActions
     {
         void OnMovement(InputAction.CallbackContext context);
-        void OnAttack(InputAction.CallbackContext context);
         void OnCursorMovement(InputAction.CallbackContext context);
         void OnAccelerateCursorMovement(InputAction.CallbackContext context);
+        void OnSpellcastingSelection(InputAction.CallbackContext context);
     }
     public interface IUIActions
     {

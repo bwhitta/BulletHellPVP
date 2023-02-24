@@ -14,7 +14,7 @@ public class ScriptableSpellData : ScriptableObject
     /// <summary> The available targeting types </summary>
     public enum TargetType { NotApplicable, Player, Center, LinearOpposing, InvertedOpposing }
 
-        [Header("Info for Spell Manager")]
+        [Space][Header("Info for Spell Manager")]
     /// <summary> The spell's name </summary>
     public string SpellName;
     /// <summary> The mana cost of the spell </summary>
@@ -28,7 +28,7 @@ public class ScriptableSpellData : ScriptableObject
     /// <summary> The scale multiplier of the casting area </summary>
     public float CastingAreaScale; // UNUSED
 
-        [Header("Info for Prefab")]
+        [Space][Header("Info for Prefab")]
     /// <summary> How much the damage the spell deals </summary>
     public float Damage;
     /// <summary> How the spell moves </summary>
@@ -38,7 +38,7 @@ public class ScriptableSpellData : ScriptableObject
     /// <summary> What the spell targets </summary>
     public TargetType TargetingType;
 
-        [Header("Prefab")]
+        [Space][Header("Prefab")]
     /// <summary> The prefab object for the projectile. </summary>
     public GameObject ProjectilePrefab; // Should always use a simple prefab with SpellBehavior and a sprite renderer.
     /// <summary> If the spell has a sprite </summary>
@@ -47,7 +47,11 @@ public class ScriptableSpellData : ScriptableObject
     public Sprite ProjectileSprite;
     public float SpriteScale;
 
-        [Header("Optional (only used for some spell types and such)")]
+        [Space][Header("UI")]
+    public Sprite SpellbookSprite;
+
+        
+        [Space][Header("Optional (only used for some spell types and such)")]
     public bool UseParticles;
     public GameObject ParticleSystemPrefab;
     public float SecondaryCastingArea;

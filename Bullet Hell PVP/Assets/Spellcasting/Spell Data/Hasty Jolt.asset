@@ -26,6 +26,7 @@ MonoBehaviour:
   HasSprite: 0
   ProjectileSprite: {fileID: 0}
   SpriteScale: 0.07
+  SpellbookSprite: {fileID: 21300000, guid: f594fe005f1bdbb42acdc055fd13fdd6, type: 3}
   UseParticles: 0
   ParticleSystemPrefab: {fileID: 0}
   SecondaryCastingArea: 0

@@ -13,22 +13,40 @@ public class SpellManager : MonoBehaviour
     private ControlCharacter characterControlScript;
     
         [Header("Spells")]
-    [SerializeField] private ScriptableSpellData[] fullSpellData;
-    private string[] spellNames;
+    public ScriptableSpellData[] fullSpellData;
+    private string[] fullSpellNames;
+    [Space] // Equipped spells
+    public string[] equippedSpellNames;
+    [HideInInspector] public ScriptableSpellData[] equippedSpellData;
+    [Space] // Spellbook
+    [SerializeField] private GameObject spellbookObject;
+    private SpellbookLogic spellbookLogic;
 
     private void Start()
     {
-        spellNames = new string[fullSpellData.Length];
-        
-        characterControlScript = castingPlayerObject.GetComponent<ControlCharacter>();
-        
         GetSpellNames();
+
+        characterControlScript = castingPlayerObject.GetComponent<ControlCharacter>();
+
+        //Enable spell controls from the SpellbookLogic script
+        SetEquippedSpellData();
+        spellbookLogic = spellbookObject.GetComponent<SpellbookLogic>();
+        spellbookLogic.EnableSpellControls();
     }
     private void GetSpellNames()
     {
-        for(var i = 0; i < fullSpellData.Length; i++)
+        fullSpellNames = new string[fullSpellData.Length];
+        for (var i = 0; i < fullSpellData.Length; i++)
         {
-            spellNames[i] = fullSpellData[i].name;
+            fullSpellNames[i] = fullSpellData[i].name;
+        }
+    }
+    private void SetEquippedSpellData()
+    {
+        equippedSpellData = new ScriptableSpellData[equippedSpellNames.Length];
+        for(var i = 0; i < equippedSpellNames.Length; i++)
+        {
+            equippedSpellData[i] = GetSpellData(equippedSpellNames[i]);
         }
     }
 
@@ -37,7 +55,13 @@ public class SpellManager : MonoBehaviour
     public void CastSpell(string attemptedSpellName)
     {
         Debug.Log($"Casting spell {attemptedSpellName}");
-        ScriptableSpellData attemptedSpellData = fullSpellData[Array.IndexOf(spellNames, attemptedSpellName)];
+        ScriptableSpellData attemptedSpellData = GetSpellData(attemptedSpellName);
+        
+        if (attemptedSpellData == null)
+        {
+            Debug.LogWarning("Casting cancelled - spell data null.");
+            return;
+        }
 
         //Checks if the player has enough mana
         if (attemptedSpellData.ManaCost <= characterControlScript.stats.CurrentManaStat)
@@ -71,12 +95,15 @@ public class SpellManager : MonoBehaviour
         if (spellData.CastingArea == ScriptableSpellData.CastArea.Single)
         {
             spellObject[0] = Instantiate(spellData.ProjectilePrefab);
+
+            // Sets spell behavior
             SpellBehavior spellBehaviorScript = spellObject[0].GetComponent<SpellBehavior>();
             spellBehaviorScript.spellData = spellData;
 
             // Reposition spell to manager
             spellBehaviorScript.transform.position = transform.position;
 
+            // Set up animated children (if enabled for the spell)
             AnimatedChildrenSetup(spellObject[0], spellData);
         }
         else if (spellData.CastingArea == ScriptableSpellData.CastArea.Stacked)
@@ -94,6 +121,7 @@ public class SpellManager : MonoBehaviour
                 // Reposition spell to manager
                 spellBehaviorScript.transform.position = transform.position;
 
+                // Set up animated children (if enabled for the spell)
                 AnimatedChildrenSetup(spellObject[i], spellData);
             }
         }
@@ -126,9 +154,10 @@ public class SpellManager : MonoBehaviour
                 spellBehaviorScript.positionInGroup = i;
                 spellBehaviorScript.distanceToMove = (cursorLogic.squareSide)/2;
 
-                // Reposition spell to corner
+                // Reposition spell to corner, rotate to match manager.
                 spellBehaviorScript.transform.SetPositionAndRotation(instantiationPoints[i], this.transform.rotation * Quaternion.Euler(0, 0, -90));
 
+                // Set up animated children (if enabled for the spell)
                 AnimatedChildrenSetup(spellObject[i], spellData);
             }
         }
@@ -157,7 +186,6 @@ public class SpellManager : MonoBehaviour
             Debug.Log("Targeting type not yet implemented");
         }
     }
-
     private void AnimatedChildrenSetup(GameObject spellPrefabObject, ScriptableSpellData spellData)
     {
         if(spellData.AnimateSpell == false)
@@ -175,5 +203,19 @@ public class SpellManager : MonoBehaviour
             // Animator does not work with changed name, so this line resets the name.
             currentAnimationPrefab.name = spellData.MultipartAnimationPrefabs[i].name;
         }
+    }
+    private ScriptableSpellData GetSpellData(string spellName)
+    {
+        //Gets the index of the spell
+        int spellIndex = Array.IndexOf(fullSpellNames, spellName);
+
+        if (spellIndex == -1)
+        {
+            Debug.LogWarning($"The spell name {spellName} is not in fullSpellNames.");
+            return null;
+        }
+
+        //Returns the spell at that index
+        return fullSpellData[spellIndex];
     }
 }

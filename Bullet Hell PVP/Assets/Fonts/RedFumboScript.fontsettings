@@ -6,7 +6,7 @@ Font:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: FumboScript
+  m_Name: RedFumboScript
   serializedVersion: 5
   m_LineSpacing: 500
   m_DefaultMaterial: {fileID: 2100000, guid: 77f454e33f3b24446ac3017b8d079be4, type: 2}

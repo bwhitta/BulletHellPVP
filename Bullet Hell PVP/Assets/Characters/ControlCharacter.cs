@@ -8,8 +8,8 @@ public class ControlCharacter : MonoBehaviour
     public float MovementSpeedMod; // Movement speed multiplier
     [SerializeField] private Animator CharacterAnimator; // The animator object with the animation tree use
     [SerializeField] private string AnimatorTreeParameterX, AnimatorTreeParameterY; // The names of the parameters for the animation tree
-    private GameControls playerControls;
-    private InputAction movement, attack;
+    private GameControls controls;
+    private InputAction movement;
     private Rigidbody2D playerRigidbody;
 
         [Header("Player Stats")]
@@ -19,31 +19,21 @@ public class ControlCharacter : MonoBehaviour
     [SerializeField] private GameObject healthBarObject, manaBarObject;
     private ConsumableBarLogic healthBar, manaBar;
 
-        [Header("Spellcasting")]
-    [SerializeField] private GameObject spellManagerObject;
-    private SpellManager spellManager;
-
-
     private void Awake() // called before all starts
     {
         PlayerStatSetup(maxHealth, maxMana);
         healthBar = healthBarObject.GetComponent<ConsumableBarLogic>();
         manaBar = manaBarObject.GetComponent<ConsumableBarLogic>();
 
-        spellManager = spellManagerObject.GetComponent<SpellManager>();
         playerRigidbody = gameObject.GetComponent<Rigidbody2D>();
 
     }
     private void Start()
     {
-        playerControls = GameControlsMaster.GameControls;
+        controls = GameControlsMaster.GameControls;
 
-        movement = playerControls.Player.Movement;
+        movement = controls.Player.Movement;
         movement.Enable();
-
-        attack = playerControls.Player.Attack;
-        attack.Enable();
-        attack.performed += context => spellManager.CastSpell("Hasty Jolt");
     }
     
     private void Update()
@@ -68,7 +58,6 @@ public class ControlCharacter : MonoBehaviour
             CurrentManaStat = maximumMana
         };
     }
-
     public enum Stat { Health, Mana }
     public void ModifyStat(Stat statToModify, float amount)
     {
@@ -86,7 +75,6 @@ public class ControlCharacter : MonoBehaviour
         }
 
     }
-
     public class PlayerStats
     {
         // Max Health and Mana
