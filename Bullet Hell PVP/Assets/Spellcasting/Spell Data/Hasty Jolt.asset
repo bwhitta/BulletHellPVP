@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SpellName: Hasty Jolt
   ManaCost: 0
-  Cooldown: 2
+  SpellCooldown: 2.5
   ProjectileQuantity: 1
   CastingArea: 1
   CastingAreaScale: 0

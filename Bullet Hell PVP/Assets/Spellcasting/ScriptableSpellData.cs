@@ -20,7 +20,7 @@ public class ScriptableSpellData : ScriptableObject
     /// <summary> The mana cost of the spell </summary>
     public float ManaCost;
     /// <summary> The cooldown after casting this spell </summary>
-    public float Cooldown; // UNUSED
+    public float SpellCooldown; // UNUSED
     /// <summary> How many times a projectile for the spell is created </summary>
     public int ProjectileQuantity;
     /// <summary> The shape in which the projectiles are instanciated </summary>

@@ -21,6 +21,8 @@ public class SpellManager : MonoBehaviour
     [Space] // Spellbook
     [SerializeField] private GameObject spellbookObject;
     private SpellbookLogic spellbookLogic;
+    // Cooldown
+    private float[] spellCooldowns;
 
     private void Start()
     {
@@ -33,6 +35,11 @@ public class SpellManager : MonoBehaviour
         spellbookLogic = spellbookObject.GetComponent<SpellbookLogic>();
         spellbookLogic.EnableSpellControls();
     }
+    private void Update()
+    {
+        UpdateCooldown();   
+    }
+
     private void GetSpellNames()
     {
         fullSpellNames = new string[fullSpellData.Length];
@@ -49,12 +56,34 @@ public class SpellManager : MonoBehaviour
             equippedSpellData[i] = GetSpellData(equippedSpellNames[i]);
         }
     }
+    private void UpdateCooldown()
+    {
+        // Set up cooldowns if data is invalid
+        if (spellCooldowns == null ||  spellCooldowns.Length < equippedSpellNames.Length)
+        {
+            spellCooldowns = new float[equippedSpellNames.Length];
+        }
 
-    // Eventually add a FixedUpdate which ticks down each cooldown by Time.fixedDeltaTime
+        // Loop through cooldowns and tick down by time.deltatime
+        for(int i = 0; i < spellCooldowns.Length; i++)
+        {
+            if (spellCooldowns[i] > 0)
+            {
+
+                spellCooldowns[i] -= Time.deltaTime;
+            }
+            if(spellCooldowns[i] < 0)
+            {
+                spellCooldowns[i] = 0;
+            }
+            //Updates the cooldown UI for i with the current percent
+            spellbookLogic.UpdateCooldownUI(i, spellCooldowns[i] / equippedSpellData[i].SpellCooldown);
+        }
+    }
 
     public void CastSpell(string attemptedSpellName)
     {
-        Debug.Log($"Casting spell {attemptedSpellName}");
+        // Debug.Log($"Casting spell {attemptedSpellName}");
         ScriptableSpellData attemptedSpellData = GetSpellData(attemptedSpellName);
         
         if (attemptedSpellData == null)
@@ -63,13 +92,22 @@ public class SpellManager : MonoBehaviour
             return;
         }
 
+        int cooldownIndex = Array.IndexOf(fullSpellNames, attemptedSpellName);
+
+        //Check if spell is on cooldown
+        if (spellCooldowns[cooldownIndex] > 0)
+        {
+            Debug.Log("Spell on cooldown.");
+            return;
+        }
+
         //Checks if the player has enough mana
         if (attemptedSpellData.ManaCost <= characterControlScript.stats.CurrentManaStat)
         {
             //Spend Mana
             characterControlScript.ModifyStat(ControlCharacter.Stat.Mana, -attemptedSpellData.ManaCost);
-            
-            // Eventually check if spell is on cooldown
+
+            spellCooldowns[cooldownIndex] = attemptedSpellData.SpellCooldown;
 
             // Instantiate the spell
             GameObject[] spellObjects = InstantiateSpell(attemptedSpellData);

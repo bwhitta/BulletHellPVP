@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 using static ControlsManager;
 
 public class SpellbookLogic : MonoBehaviour
@@ -46,7 +47,7 @@ public class SpellbookLogic : MonoBehaviour
         {
             if (spellManager.equippedSpellNames.Length <= i) {
                 // Debug.Log("No equipped spell in slot, skipping render");
-                spellDisplays[i].GetComponent<SpriteRenderer>().enabled = false;
+                spellDisplays[i].gameObject.SetActive(false);
                 continue;
             }
             spellDisplays[i].GetComponent<SpriteRenderer>().enabled = true;
@@ -55,6 +56,15 @@ public class SpellbookLogic : MonoBehaviour
             // Debug.Log($"UI {i} updated");
         }
         
+    }
+
+    public void UpdateCooldownUI(int index, float percentFilled)
+    {
+        // Gets the top bar GameObject
+        GameObject bottomBar = spellDisplays[index].transform.GetChild(0).gameObject;
+        GameObject topBar = bottomBar.transform.GetChild(0).gameObject;
+
+        topBar.GetComponent<Image>().fillAmount = percentFilled;
     }
 
     public void EnableSpellControls()
@@ -68,9 +78,10 @@ public class SpellbookLogic : MonoBehaviour
         castingAction.Enable();
         castingAction.performed += context => CastingInputPerformed((int)castingAction.ReadValue<float>() - 1);
     }
+
     private void CastingInputPerformed(int spellbookSlotIndex)
     {
-        Debug.Log($"Equipped spell {spellbookSlotIndex+1} cast.");
+        // Debug.Log($"Equipped spell {spellbookSlotIndex+1} cast.");
         if (spellManager.equippedSpellNames.Length <= spellbookSlotIndex)
         {
             Debug.LogWarning("Error - not enough equipped spells.");
