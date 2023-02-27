@@ -1447,7 +1447,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 380446329d796424b9a24125730e1f4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spellManagerObject: {fileID: 1269359565}
+  spellManagerObject: {fileID: 746061121}
   spellDisplays:
   - {fileID: 939543374}
   - {fileID: 2076876752}
