@@ -2,7 +2,7 @@
     "name": "GameControls",
     "maps": [
         {
-            "name": "Player",
+            "name": "Left Player",
             "id": "f80398c3-75bd-4dfc-bd48-07244e4d52d4",
             "actions": [
                 {
@@ -216,6 +216,182 @@
                     "processors": "Scale",
                     "groups": "",
                     "action": "SpellcastingSelection",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "Right Player",
+            "id": "cd7360b4-26bc-46be-be37-72fe512905b7",
+            "actions": [
+                {
+                    "name": "Movement",
+                    "type": "Value",
+                    "id": "9d4a1e8e-9b41-4723-a021-99c92187c097",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "CursorMovement",
+                    "type": "Value",
+                    "id": "e43cdcb8-a677-4753-9c00-6a7bc20a0366",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "AccelerateCursorMovement",
+                    "type": "Button",
+                    "id": "18f13d3d-493a-4f4b-a165-4098abd30f18",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "SpellcastingSelection",
+                    "type": "Value",
+                    "id": "3c5cf588-4471-4dae-81e3-78b4f6680838",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "1D Axis",
+                    "id": "4718b171-281b-4fb5-a03e-be671c88d253",
+                    "path": "1DAxis",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "CursorMovement",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "negative",
+                    "id": "90d65a67-e4b1-434b-bd31-d2e597308c9b",
+                    "path": "<Gamepad>/dpad/left",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "CursorMovement",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "positive",
+                    "id": "8ee3e53a-0813-4b09-9de4-2a9b5ef688dd",
+                    "path": "<Gamepad>/dpad/right",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "CursorMovement",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "7797e7c6-b40c-438c-9862-963fe9781bb1",
+                    "path": "<Gamepad>/leftTrigger",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "AccelerateCursorMovement",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "7987bf27-82fa-4315-8374-7fe264996879",
+                    "path": "<Gamepad>/buttonSouth",
+                    "interactions": "",
+                    "processors": "Scale",
+                    "groups": "Gamepad",
+                    "action": "SpellcastingSelection",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "10d4f7e1-03e9-4e22-a780-39f9ca297614",
+                    "path": "<Gamepad>/buttonEast",
+                    "interactions": "",
+                    "processors": "Scale(factor=2)",
+                    "groups": "Gamepad",
+                    "action": "SpellcastingSelection",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "91b29613-a97e-4bde-8952-9e63a6da3f63",
+                    "path": "<Gamepad>/buttonNorth",
+                    "interactions": "",
+                    "processors": "Scale(factor=3)",
+                    "groups": "Gamepad",
+                    "action": "SpellcastingSelection",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "b015d7df-159f-4322-a0e5-c658b90ff1a8",
+                    "path": "<Gamepad>/buttonWest",
+                    "interactions": "",
+                    "processors": "Scale(factor=4)",
+                    "groups": "Gamepad",
+                    "action": "SpellcastingSelection",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "15eb12ad-6e22-42b8-b08c-d0da46c63cb1",
+                    "path": "<Gamepad>/leftShoulder",
+                    "interactions": "",
+                    "processors": "Scale(factor=5)",
+                    "groups": "Gamepad",
+                    "action": "SpellcastingSelection",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "b5979a14-98a1-4e25-a5a9-fbaf94e232ef",
+                    "path": "<Gamepad>/rightShoulder",
+                    "interactions": "",
+                    "processors": "Scale(factor=6)",
+                    "groups": "Gamepad",
+                    "action": "SpellcastingSelection",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "6058d48f-41d6-4b21-9a8b-81234a0926e8",
+                    "path": "<Gamepad>/rightTrigger",
+                    "interactions": "",
+                    "processors": "Scale",
+                    "groups": "Gamepad",
+                    "action": "SpellcastingSelection",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d2a4975c-f038-4c79-ba7c-e5bd45862b1b",
+                    "path": "<Gamepad>/leftStick",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "Movement",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

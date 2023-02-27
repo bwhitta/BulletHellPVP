@@ -1,114 +1,48 @@
+using JetBrains.Annotations;
+using System;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using static ConsumableBarLogic;
 using static ControlsManager;
 
 public class ControlCharacter : MonoBehaviour
 {
-        [Header("Controls and movement")]
-    public float MovementSpeedMod; // Movement speed multiplier
-    [SerializeField] private Animator CharacterAnimator; // The animator object with the animation tree use
-    [SerializeField] private string AnimatorTreeParameterX, AnimatorTreeParameterY; // The names of the parameters for the animation tree
-    private GameControls controls;
-    private InputAction movement;
+    [Header("Controls")]
+    [SerializeField] private string controllingPlayerMapName;
+    [SerializeField] private string movementActionName;
+    private InputAction movementAction;
+
+    [Header("Movement")]
+    [SerializeField] private float MovementSpeedMod; // Movement speed multiplier
     private Rigidbody2D playerRigidbody;
 
-        [Header("Player Stats")]
-    [SerializeField] private float maxHealth;
-    [SerializeField] private float maxMana;
-    [HideInInspector] public PlayerStats stats;
-    [SerializeField] private GameObject healthBarObject, manaBarObject;
-    private ConsumableBarLogic healthBar, manaBar;
+    [Header("Animation")]
+    [SerializeField] private Animator CharacterAnimator; // The animator object with the animation tree use
+    [SerializeField] private string AnimatorTreeParameterX, AnimatorTreeParameterY; // The names of the parameters for the animation tree
 
-    private void Awake() // called before all starts
-    {
-        PlayerStatSetup(maxHealth, maxMana);
-        healthBar = healthBarObject.GetComponent<ConsumableBarLogic>();
-        manaBar = manaBarObject.GetComponent<ConsumableBarLogic>();
-
-        playerRigidbody = gameObject.GetComponent<Rigidbody2D>();
-
-    }
+    // Monobehavior methods
     private void Start()
     {
-        controls = GameControlsMaster.GameControls;
+        // Get rigidbody for use in Update
+        playerRigidbody = gameObject.GetComponent<Rigidbody2D>();
 
-        movement = controls.Player.Movement;
-        movement.Enable();
+        // Get and enable movement
+        InputActionMap controllingPlayerMap = ControlsManager.GetActionMap(controllingPlayerMapName);
+        movementAction = controllingPlayerMap.FindAction(movementActionName, true);
+        movementAction.Enable();
     }
-    
     private void Update()
     {
-        Vector2 movementVector = movement.ReadValue<Vector2>(); // Reads the "movement" input action's vector
-        
-
-        playerRigidbody.velocity = MovementSpeedMod * movementVector; // Moves the character
-
-        CharacterAnimator.SetFloat("FacingX", movementVector.x); // Tells the animator to show the character as facing left or right
-        CharacterAnimator.SetFloat("FacingY", movementVector.y); // Tells the animator to show the character as facing up or down
+        CheckCharacterMovement();
     }
-
-    private void PlayerStatSetup(float maximumHealth, float maximumMana)
+    private void CheckCharacterMovement()
     {
-        //Creates and sets new stats unique to this character
-        stats = new PlayerStats
-        {
-            MaxHealthStat = maximumHealth,
-            CurrentHealthStat = maximumHealth,
-            MaxManaStat = maximumMana,
-            CurrentManaStat = maximumMana
-        };
-    }
-    public enum Stat { Health, Mana }
-    public void ModifyStat(Stat statToModify, float amount)
-    {
-        if (statToModify == Stat.Health)
-        {
-            healthBar.ModifyStat(amount);
-        }
-        else if (statToModify == Stat.Mana)
-        {
-            manaBar.ModifyStat(amount);
-        }
-        else
-        {
-            Debug.LogError("Inputted stat enum invalid");
-        }
+        Vector2 movementVector = movementAction.ReadValue<Vector2>(); // Reads the "movement" input action's vector
 
-    }
-    public class PlayerStats
-    {
-        // Max Health and Mana
-        public float MaxManaStat;
-        public float MaxHealthStat;
+        playerRigidbody.velocity = MovementSpeedMod * movementVector; // Moves the characterStats
 
-        // Current Health
-        private float _currentHealthStat;
-        public float CurrentHealthStat
-        {
-            get => _currentHealthStat;
-            set
-            {
-                if(_currentHealthStat > MaxHealthStat)
-                    _currentHealthStat = MaxHealthStat;
-
-                else
-                    _currentHealthStat = value;
-            }
-        }
-
-        // Current Mana
-        private float _currentManaStat;
-        public float CurrentManaStat
-        {
-            get => _currentManaStat;
-            set
-            {
-                if (_currentManaStat > MaxManaStat)
-                    _currentManaStat = MaxManaStat;
-
-                else
-                    _currentManaStat = value;
-            }
-        }
+        CharacterAnimator.SetFloat("FacingX", movementVector.x); // Tells the animator to show the characterStats as facing left or right
+        CharacterAnimator.SetFloat("FacingY", movementVector.y); // Tells the animator to show the characterStats as facing up or down
     }
 }

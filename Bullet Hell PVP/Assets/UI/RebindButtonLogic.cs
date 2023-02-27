@@ -1,12 +1,5 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Runtime.InteropServices.WindowsRuntime;
 using TMPro;
-using Unity.VisualScripting;
-using UnityEditor.U2D.Path.GUIFramework;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using static ControlsManager;
@@ -30,8 +23,9 @@ public class RebindButtonLogic : MonoBehaviour
         SelectObjects();
         selfButton.onClick.AddListener(ButtonClicked);
         controls = GameControlsMaster.GameControls;
-        selfText.SetText(controls.FindAction(actionName).bindings[bindingIndex].ToDisplayString());
+        selfText.SetText(controls.FindAction(actionName, true).bindings[bindingIndex].ToDisplayString());
     }
+
     private void SelectObjects()
     {
         selfButton = this.GetComponent<Button>();

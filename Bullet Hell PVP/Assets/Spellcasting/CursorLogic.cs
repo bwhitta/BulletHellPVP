@@ -8,14 +8,17 @@ using static ControlsManager;
 
 public class CursorLogic : MonoBehaviour
 {
-    [SerializeField] private float movementMultiplier;
     [SerializeField] private float acceleratedMovementMultiplier;
-    GameControls controls;
     [SerializeField][Range(-30f, 30f)] private float location;
+
+    // Movement
+    [SerializeField] private float movementMultiplier;
     [SerializeField] private Transform squareTransform;
     public float squareSide;
 
-    private InputAction cursorMovement, cursorAccelerate;
+    // Controls
+    [SerializeField] private string controllingPlayerMapName, cursorMovementInputName, cursorAccelerationInputName;
+    private InputAction cursorMovementInput, cursorAccelerationInput;
 
     private void OnValidate()
     {
@@ -26,20 +29,22 @@ public class CursorLogic : MonoBehaviour
     private void Start()
     {
         squareSide = squareTransform.localScale.x;
-        
-        controls = GameControlsMaster.GameControls;
 
-        cursorMovement = controls.Player.CursorMovement;
-        cursorMovement.Enable();
+        //Get the InputActionMap
+        InputActionMap controllingPlayerMap = ControlsManager.GetActionMap(controllingPlayerMapName);
 
-        cursorAccelerate = controls.Player.AccelerateCursorMovement;
-        cursorAccelerate.Enable();
+        // Set and enable 
+        cursorMovementInput = controllingPlayerMap.FindAction(cursorMovementInputName, true);
+        cursorMovementInput.Enable();
+
+        cursorAccelerationInput = controllingPlayerMap.FindAction(cursorAccelerationInputName, true);
+        cursorAccelerationInput.Enable();
     }
     private void Update()
     {
-        float cursorMovement = controls.Player.CursorMovement.ReadValue<float>();
+        float cursorMovement = cursorMovementInput.ReadValue<float>();
         cursorMovement = cursorMovement * Time.deltaTime * movementMultiplier;
-        if (cursorAccelerate.ReadValue<float>() >= 0.5f)
+        if (cursorAccelerationInput.ReadValue<float>() >= 0.5f)
         {
             cursorMovement *= acceleratedMovementMultiplier;
         }

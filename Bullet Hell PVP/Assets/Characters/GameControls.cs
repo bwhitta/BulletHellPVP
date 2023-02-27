@@ -24,7 +24,7 @@ public partial class @GameControls : IInputActionCollection2, IDisposable
     ""name"": ""GameControls"",
     ""maps"": [
         {
-            ""name"": ""Player"",
+            ""name"": ""Left Player"",
             ""id"": ""f80398c3-75bd-4dfc-bd48-07244e4d52d4"",
             ""actions"": [
                 {
@@ -238,6 +238,182 @@ public partial class @GameControls : IInputActionCollection2, IDisposable
                     ""processors"": ""Scale"",
                     ""groups"": """",
                     ""action"": ""SpellcastingSelection"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
+        },
+        {
+            ""name"": ""Right Player"",
+            ""id"": ""cd7360b4-26bc-46be-be37-72fe512905b7"",
+            ""actions"": [
+                {
+                    ""name"": ""Movement"",
+                    ""type"": ""Value"",
+                    ""id"": ""9d4a1e8e-9b41-4723-a021-99c92187c097"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""CursorMovement"",
+                    ""type"": ""Value"",
+                    ""id"": ""e43cdcb8-a677-4753-9c00-6a7bc20a0366"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""AccelerateCursorMovement"",
+                    ""type"": ""Button"",
+                    ""id"": ""18f13d3d-493a-4f4b-a165-4098abd30f18"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SpellcastingSelection"",
+                    ""type"": ""Value"",
+                    ""id"": ""3c5cf588-4471-4dae-81e3-78b4f6680838"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": ""1D Axis"",
+                    ""id"": ""4718b171-281b-4fb5-a03e-be671c88d253"",
+                    ""path"": ""1DAxis"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""CursorMovement"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""negative"",
+                    ""id"": ""90d65a67-e4b1-434b-bd31-d2e597308c9b"",
+                    ""path"": ""<Gamepad>/dpad/left"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""CursorMovement"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""positive"",
+                    ""id"": ""8ee3e53a-0813-4b09-9de4-2a9b5ef688dd"",
+                    ""path"": ""<Gamepad>/dpad/right"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""CursorMovement"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""7797e7c6-b40c-438c-9862-963fe9781bb1"",
+                    ""path"": ""<Gamepad>/leftTrigger"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""AccelerateCursorMovement"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""7987bf27-82fa-4315-8374-7fe264996879"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": ""Scale"",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""SpellcastingSelection"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""10d4f7e1-03e9-4e22-a780-39f9ca297614"",
+                    ""path"": ""<Gamepad>/buttonEast"",
+                    ""interactions"": """",
+                    ""processors"": ""Scale(factor=2)"",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""SpellcastingSelection"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""91b29613-a97e-4bde-8952-9e63a6da3f63"",
+                    ""path"": ""<Gamepad>/buttonNorth"",
+                    ""interactions"": """",
+                    ""processors"": ""Scale(factor=3)"",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""SpellcastingSelection"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b015d7df-159f-4322-a0e5-c658b90ff1a8"",
+                    ""path"": ""<Gamepad>/buttonWest"",
+                    ""interactions"": """",
+                    ""processors"": ""Scale(factor=4)"",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""SpellcastingSelection"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""15eb12ad-6e22-42b8-b08c-d0da46c63cb1"",
+                    ""path"": ""<Gamepad>/leftShoulder"",
+                    ""interactions"": """",
+                    ""processors"": ""Scale(factor=5)"",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""SpellcastingSelection"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b5979a14-98a1-4e25-a5a9-fbaf94e232ef"",
+                    ""path"": ""<Gamepad>/rightShoulder"",
+                    ""interactions"": """",
+                    ""processors"": ""Scale(factor=6)"",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""SpellcastingSelection"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""6058d48f-41d6-4b21-9a8b-81234a0926e8"",
+                    ""path"": ""<Gamepad>/rightTrigger"",
+                    ""interactions"": """",
+                    ""processors"": ""Scale"",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""SpellcastingSelection"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""d2a4975c-f038-4c79-ba7c-e5bd45862b1b"",
+                    ""path"": ""<Gamepad>/leftStick"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Movement"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -783,12 +959,18 @@ public partial class @GameControls : IInputActionCollection2, IDisposable
         }
     ]
 }");
-        // Player
-        m_Player = asset.FindActionMap("Player", throwIfNotFound: true);
-        m_Player_Movement = m_Player.FindAction("Movement", throwIfNotFound: true);
-        m_Player_CursorMovement = m_Player.FindAction("CursorMovement", throwIfNotFound: true);
-        m_Player_AccelerateCursorMovement = m_Player.FindAction("AccelerateCursorMovement", throwIfNotFound: true);
-        m_Player_SpellcastingSelection = m_Player.FindAction("SpellcastingSelection", throwIfNotFound: true);
+        // Left Player
+        m_LeftPlayer = asset.FindActionMap("Left Player", throwIfNotFound: true);
+        m_LeftPlayer_Movement = m_LeftPlayer.FindAction("Movement", throwIfNotFound: true);
+        m_LeftPlayer_CursorMovement = m_LeftPlayer.FindAction("CursorMovement", throwIfNotFound: true);
+        m_LeftPlayer_AccelerateCursorMovement = m_LeftPlayer.FindAction("AccelerateCursorMovement", throwIfNotFound: true);
+        m_LeftPlayer_SpellcastingSelection = m_LeftPlayer.FindAction("SpellcastingSelection", throwIfNotFound: true);
+        // Right Player
+        m_RightPlayer = asset.FindActionMap("Right Player", throwIfNotFound: true);
+        m_RightPlayer_Movement = m_RightPlayer.FindAction("Movement", throwIfNotFound: true);
+        m_RightPlayer_CursorMovement = m_RightPlayer.FindAction("CursorMovement", throwIfNotFound: true);
+        m_RightPlayer_AccelerateCursorMovement = m_RightPlayer.FindAction("AccelerateCursorMovement", throwIfNotFound: true);
+        m_RightPlayer_SpellcastingSelection = m_RightPlayer.FindAction("SpellcastingSelection", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -855,44 +1037,44 @@ public partial class @GameControls : IInputActionCollection2, IDisposable
         return asset.FindBinding(bindingMask, out action);
     }
 
-    // Player
-    private readonly InputActionMap m_Player;
-    private IPlayerActions m_PlayerActionsCallbackInterface;
-    private readonly InputAction m_Player_Movement;
-    private readonly InputAction m_Player_CursorMovement;
-    private readonly InputAction m_Player_AccelerateCursorMovement;
-    private readonly InputAction m_Player_SpellcastingSelection;
-    public struct PlayerActions
+    // Left Player
+    private readonly InputActionMap m_LeftPlayer;
+    private ILeftPlayerActions m_LeftPlayerActionsCallbackInterface;
+    private readonly InputAction m_LeftPlayer_Movement;
+    private readonly InputAction m_LeftPlayer_CursorMovement;
+    private readonly InputAction m_LeftPlayer_AccelerateCursorMovement;
+    private readonly InputAction m_LeftPlayer_SpellcastingSelection;
+    public struct LeftPlayerActions
     {
         private @GameControls m_Wrapper;
-        public PlayerActions(@GameControls wrapper) { m_Wrapper = wrapper; }
-        public InputAction @Movement => m_Wrapper.m_Player_Movement;
-        public InputAction @CursorMovement => m_Wrapper.m_Player_CursorMovement;
-        public InputAction @AccelerateCursorMovement => m_Wrapper.m_Player_AccelerateCursorMovement;
-        public InputAction @SpellcastingSelection => m_Wrapper.m_Player_SpellcastingSelection;
-        public InputActionMap Get() { return m_Wrapper.m_Player; }
+        public LeftPlayerActions(@GameControls wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Movement => m_Wrapper.m_LeftPlayer_Movement;
+        public InputAction @CursorMovement => m_Wrapper.m_LeftPlayer_CursorMovement;
+        public InputAction @AccelerateCursorMovement => m_Wrapper.m_LeftPlayer_AccelerateCursorMovement;
+        public InputAction @SpellcastingSelection => m_Wrapper.m_LeftPlayer_SpellcastingSelection;
+        public InputActionMap Get() { return m_Wrapper.m_LeftPlayer; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
         public bool enabled => Get().enabled;
-        public static implicit operator InputActionMap(PlayerActions set) { return set.Get(); }
-        public void SetCallbacks(IPlayerActions instance)
+        public static implicit operator InputActionMap(LeftPlayerActions set) { return set.Get(); }
+        public void SetCallbacks(ILeftPlayerActions instance)
         {
-            if (m_Wrapper.m_PlayerActionsCallbackInterface != null)
+            if (m_Wrapper.m_LeftPlayerActionsCallbackInterface != null)
             {
-                @Movement.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMovement;
-                @Movement.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMovement;
-                @Movement.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMovement;
-                @CursorMovement.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCursorMovement;
-                @CursorMovement.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCursorMovement;
-                @CursorMovement.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCursorMovement;
-                @AccelerateCursorMovement.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnAccelerateCursorMovement;
-                @AccelerateCursorMovement.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnAccelerateCursorMovement;
-                @AccelerateCursorMovement.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnAccelerateCursorMovement;
-                @SpellcastingSelection.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSpellcastingSelection;
-                @SpellcastingSelection.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSpellcastingSelection;
-                @SpellcastingSelection.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSpellcastingSelection;
+                @Movement.started -= m_Wrapper.m_LeftPlayerActionsCallbackInterface.OnMovement;
+                @Movement.performed -= m_Wrapper.m_LeftPlayerActionsCallbackInterface.OnMovement;
+                @Movement.canceled -= m_Wrapper.m_LeftPlayerActionsCallbackInterface.OnMovement;
+                @CursorMovement.started -= m_Wrapper.m_LeftPlayerActionsCallbackInterface.OnCursorMovement;
+                @CursorMovement.performed -= m_Wrapper.m_LeftPlayerActionsCallbackInterface.OnCursorMovement;
+                @CursorMovement.canceled -= m_Wrapper.m_LeftPlayerActionsCallbackInterface.OnCursorMovement;
+                @AccelerateCursorMovement.started -= m_Wrapper.m_LeftPlayerActionsCallbackInterface.OnAccelerateCursorMovement;
+                @AccelerateCursorMovement.performed -= m_Wrapper.m_LeftPlayerActionsCallbackInterface.OnAccelerateCursorMovement;
+                @AccelerateCursorMovement.canceled -= m_Wrapper.m_LeftPlayerActionsCallbackInterface.OnAccelerateCursorMovement;
+                @SpellcastingSelection.started -= m_Wrapper.m_LeftPlayerActionsCallbackInterface.OnSpellcastingSelection;
+                @SpellcastingSelection.performed -= m_Wrapper.m_LeftPlayerActionsCallbackInterface.OnSpellcastingSelection;
+                @SpellcastingSelection.canceled -= m_Wrapper.m_LeftPlayerActionsCallbackInterface.OnSpellcastingSelection;
             }
-            m_Wrapper.m_PlayerActionsCallbackInterface = instance;
+            m_Wrapper.m_LeftPlayerActionsCallbackInterface = instance;
             if (instance != null)
             {
                 @Movement.started += instance.OnMovement;
@@ -910,7 +1092,64 @@ public partial class @GameControls : IInputActionCollection2, IDisposable
             }
         }
     }
-    public PlayerActions @Player => new PlayerActions(this);
+    public LeftPlayerActions @LeftPlayer => new LeftPlayerActions(this);
+
+    // Right Player
+    private readonly InputActionMap m_RightPlayer;
+    private IRightPlayerActions m_RightPlayerActionsCallbackInterface;
+    private readonly InputAction m_RightPlayer_Movement;
+    private readonly InputAction m_RightPlayer_CursorMovement;
+    private readonly InputAction m_RightPlayer_AccelerateCursorMovement;
+    private readonly InputAction m_RightPlayer_SpellcastingSelection;
+    public struct RightPlayerActions
+    {
+        private @GameControls m_Wrapper;
+        public RightPlayerActions(@GameControls wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Movement => m_Wrapper.m_RightPlayer_Movement;
+        public InputAction @CursorMovement => m_Wrapper.m_RightPlayer_CursorMovement;
+        public InputAction @AccelerateCursorMovement => m_Wrapper.m_RightPlayer_AccelerateCursorMovement;
+        public InputAction @SpellcastingSelection => m_Wrapper.m_RightPlayer_SpellcastingSelection;
+        public InputActionMap Get() { return m_Wrapper.m_RightPlayer; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(RightPlayerActions set) { return set.Get(); }
+        public void SetCallbacks(IRightPlayerActions instance)
+        {
+            if (m_Wrapper.m_RightPlayerActionsCallbackInterface != null)
+            {
+                @Movement.started -= m_Wrapper.m_RightPlayerActionsCallbackInterface.OnMovement;
+                @Movement.performed -= m_Wrapper.m_RightPlayerActionsCallbackInterface.OnMovement;
+                @Movement.canceled -= m_Wrapper.m_RightPlayerActionsCallbackInterface.OnMovement;
+                @CursorMovement.started -= m_Wrapper.m_RightPlayerActionsCallbackInterface.OnCursorMovement;
+                @CursorMovement.performed -= m_Wrapper.m_RightPlayerActionsCallbackInterface.OnCursorMovement;
+                @CursorMovement.canceled -= m_Wrapper.m_RightPlayerActionsCallbackInterface.OnCursorMovement;
+                @AccelerateCursorMovement.started -= m_Wrapper.m_RightPlayerActionsCallbackInterface.OnAccelerateCursorMovement;
+                @AccelerateCursorMovement.performed -= m_Wrapper.m_RightPlayerActionsCallbackInterface.OnAccelerateCursorMovement;
+                @AccelerateCursorMovement.canceled -= m_Wrapper.m_RightPlayerActionsCallbackInterface.OnAccelerateCursorMovement;
+                @SpellcastingSelection.started -= m_Wrapper.m_RightPlayerActionsCallbackInterface.OnSpellcastingSelection;
+                @SpellcastingSelection.performed -= m_Wrapper.m_RightPlayerActionsCallbackInterface.OnSpellcastingSelection;
+                @SpellcastingSelection.canceled -= m_Wrapper.m_RightPlayerActionsCallbackInterface.OnSpellcastingSelection;
+            }
+            m_Wrapper.m_RightPlayerActionsCallbackInterface = instance;
+            if (instance != null)
+            {
+                @Movement.started += instance.OnMovement;
+                @Movement.performed += instance.OnMovement;
+                @Movement.canceled += instance.OnMovement;
+                @CursorMovement.started += instance.OnCursorMovement;
+                @CursorMovement.performed += instance.OnCursorMovement;
+                @CursorMovement.canceled += instance.OnCursorMovement;
+                @AccelerateCursorMovement.started += instance.OnAccelerateCursorMovement;
+                @AccelerateCursorMovement.performed += instance.OnAccelerateCursorMovement;
+                @AccelerateCursorMovement.canceled += instance.OnAccelerateCursorMovement;
+                @SpellcastingSelection.started += instance.OnSpellcastingSelection;
+                @SpellcastingSelection.performed += instance.OnSpellcastingSelection;
+                @SpellcastingSelection.canceled += instance.OnSpellcastingSelection;
+            }
+        }
+    }
+    public RightPlayerActions @RightPlayer => new RightPlayerActions(this);
 
     // UI
     private readonly InputActionMap m_UI;
@@ -1045,7 +1284,14 @@ public partial class @GameControls : IInputActionCollection2, IDisposable
             return asset.controlSchemes[m_XRSchemeIndex];
         }
     }
-    public interface IPlayerActions
+    public interface ILeftPlayerActions
+    {
+        void OnMovement(InputAction.CallbackContext context);
+        void OnCursorMovement(InputAction.CallbackContext context);
+        void OnAccelerateCursorMovement(InputAction.CallbackContext context);
+        void OnSpellcastingSelection(InputAction.CallbackContext context);
+    }
+    public interface IRightPlayerActions
     {
         void OnMovement(InputAction.CallbackContext context);
         void OnCursorMovement(InputAction.CallbackContext context);

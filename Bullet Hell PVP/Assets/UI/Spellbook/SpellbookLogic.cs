@@ -11,10 +11,9 @@ public class SpellbookLogic : MonoBehaviour
 {
     [SerializeField] private GameObject spellManagerObject;
     [SerializeField] private GameObject[] spellDisplays;
-    [SerializeField] private string castingActionName;
+    [SerializeField] private string controllingPlayerMapName, spellcastingSelectionActionName;
 
     private SpellManager spellManager;
-    private GameControls controls;
 
     private bool componentsSet = false;
 
@@ -30,7 +29,6 @@ public class SpellbookLogic : MonoBehaviour
             Debug.Log("Skipping SetComponents, already set.");
             return;
         }
-        controls = GameControlsMaster.GameControls;
         spellManager = spellManagerObject.GetComponent<SpellManager>();
 
         componentsSet = true;
@@ -47,11 +45,10 @@ public class SpellbookLogic : MonoBehaviour
         {
             if (spellManager.equippedSpellNames.Length <= i) {
                 // Debug.Log("No equipped spell in slot, skipping render");
-                spellDisplays[i].gameObject.SetActive(false);
+                spellDisplays[i].SetActive(false);
                 continue;
             }
             spellDisplays[i].GetComponent<SpriteRenderer>().enabled = true;
-
             spellDisplays[i].GetComponent<SpriteRenderer>().sprite = spellManager.equippedSpellData[i].SpellbookSprite;
             // Debug.Log($"UI {i} updated");
         }
@@ -69,19 +66,15 @@ public class SpellbookLogic : MonoBehaviour
 
     public void EnableSpellControls()
     {
-        if(controls == null)
-        {
-            SetComponents();
-        }
-        InputAction castingAction = controls.FindAction(castingActionName);
-
+        InputActionMap controllingPlayerMap = ControlsManager.GetActionMap(controllingPlayerMapName);
+        InputAction castingAction = controllingPlayerMap.FindAction(spellcastingSelectionActionName, true);
+        // Enable the castingAction action and give it functionality
         castingAction.Enable();
         castingAction.performed += context => CastingInputPerformed((int)castingAction.ReadValue<float>() - 1);
     }
 
     private void CastingInputPerformed(int spellbookSlotIndex)
     {
-        // Debug.Log($"Equipped spell {spellbookSlotIndex+1} cast.");
         if (spellManager.equippedSpellNames.Length <= spellbookSlotIndex)
         {
             Debug.LogWarning("Error - not enough equipped spells.");

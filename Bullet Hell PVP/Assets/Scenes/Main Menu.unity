@@ -986,11 +986,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3284913353818304343, guid: 14620cd6cf33d3e408ef85e9af33e903, type: 3}
       propertyPath: m_Name
-      value: AttackControl
+      value: C.S. Control
       objectReference: {fileID: 0}
     - target: {fileID: 3284913353818304346, guid: 14620cd6cf33d3e408ef85e9af33e903, type: 3}
       propertyPath: actionName
-      value: Attack
+      value: AccelerateCursorMovement
       objectReference: {fileID: 0}
     - target: {fileID: 3284913353818304346, guid: 14620cd6cf33d3e408ef85e9af33e903, type: 3}
       propertyPath: bindingIndex
@@ -998,11 +998,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3284913354387429182, guid: 14620cd6cf33d3e408ef85e9af33e903, type: 3}
       propertyPath: m_text
-      value: Attack
+      value: C. S.
       objectReference: {fileID: 0}
     - target: {fileID: 3284913354552192748, guid: 14620cd6cf33d3e408ef85e9af33e903, type: 3}
       propertyPath: m_Name
-      value: RR Attack
+      value: RR Cursor Speed
       objectReference: {fileID: 0}
     - target: {fileID: 3284913354552192751, guid: 14620cd6cf33d3e408ef85e9af33e903, type: 3}
       propertyPath: m_Pivot.x
@@ -1088,9 +1088,13 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3284913355421776542, guid: 14620cd6cf33d3e408ef85e9af33e903, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 105
+      objectReference: {fileID: 0}
     - target: {fileID: 3284913355421776609, guid: 14620cd6cf33d3e408ef85e9af33e903, type: 3}
       propertyPath: m_text
-      value: Attack
+      value: Cursor Speed
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 14620cd6cf33d3e408ef85e9af33e903, type: 3}
@@ -1217,50 +1221,6 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 3284913354552192751, guid: 14620cd6cf33d3e408ef85e9af33e903, type: 3}
   m_PrefabInstance: {fileID: 938484457}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &1225277511
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1225277512}
-  - component: {fileID: 1225277513}
-  m_Layer: 0
-  m_Name: ControlsManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1225277512
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1225277511}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 5
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1225277513
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1225277511}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 06b640e3e1dc0b4498ff8738462fde51, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1328519499
 GameObject:
   m_ObjectHideFlags: 0
@@ -1957,7 +1917,7 @@ GameObject:
   - component: {fileID: 1672376947}
   - component: {fileID: 1672376948}
   m_Layer: 0
-  m_Name: MenuManager
+  m_Name: MenuController
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

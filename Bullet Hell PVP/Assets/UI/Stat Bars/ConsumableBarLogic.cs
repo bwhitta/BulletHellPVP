@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -13,7 +14,7 @@ public class ConsumableBarLogic : MonoBehaviour
 {
         [Header("Character")]
     [SerializeField] private GameObject characterObject;
-    [SerializeField] private ControlCharacter character;
+    [SerializeField] private CharacterStats characterStats;
 
     enum Stats { health, mana }
         [Header("Stats")]
@@ -26,127 +27,122 @@ public class ConsumableBarLogic : MonoBehaviour
     private float statLost;
     private float statLostVelocity = 0;
     [SerializeField] private float statLostVelocityMod;
-    
 
+    // Gets and/or sets the correct value from CharacterStats
+    private float StatRemaining
+    {
+        get
+        {
+            if (statToModify == Stats.health)
+            {
+                return characterStats.CurrentHealthStat;
+            }
+            else if (statToModify == Stats.mana)
+            {
+                return characterStats.CurrentManaStat;
+            }
+            else
+            {
+                Debug.LogError("Invalid stat assigned!");
+                return 0f;
+            }
+        }
+    }
+    private float StatMax
+    {
+        get
+        {
+            if (statToModify == Stats.health)
+            {
+                return characterStats.MaxHealthStat;
+            }
+            else if (statToModify == Stats.mana)
+            {
+                return characterStats.MaxManaStat;
+            }
+            else
+            {
+                Debug.LogError("Invalid stat assigned!");
+                return 0f;
+            }
+        }
+    }
+
+    // Monobehavior Methods
     private void Start()
     {
-        character = characterObject.GetComponent<ControlCharacter>();
-        InitialStatDisplay();
-        UpdateText();
+        characterStats = characterObject.GetComponent<CharacterStats>();
+
+        statLost = StatRemaining;
+        UpdateStatDisplay(UpdatableStats.Both);
     }
     private void FixedUpdate()
     {
         UpdateStatLost();
     }
 
-    public void ModifyStat(float statChange)
+    public enum UpdatableStats { Remaining, Lost, Both }
+    public void UpdateStatDisplay(UpdatableStats updatedStat)
     {
-        SetCurrentStat(GetCurrentStat() + statChange);
-        UpdateStatDisplay(statRemainingObject, GetCurrentStat(), remainingEdgeLeft, remainingEdgeRight);
-    }
-    private void UpdateStatDisplay(GameObject displayObject, float valueSet, int edgeLeft = 0, int edgeRight = 0)
-    {
-        float statMax = GetStatMax();
+        // Update the text
+        valueText.text = StatRemaining.ToString();
+
+        // Variables
+        float edgeLeft, edgeRight, valueSet;
+        Image displayImage;
+        // Set variables based on parameter
+        if(updatedStat == UpdatableStats.Remaining)
+        {
+            edgeLeft = remainingEdgeLeft;
+            edgeRight = remainingEdgeRight;
+            displayImage = statRemainingObject.GetComponent<Image>();
+            valueSet = StatRemaining;
+        }
+        else if(updatedStat == UpdatableStats.Lost)
+        {
+            edgeLeft = lostEdgeLeft;
+            edgeRight = lostEdgeRight;
+            displayImage = statLostObject.GetComponent<Image>();
+            valueSet = statLost;
+        }
+        else
+        {
+            // For the "Both" parameter 
+            UpdateStatDisplay(UpdatableStats.Remaining);
+            UpdateStatDisplay(UpdatableStats.Lost);
+            return;
+        }
         
-        Image displayImage = displayObject.GetComponent<Image>();
-        
+        float statPercentage = valueSet / StatMax;
+        float divMin = (-displayImage.preferredWidth / 2) + edgeLeft;
+        float divLocation = divMin + ((displayImage.preferredWidth - (edgeLeft + edgeRight)) * statPercentage);
+
         // Update divider bar
-        float statPercentage = valueSet / statMax;
-        float divMin = (-displayImage.preferredWidth / 2) + edgeLeft; // The left-most point of the bar
-        float divLocation = divMin + ((displayImage.preferredWidth - (edgeLeft + edgeRight)) * statPercentage); // The divider's X along the bar
-
-
         GameObject div = displayImage.transform.GetChild(0).gameObject; // Divider game object
         div.GetComponent<RectTransform>().anchoredPosition = new Vector2(divLocation, 0); // Moves the divider into location
+        
         displayImage.fillAmount = statPercentage;
-    }
-
-    private void InitialStatDisplay()
-    {
-        statLost = GetStatMax();
-        UpdateStatDisplay(statRemainingObject, GetCurrentStat(), remainingEdgeLeft, remainingEdgeRight);
-        UpdateStatDisplay(statLostObject, statLost, lostEdgeLeft, lostEdgeRight);
     }
 
     private void UpdateStatLost()
     {
-        if (statLost > GetCurrentStat()) // Checks if 
+        // Checks if statLost is too high
+        if (statLost > StatRemaining)
         {
-            statLost -= statLostVelocity; // Move healthAtLost towards healthRemaining
-            if (statLost <= GetCurrentStat()) // If it's at or under healthRemaining,
-            {
-                statLost = GetCurrentStat(); // Floor at healthRemaining
-                statLostVelocity = 0; // Stop velocity for next health loss
-            }
-            else
-            {
-                statLostVelocity += statLostVelocityMod; // Speed up velocity
-            }
-            UpdateStatDisplay(statLostObject, statLost, lostEdgeLeft, lostEdgeRight);
-        }
-        else if (statLost < GetCurrentStat())
-        {
-            statLost = GetCurrentStat(); // Floor at healthRemaining
-            UpdateStatDisplay(statLostObject, statLost, lostEdgeLeft, lostEdgeRight);
-        }
-    }
-    
-    private float GetStatMax()
-    {
-        float statMax = 0;
-        if (statToModify == Stats.health)
-        {
-            statMax = character.stats.MaxHealthStat;
-        }
-        else if (statToModify == Stats.mana)
-        {
-            statMax = character.stats.MaxManaStat;
-        }
-        return statMax;
-    }
-    private float GetCurrentStat()
-    {
-        float CurrentStat = 0;
-        if (statToModify == Stats.health)
-        {
-            CurrentStat = character.stats.CurrentHealthStat;
-        }
-        else if (statToModify == Stats.mana)
-        {
-            CurrentStat = character.stats.CurrentManaStat;
-        }
-        else
-        {
-            Debug.LogError("No valid stat assigned");
-        }
-        return CurrentStat;
-    }
-    private void SetCurrentStat(float targetValue)
-    {
-        if (statToModify == Stats.health)
-        {
-            character.stats.CurrentHealthStat = targetValue;
-        }
-        else if (statToModify == Stats.mana)
-        {
-            character.stats.CurrentManaStat = targetValue;
-        }
-        else
-        {
-            Debug.LogError("No valid stat assigned");
-        }
-        UpdateText();
-    }
+            // Move statLost down and speed up velocity
+            statLost -= statLostVelocity;
+            statLostVelocity += statLostVelocityMod;
 
-    private void UpdateText()
-    {
-        if (statToModify == Stats.health)
-        {
-            valueText.text = character.stats.CurrentHealthStat.ToString();
+            UpdateStatDisplay(UpdatableStats.Lost);
         }
-        else if (statToModify == Stats.mana)
+        // Check if statLost is now too low
+        if (statLost < StatRemaining)
         {
-            valueText.text = character.stats.CurrentManaStat.ToString();
+            // Floor at actual stat and stop the movement
+            statLost = StatRemaining; 
+            statLostVelocity = 0;
+
+            UpdateStatDisplay(UpdatableStats.Lost);
         }
     }
 }
