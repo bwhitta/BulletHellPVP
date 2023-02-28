@@ -1,7 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEditor;
-using UnityEditor.Animations;
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "Scriptable Spell")]
@@ -57,11 +53,15 @@ public class ScriptableSpellData : ScriptableObject
     public float SecondaryCastingArea;
     [Space] // Animation
     public bool AnimateSpell;
-    public AnimatorController SpellAnimatorController;
+    public RuntimeAnimatorController SpellAnimatorController;
     public GameObject[] MultipartAnimationPrefabs;
     [Space] // Scaling
     public bool ScalingAfterDistance;
     public float ScalingStart;
     public bool DestroyOnScalingCompleted;
 
+    [Space]
+    [Header("Collision Info")]
+    public bool UsesCollider;
+    public Vector2[] ColliderPath;
 }

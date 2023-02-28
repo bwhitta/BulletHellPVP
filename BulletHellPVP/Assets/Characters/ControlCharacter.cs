@@ -1,6 +1,7 @@
 using JetBrains.Annotations;
 using System;
 using System.Runtime.CompilerServices;
+using UnityEditor.Search;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using static ConsumableBarLogic;
@@ -44,5 +45,29 @@ public class ControlCharacter : MonoBehaviour
 
         CharacterAnimator.SetFloat("FacingX", movementVector.x); // Tells the animator to show the characterStats as facing left or right
         CharacterAnimator.SetFloat("FacingY", movementVector.y); // Tells the animator to show the characterStats as facing up or down
+    }
+
+
+
+    // Collision
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        CheckCollision(collision);
+    }
+
+    private void CheckCollision(Collider2D collision)
+    {
+        Debug.Log($"{gameObject.name} is colliding with {collision.gameObject.name}");
+        
+        if (collision.GetComponent<SpellBehavior>() != null )
+        {
+            SpellBehavior collisionSpellBehavior = collision.GetComponent<SpellBehavior>();
+            // Invincibility frames check
+
+            gameObject.GetComponent<CharacterStats>().CurrentHealthStat -= collisionSpellBehavior.spellData.Damage;
+            Debug.Log($"{collisionSpellBehavior.spellData.Damage} health lost ");
+
+            // Invincibility frames set
+        }
     }
 }

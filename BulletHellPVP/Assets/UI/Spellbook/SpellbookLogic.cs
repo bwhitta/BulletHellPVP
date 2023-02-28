@@ -44,13 +44,13 @@ public class SpellbookLogic : MonoBehaviour
         for (var i = 0; i < spellDisplays.Length; i++)
         {
             if (spellManager.equippedSpellNames.Length <= i) {
-                // Debug.Log("No equipped spell in slot, skipping render");
+                //Debug.Log("No equipped spell in slot, skipping render");
                 spellDisplays[i].SetActive(false);
                 continue;
             }
             spellDisplays[i].GetComponent<SpriteRenderer>().enabled = true;
-            spellDisplays[i].GetComponent<SpriteRenderer>().sprite = spellManager.equippedSpellData[i].SpellbookSprite;
-            // Debug.Log($"UI {i} updated");
+            spellDisplays[i].GetComponent<SpriteRenderer>().sprite = spellManager.EquippedSpellData[i].SpellbookSprite;
+            //Debug.Log($"UI {i} updated");
         }
         
     }

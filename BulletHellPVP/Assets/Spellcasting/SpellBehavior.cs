@@ -1,11 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
+using System;
 using Unity.VisualScripting;
-using UnityEditor.Animations;
 using UnityEngine;
-using UnityEngine.UIElements;
-using static SpellManager;
 
 public class SpellBehavior : MonoBehaviour
 {
@@ -29,9 +24,18 @@ public class SpellBehavior : MonoBehaviour
         }
 
 
+        gameObject.GetComponent<PolygonCollider2D>().enabled = spellData.UsesCollider;
+        SetCollider();
+        
         AnimatorSetup();
         PointTowardsTarget();
     }
+
+    private void SetCollider()
+    {
+        gameObject.GetComponent<PolygonCollider2D>().points = spellData.ColliderPath;
+    }
+
     private void Update()
     {
         // Move based on movement

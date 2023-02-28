@@ -1,11 +1,6 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using UnityEditor.SearchService;
 using UnityEngine;
-using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
 
 public class MenuController : MonoBehaviour

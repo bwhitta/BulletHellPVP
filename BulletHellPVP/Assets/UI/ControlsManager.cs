@@ -1,11 +1,5 @@
-using System;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using Unity.VisualScripting;
-using UnityEditor.U2D.Path.GUIFramework;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using static UnityEngine.InputSystem.InputActionRebindingExtensions;
 
 public class ControlsManager
 {

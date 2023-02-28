@@ -20,7 +20,7 @@ MonoBehaviour:
   CastingAreaScale: 0
   Damage: 10
   TypeOfSpell: 1
-  MovementSpeed: 5
+  MovementSpeed: 0
   TargetingType: 1
   ProjectilePrefab: {fileID: 1062348163457161292, guid: a12a2eac476853e4184718ce4ef910dc, type: 3}
   HasSprite: 0
@@ -38,3 +38,9 @@ MonoBehaviour:
   ScalingAfterDistance: 0
   ScalingStart: 0
   DestroyOnScalingCompleted: 0
+  UsesCollider: 1
+  ColliderPath:
+  - {x: 9, y: 1}
+  - {x: -6, y: 0}
+  - {x: 0, y: -1}
+  - {x: 6, y: 0}

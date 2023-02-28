@@ -5,14 +5,47 @@ public class SpellManager : MonoBehaviour
 {
         [Header("Object References")]
     [SerializeField] private GameObject castingPlayerObject;
+    [SerializeField] private GameObject opponentObject;
     private CharacterStats characterStats;
         [Header("Spells")]
         //Spell data
     public ScriptableSpellData[] fullSpellData;
-    private string[] fullSpellNames;
+
+    private string[] _fullSpellNames;
+    private string[] FullSpellNames
+    {
+        get
+        {
+            if (_fullSpellNames == null)
+            {
+                _fullSpellNames = new string[fullSpellData.Length];
+                for (var i = 0; i < fullSpellData.Length; i++)
+                {
+                    _fullSpellNames[i] = fullSpellData[i].name;
+                }
+            }
+            return _fullSpellNames;
+        }
+    }
         // Equipped Spells
     public string[] equippedSpellNames;
-    [HideInInspector] public ScriptableSpellData[] equippedSpellData;
+
+    private ScriptableSpellData[] _equippedSpellData;
+    [HideInInspector] public ScriptableSpellData[] EquippedSpellData
+    {
+        get
+        {
+            if(_equippedSpellData == null)
+            {
+                _equippedSpellData = new ScriptableSpellData[equippedSpellNames.Length];
+                for (var i = 0; i < equippedSpellNames.Length; i++)
+                {
+                    _equippedSpellData[i] = GetSpellData(equippedSpellNames[i]);
+                }
+            }
+            return _equippedSpellData;
+        }
+    }
         // Spellbook
     [SerializeField] private GameObject spellbookObject;
     private SpellbookLogic spellbookLogic;
@@ -24,12 +57,9 @@ public class SpellManager : MonoBehaviour
     /// Monobehavior Methods
     private void Start()
     {
-        GetSpellNames();
-
         characterStats = castingPlayerObject.GetComponent<CharacterStats>();
 
-        //Enable spell controls from the SpellbookLogic script
-        SetEquippedSpellData();
+        //Enable spell controls from the SpellbookLogic scripty
         spellbookLogic = spellbookObject.GetComponent<SpellbookLogic>();
         spellbookLogic.EnableSpellControls();
     }
@@ -38,23 +68,6 @@ public class SpellManager : MonoBehaviour
         UpdateCooldown();   
     }
 
-    // Run from Monobehavior Methods
-    private void GetSpellNames()
-    {
-        fullSpellNames = new string[fullSpellData.Length];
-        for (var i = 0; i < fullSpellData.Length; i++)
-        {
-            fullSpellNames[i] = fullSpellData[i].name;
-        }
-    }
-    private void SetEquippedSpellData()
-    {
-        equippedSpellData = new ScriptableSpellData[equippedSpellNames.Length];
-        for(var i = 0; i < equippedSpellNames.Length; i++)
-        {
-            equippedSpellData[i] = GetSpellData(equippedSpellNames[i]);
-        }
-    }
     private void UpdateCooldown()
     {
         // Set up cooldowns if data is invalid
@@ -76,7 +89,7 @@ public class SpellManager : MonoBehaviour
                 spellCooldowns[i] = 0;
             }
             //Updates the cooldown UI for i with the current percent
-            spellbookLogic.UpdateCooldownUI(i, spellCooldowns[i] / equippedSpellData[i].SpellCooldown);
+            spellbookLogic.UpdateCooldownUI(i, spellCooldowns[i] / EquippedSpellData[i].SpellCooldown);
         }
     }
 
@@ -92,7 +105,7 @@ public class SpellManager : MonoBehaviour
             return;
         }
 
-        int cooldownIndex = Array.IndexOf(fullSpellNames, attemptedSpellName);
+        int cooldownIndex = Array.IndexOf(FullSpellNames, attemptedSpellName);
 
         //Check if spell is on cooldown
         if (spellCooldowns[cooldownIndex] > 0)
@@ -222,7 +235,7 @@ public class SpellManager : MonoBehaviour
         {
             for (int i = 0; i < spellBehaviors.Length; i++)
             {
-                spellBehaviors[i].targetedPlayer = castingPlayerObject;
+                spellBehaviors[i].targetedPlayer = opponentObject;
             }
         }
         else if (attemptedSpellData.TargetingType == ScriptableSpellData.TargetType.NotApplicable)
@@ -257,7 +270,7 @@ public class SpellManager : MonoBehaviour
     private ScriptableSpellData GetSpellData(string spellName)
     {
         //Gets the index of the spell
-        int spellIndex = Array.IndexOf(fullSpellNames, spellName);
+        int spellIndex = Array.IndexOf(FullSpellNames, spellName);
 
         if (spellIndex == -1)
         {

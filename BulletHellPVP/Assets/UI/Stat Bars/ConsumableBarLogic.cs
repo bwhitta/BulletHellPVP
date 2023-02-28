@@ -14,7 +14,7 @@ public class ConsumableBarLogic : MonoBehaviour
 {
         [Header("Character")]
     [SerializeField] private GameObject characterObject;
-    [SerializeField] private CharacterStats characterStats;
+    private CharacterStats characterStats;
 
     enum Stats { health, mana }
         [Header("Stats")]
