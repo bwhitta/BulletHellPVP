@@ -36,3 +36,10 @@ MonoBehaviour:
   ScalingAfterDistance: 1
   ScalingStart: 0.75
   DestroyOnScalingCompleted: 1
+  UsesCollider: 1
+  ColliderPath:
+  - {x: 10, y: -5.5}
+  - {x: 0, y: -3}
+  - {x: 0, y: 2}
+  - {x: 10, y: 4.5}
+  - {x: 25, y: -0.5}

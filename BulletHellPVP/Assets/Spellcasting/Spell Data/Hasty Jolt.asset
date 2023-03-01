@@ -20,7 +20,7 @@ MonoBehaviour:
   CastingAreaScale: 0
   Damage: 10
   TypeOfSpell: 1
-  MovementSpeed: 0
+  MovementSpeed: 5
   TargetingType: 1
   ProjectilePrefab: {fileID: 1062348163457161292, guid: a12a2eac476853e4184718ce4ef910dc, type: 3}
   HasSprite: 0
