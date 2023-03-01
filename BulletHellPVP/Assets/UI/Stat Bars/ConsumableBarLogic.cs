@@ -85,7 +85,7 @@ public class ConsumableBarLogic : MonoBehaviour
     public void UpdateStatDisplay(UpdatableStats updatedStat)
     {
         // Update the text
-        valueText.text = StatRemaining.ToString();
+        valueText.text = Mathf.Floor(StatRemaining).ToString();
 
         // Variables
         float edgeLeft, edgeRight, valueSet;

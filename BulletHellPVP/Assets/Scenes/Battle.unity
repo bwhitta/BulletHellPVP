@@ -1684,6 +1684,7 @@ MonoBehaviour:
   manaBarObject: {fileID: 1240763136}
   MaxManaStat: 100
   MaxHealthStat: 100
+  baseManaRegen: 5
   maxInvincibilityTime: 1.5
   invincibilityAlphaMod: 0.5
 --- !u!114 &838268008
@@ -2941,6 +2942,7 @@ MonoBehaviour:
   manaBarObject: {fileID: 433776964}
   MaxManaStat: 100
   MaxHealthStat: 100
+  baseManaRegen: 5
   maxInvincibilityTime: 1.5
   invincibilityAlphaMod: 0.5
 --- !u!1001 &1395643566

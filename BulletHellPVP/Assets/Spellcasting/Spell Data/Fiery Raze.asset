@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Fiery Raze
   m_EditorClassIdentifier: 
   SpellName: Fiery Raze
-  ManaCost: 25
+  ManaCost: 50
   SpellCooldown: 2
   ProjectileQuantity: 2
   CastingArea: 3

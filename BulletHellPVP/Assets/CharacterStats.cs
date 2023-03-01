@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using Unity.VisualScripting;
 using UnityEngine;
 using static ConsumableBarLogic;
 
@@ -9,8 +11,9 @@ public class CharacterStats : MonoBehaviour
     [SerializeField] private GameObject healthBarObject, manaBarObject;
     public float MaxManaStat, MaxHealthStat;
     private ConsumableBarLogic healthBar, manaBar;
-    
-        [Header("Damage")]
+    [SerializeField] private float baseManaRegen;
+
+        [Space][Header("Damage")]
     [SerializeField] private float maxInvincibilityTime;
     [SerializeField][Range(0, 1)] private float invincibilityAlphaMod;
     private float remainingInvincibilityTime = 0;
@@ -40,12 +43,18 @@ public class CharacterStats : MonoBehaviour
         set
         {
             StatConfigCheck();
-            if (_currentHealthStat > MaxHealthStat)
+            if (value > MaxHealthStat)
                 _currentHealthStat = MaxHealthStat;
 
             else
                 _currentHealthStat = value;
             healthBar.UpdateStatDisplay(UpdatableStats.Remaining);
+
+            if (value < 0)
+            {
+                Destroy(gameObject);
+                // win the game screen
+            }
         }
     }
     // Current Mana
@@ -60,9 +69,8 @@ public class CharacterStats : MonoBehaviour
         set
         {
             StatConfigCheck();
-            if (_currentManaStat > MaxManaStat)
+            if (value > MaxManaStat)
                 _currentManaStat = MaxManaStat;
-
             else
                 _currentManaStat = value;
             manaBar.UpdateStatDisplay(UpdatableStats.Remaining);
@@ -104,6 +112,8 @@ public class CharacterStats : MonoBehaviour
             remainingInvincibilityTime = 0;
             SetChildAlpha(1);
         }
+
+        CurrentManaStat += baseManaRegen * Time.deltaTime;
     }
 
     private float currentAlpha;
