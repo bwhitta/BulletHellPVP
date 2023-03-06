@@ -52,7 +52,7 @@ public class SpellBehavior : MonoBehaviour
 
     private void PointTowardsTarget()
     {
-        // If TargetingType is Player, point towards the player
+        // If TargetingType is PlayerStats, point towards the player
         if (spellData.TargetingType == ScriptableSpellData.TargetType.Player)
         {
             if (targetedPlayer == null)

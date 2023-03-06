@@ -18,7 +18,7 @@ MonoBehaviour:
   ProjectileQuantity: 2
   CastingArea: 3
   CastingAreaScale: 0.25
-  Damage: 15
+  Damage: 50
   TypeOfSpell: 2
   MovementSpeed: 7.5
   TargetingType: 0

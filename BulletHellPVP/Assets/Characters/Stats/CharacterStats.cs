@@ -1,37 +1,24 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Unity.VisualScripting;
 using UnityEngine;
-using static ConsumableBarLogic;
+using static BarLogic;
 
 public class CharacterStats : MonoBehaviour
 {
-        [Header("Mana and health")]
-    [SerializeField] private GameObject healthBarObject, manaBarObject;
-    public float MaxManaStat, MaxHealthStat;
-    private ConsumableBarLogic healthBar, manaBar;
-    [SerializeField] private float baseManaRegen;
+    
+    public PlayerInfo playerInfo;
 
-        [Space][Header("Damage")]
-    [SerializeField] private float maxInvincibilityTime;
-    [SerializeField][Range(0, 1)] private float invincibilityAlphaMod;
     private float remainingInvincibilityTime = 0;
-
-    // Check if the stats are configured
-    private bool statsConfigured;
-    private void StatConfigCheck()
+    
+    private void Update()
     {
-        if (!statsConfigured)
-        {
-            healthBar = healthBarObject.GetComponent<ConsumableBarLogic>();
-            manaBar = manaBarObject.GetComponent<ConsumableBarLogic>();
-            _currentHealthStat = MaxHealthStat;
-            _currentManaStat = MaxManaStat;
-        }
-        statsConfigured = true;
+        InvincibilityTick();
     }
-    // Current Health
+
+    // Health
     private float _currentHealthStat;
     public float CurrentHealthStat
     {
@@ -43,21 +30,24 @@ public class CharacterStats : MonoBehaviour
         set
         {
             StatConfigCheck();
-            if (value > MaxHealthStat)
-                _currentHealthStat = MaxHealthStat;
+            if (value > playerInfo.defaultStats.MaxHealthStat)
+                _currentHealthStat = playerInfo.defaultStats.MaxHealthStat;
 
             else
                 _currentHealthStat = value;
-            healthBar.UpdateStatDisplay(UpdatableStats.Remaining);
+            playerInfo.HealthBar.UpdateStatDisplay(UpdatableStats.Remaining);
 
             if (value < 0)
             {
+                _currentHealthStat = 0;
+                Debug.Log("dead");
+                GameplayManager.GameIsOver = true;
                 Destroy(gameObject);
-                // win the game screen
             }
         }
     }
-    // Current Mana
+
+    // Mana
     private float _currentManaStat;
     public float CurrentManaStat
     {
@@ -69,22 +59,38 @@ public class CharacterStats : MonoBehaviour
         set
         {
             StatConfigCheck();
-            if (value > MaxManaStat)
-                _currentManaStat = MaxManaStat;
+            if (value > playerInfo.defaultStats.MaxManaStat)
+                _currentManaStat = playerInfo.defaultStats.MaxManaStat;
             else
                 _currentManaStat = value;
-            manaBar.UpdateStatDisplay(UpdatableStats.Remaining);
+            playerInfo.ManaBar.UpdateStatDisplay(UpdatableStats.Remaining);
         }
     }
+
+    // Check if the stats are configured
+    private bool statsConfigured;
+    private void StatConfigCheck()
+    {
+        if (!statsConfigured)
+        {
+            _currentHealthStat = playerInfo.defaultStats.MaxHealthStat;
+            _currentManaStat = playerInfo.defaultStats.MaxManaStat;
+        }
+        statsConfigured = true;
+    }
+
     // Collision
     private void OnTriggerEnter2D(Collider2D collision)
     {
         CheckCollision(collision);
     }
-
     private void CheckCollision(Collider2D collision)
     {
         Debug.Log($"{gameObject.name} is colliding with {collision.gameObject.name}");
+        if (GameplayManager.GameIsOver)
+        {
+            return;
+        }
 
         if (collision.GetComponent<SpellBehavior>() != null)
         {
@@ -92,30 +98,30 @@ public class CharacterStats : MonoBehaviour
             
             if(remainingInvincibilityTime <= 0)
             {
-                remainingInvincibilityTime = maxInvincibilityTime;
+                remainingInvincibilityTime = playerInfo.defaultStats.InvincibilityTime;
                 gameObject.GetComponent<CharacterStats>().CurrentHealthStat -= collisionSpellBehavior.spellData.Damage;
                 Debug.Log($"{collisionSpellBehavior.spellData.Damage} health lost ");
             }
         }
     }
-
-    private void Update()
+    
+    // Invincibility after damage
+    private void InvincibilityTick()
     {
-        if(remainingInvincibilityTime > 0)
+        if (remainingInvincibilityTime > 0)
         {
             remainingInvincibilityTime -= Time.deltaTime;
-            
-            SetChildAlpha(invincibilityAlphaMod);
+
+            SetChildAlpha(playerInfo.defaultStats.InvincibilityAlphaMod);
         }
-        if(remainingInvincibilityTime < 0)
+        if (remainingInvincibilityTime < 0)
         {
             remainingInvincibilityTime = 0;
             SetChildAlpha(1);
         }
 
-        CurrentManaStat += baseManaRegen * Time.deltaTime;
+        CurrentManaStat += playerInfo.defaultStats.BaseManaRegen * Time.deltaTime;
     }
-
     private float currentAlpha;
     private void SetChildAlpha(float alpha)
     {
@@ -124,10 +130,8 @@ public class CharacterStats : MonoBehaviour
             return;
         }
         currentAlpha = alpha;
-        Debug.Log("Setting alpha");
-        for(var i = 0; i < gameObject.transform.childCount; i++)
+        for (int i = 0; i < gameObject.transform.childCount; i++)
         {
-            Debug.Log(i);
             gameObject.transform.GetChild(i).GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, alpha);
         }
     }

@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using static MenuController;
 
 public class MenuController : MonoBehaviour
 {
@@ -9,6 +10,12 @@ public class MenuController : MonoBehaviour
     [SerializeField] private GameObject[] MenuCanvasParents; // The parents for each menu's canvas elements
     [SerializeField] private GameObject[] MenuNonCanvasParents; // The parents for each menu's non-canvas elements
     [SerializeField] private string StartingMenu; // The menu the game opens to
+    [SerializeField] private string battleStartScene;
+
+    [Space]
+    [SerializeField] private string localTypeName, hostTypeName, clientTypeName;
+    public enum GameTypes { Local, OnlineHost, OnlineClient}
+    public static GameTypes gameType;
 
     void Start()
     {
@@ -79,5 +86,27 @@ public class MenuController : MonoBehaviour
     public void SetScene(string SceneToSet)
     {
         SceneManager.LoadScene(SceneToSet);
+    }
+
+    public void StartBattle(string gameTypeName)
+    {
+        if (gameTypeName == localTypeName)
+        {
+            gameType = GameTypes.Local;
+        }
+        else if (gameTypeName == clientTypeName)
+        {
+            gameType = GameTypes.OnlineClient;
+        }
+        else if (gameTypeName == hostTypeName)
+        {
+            gameType = GameTypes.OnlineHost;
+        }
+        else
+        {
+            Debug.LogError("invalid game type");
+            return;
+        }
+        SetScene(battleStartScene);
     }
 }

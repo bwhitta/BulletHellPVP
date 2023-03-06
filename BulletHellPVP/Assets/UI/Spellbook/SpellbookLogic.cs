@@ -75,6 +75,11 @@ public class SpellbookLogic : MonoBehaviour
 
     private void CastingInputPerformed(int spellbookSlotIndex)
     {
+        if (GameplayManager.GameIsOver)
+        {
+            Debug.Log("Casting cancelled, game is over.");
+            return;
+        }
         if (spellManager.equippedSpellNames.Length <= spellbookSlotIndex)
         {
             Debug.LogWarning("Error - not enough equipped spells.");

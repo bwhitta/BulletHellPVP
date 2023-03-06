@@ -10,36 +10,37 @@ using static ControlsManager;
 
 // 249, 264 (margins around image)
 
-public class ConsumableBarLogic : MonoBehaviour
+public class BarLogic : MonoBehaviour
 {
         [Header("Character")]
-    [SerializeField] private GameObject characterObject;
-    private CharacterStats characterStats;
+    [SerializeField] private PlayerInfo playerInfo;
 
-    enum Stats { health, mana }
-        [Header("Stats")]
-    [SerializeField] Stats statToModify = new();
+    public enum Stats { health, mana }
+    [Header("Stats")]
+    [Space]
+    public Stats statToModify;
     [SerializeField] private GameObject statRemainingObject, statLostObject;
     [SerializeField] private int remainingEdgeLeft, remainingEdgeRight, lostEdgeLeft, lostEdgeRight;
-    [SerializeField] private Text valueText;
+    [SerializeField] private Text valueTextObject;
 
         [Header("Stat loss bar")]
     private float statLost;
     private float statLostVelocity = 0;
-    [SerializeField] private float statLostVelocityMod;
+    
+    
 
-    // Gets and/or sets the correct value from CharacterStats
+    // Gets and/or sets the correct value from PlayerStats
     private float StatRemaining
     {
         get
         {
             if (statToModify == Stats.health)
             {
-                return characterStats.CurrentHealthStat;
+                return playerInfo.PlayerStats.CurrentHealthStat;
             }
             else if (statToModify == Stats.mana)
             {
-                return characterStats.CurrentManaStat;
+                return playerInfo.PlayerStats.CurrentManaStat;
             }
             else
             {
@@ -54,11 +55,11 @@ public class ConsumableBarLogic : MonoBehaviour
         {
             if (statToModify == Stats.health)
             {
-                return characterStats.MaxHealthStat;
+                return playerInfo.defaultStats.MaxHealthStat;
             }
             else if (statToModify == Stats.mana)
             {
-                return characterStats.MaxManaStat;
+                return playerInfo.defaultStats.MaxManaStat;
             }
             else
             {
@@ -71,8 +72,6 @@ public class ConsumableBarLogic : MonoBehaviour
     // Monobehavior Methods
     private void Start()
     {
-        characterStats = characterObject.GetComponent<CharacterStats>();
-
         statLost = StatRemaining;
         UpdateStatDisplay(UpdatableStats.Both);
     }
@@ -85,7 +84,7 @@ public class ConsumableBarLogic : MonoBehaviour
     public void UpdateStatDisplay(UpdatableStats updatedStat)
     {
         // Update the text
-        valueText.text = Mathf.Floor(StatRemaining).ToString();
+        valueTextObject.text = Mathf.Floor(StatRemaining).ToString();
 
         // Variables
         float edgeLeft, edgeRight, valueSet;
@@ -131,7 +130,7 @@ public class ConsumableBarLogic : MonoBehaviour
         {
             // Move statLost down and speed up velocity
             statLost -= statLostVelocity;
-            statLostVelocity += statLostVelocityMod;
+            statLostVelocity += playerInfo.defaultStats.StatLostVelocityMod;
 
             UpdateStatDisplay(UpdatableStats.Lost);
         }
