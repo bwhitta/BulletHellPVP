@@ -1,10 +1,5 @@
-using JetBrains.Annotations;
-using System;
-using System.Runtime.CompilerServices;
-using UnityEditor.Search;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using static BarLogic;
 using static ControlsManager;
 
 public class ControlCharacter : MonoBehaviour
@@ -18,6 +13,7 @@ public class ControlCharacter : MonoBehaviour
     {
         SetObjectReferences();
         EnableMovement();
+        gameObject.transform.position = playerInfo.CharacterStartLocation;
     }
     private void SetObjectReferences()
     {
@@ -27,7 +23,7 @@ public class ControlCharacter : MonoBehaviour
 
     private void EnableMovement()
     {
-        InputActionMap controllingPlayerMap = GetActionMap(playerInfo.ControllingMap);
+        InputActionMap controllingPlayerMap = GetActionMap(playerInfo.InputMapName);
         movementAction = controllingPlayerMap.FindAction(playerInfo.MovementActionName, true);
         movementAction.Enable();
     }
@@ -42,7 +38,7 @@ public class ControlCharacter : MonoBehaviour
 
         playerRigidbody.velocity = playerInfo.defaultStats.MovementSpeedMod * movementVector;
 
-        playerInfo.CharacterAnimator.SetFloat(playerInfo.AnimatorTreeParameterX, movementVector.x);
-        playerInfo.CharacterAnimator.SetFloat(playerInfo.AnimatorTreeParameterY, movementVector.y);
+        gameObject.GetComponent<Animator>().SetFloat(playerInfo.AnimatorTreeParameterX, movementVector.x);
+        gameObject.GetComponent<Animator>().SetFloat(playerInfo.AnimatorTreeParameterY, movementVector.y);
     }
 }

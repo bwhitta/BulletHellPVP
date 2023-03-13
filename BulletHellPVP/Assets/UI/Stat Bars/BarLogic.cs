@@ -26,21 +26,23 @@ public class BarLogic : MonoBehaviour
         [Header("Stat loss bar")]
     private float statLost;
     private float statLostVelocity = 0;
-    
-    
 
-    // Gets and/or sets the correct value from PlayerStats
+    // Gets and/or sets the correct value from CharacterStatsScript
     private float StatRemaining
     {
         get
         {
-            if (statToModify == Stats.health)
+            if (playerInfo.PlayerObject == null)
             {
-                return playerInfo.PlayerStats.CurrentHealthStat;
+                return 0.0f;
+            }
+            else if (statToModify == Stats.health)
+            {
+                return playerInfo.CharacterStatsScript.CurrentHealthStat;
             }
             else if (statToModify == Stats.mana)
             {
-                return playerInfo.PlayerStats.CurrentManaStat;
+                return playerInfo.CharacterStatsScript.CurrentManaStat;
             }
             else
             {
@@ -72,16 +74,52 @@ public class BarLogic : MonoBehaviour
     // Monobehavior Methods
     private void Start()
     {
-        statLost = StatRemaining;
-        UpdateStatDisplay(UpdatableStats.Both);
+        if(playerInfo.PlayerObject == null)
+        {
+            BarEnabled(false);
+        }
+        else {
+            BarEnabled(true);
+        }
     }
-    private void FixedUpdate()
+    private void Update()
     {
-        UpdateStatLost();
+        if (gameObject.activeSelf)
+        {
+            UpdateStatLost();
+        }
+    }
+
+    public void BarEnabled(bool enable)
+    {
+        if (enable == gameObject.activeSelf)
+        {
+            return;
+        }
+        gameObject.SetActive(enable);
+
+        // Enabled Behavior
+        if (enable)
+        {
+            statLost = StatRemaining;
+            UpdateStatDisplays(UpdatableStats.Both);
+        }
+        // Disabled Behavior
+        else
+        {
+            if(statToModify == Stats.health)
+            {
+                playerInfo.HealthBar = gameObject.GetComponent<BarLogic>();
+            }
+            else
+            {
+                playerInfo.ManaBar = gameObject.GetComponent<BarLogic>();
+            }
+        }
     }
 
     public enum UpdatableStats { Remaining, Lost, Both }
-    public void UpdateStatDisplay(UpdatableStats updatedStat)
+    public void UpdateStatDisplays(UpdatableStats updatedDisplays)
     {
         // Update the text
         valueTextObject.text = Mathf.Floor(StatRemaining).ToString();
@@ -90,14 +128,14 @@ public class BarLogic : MonoBehaviour
         float edgeLeft, edgeRight, valueSet;
         Image displayImage;
         // Set variables based on parameter
-        if(updatedStat == UpdatableStats.Remaining)
+        if(updatedDisplays == UpdatableStats.Remaining)
         {
             edgeLeft = remainingEdgeLeft;
             edgeRight = remainingEdgeRight;
             displayImage = statRemainingObject.GetComponent<Image>();
             valueSet = StatRemaining;
         }
-        else if(updatedStat == UpdatableStats.Lost)
+        else if(updatedDisplays == UpdatableStats.Lost)
         {
             edgeLeft = lostEdgeLeft;
             edgeRight = lostEdgeRight;
@@ -107,8 +145,8 @@ public class BarLogic : MonoBehaviour
         else
         {
             // For the "Both" parameter 
-            UpdateStatDisplay(UpdatableStats.Remaining);
-            UpdateStatDisplay(UpdatableStats.Lost);
+            UpdateStatDisplays(UpdatableStats.Remaining);
+            UpdateStatDisplays(UpdatableStats.Lost);
             return;
         }
         
@@ -129,10 +167,10 @@ public class BarLogic : MonoBehaviour
         if (statLost > StatRemaining)
         {
             // Move statLost down and speed up velocity
-            statLost -= statLostVelocity;
+            statLost -= statLostVelocity * Time.deltaTime;
             statLostVelocity += playerInfo.defaultStats.StatLostVelocityMod;
 
-            UpdateStatDisplay(UpdatableStats.Lost);
+            UpdateStatDisplays(UpdatableStats.Lost);
         }
         // Check if statLost is now too low
         if (statLost < StatRemaining)
@@ -141,7 +179,7 @@ public class BarLogic : MonoBehaviour
             statLost = StatRemaining; 
             statLostVelocity = 0;
 
-            UpdateStatDisplay(UpdatableStats.Lost);
+            UpdateStatDisplays(UpdatableStats.Lost);
         }
     }
 }

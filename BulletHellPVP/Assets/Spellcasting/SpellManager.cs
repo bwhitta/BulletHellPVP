@@ -3,14 +3,11 @@ using UnityEngine;
 
 public class SpellManager : MonoBehaviour
 {
-        [Header("Object References")]
-    [SerializeField] private GameObject castingPlayerObject;
-    [SerializeField] private GameObject opponentObject;
-    private CharacterStats characterStats;
-        [Header("Spells")]
-        //Spell data
-    public ScriptableSpellData[] fullSpellData;
+    [SerializeField] private PlayerInfo playerInfo;
 
+    [Space]
+    //Spell data
+    public ScriptableSpellData[] fullSpellData;
     private string[] _fullSpellNames;
     private string[] FullSpellNames
     {
@@ -27,7 +24,9 @@ public class SpellManager : MonoBehaviour
             return _fullSpellNames;
         }
     }
-        // Equipped Spells
+    
+    [Space]
+    // Equipped Spells
     public string[] equippedSpellNames;
 
     private ScriptableSpellData[] _equippedSpellData;
@@ -35,7 +34,7 @@ public class SpellManager : MonoBehaviour
     {
         get
         {
-            if(_equippedSpellData == null)
+            if (_equippedSpellData == null)
             {
                 _equippedSpellData = new ScriptableSpellData[equippedSpellNames.Length];
                 for (var i = 0; i < equippedSpellNames.Length; i++)
@@ -46,53 +45,11 @@ public class SpellManager : MonoBehaviour
             return _equippedSpellData;
         }
     }
-        // Spellbook
+    // Spellbook
     [SerializeField] private GameObject spellbookObject;
-    private SpellbookLogic spellbookLogic;
-        // Cooldown
-    private float[] spellCooldowns;
     // Mask layers
     [SerializeField] private string spellMaskLayer;
-
-    /// Monobehavior Methods
-    private void Start()
-    {
-        characterStats = castingPlayerObject.GetComponent<CharacterStats>();
-
-        //Enable spell controls from the SpellbookLogic scripty
-        spellbookLogic = spellbookObject.GetComponent<SpellbookLogic>();
-        spellbookLogic.EnableSpellControls();
-    }
-    private void Update()
-    {
-        UpdateCooldown();   
-    }
-
-    private void UpdateCooldown()
-    {
-        // Set up cooldowns if data is invalid
-        if (spellCooldowns == null ||  spellCooldowns.Length < equippedSpellNames.Length)
-        {
-            spellCooldowns = new float[equippedSpellNames.Length];
-        }
-
-        // Loop through cooldowns and tick down by time.deltatime
-        for(int i = 0; i < spellCooldowns.Length; i++)
-        {
-            if (spellCooldowns[i] > 0)
-            {
-
-                spellCooldowns[i] -= Time.deltaTime;
-            }
-            if(spellCooldowns[i] < 0)
-            {
-                spellCooldowns[i] = 0;
-            }
-            //Updates the cooldown UI for i with the current percent
-            spellbookLogic.UpdateCooldownUI(i, spellCooldowns[i] / EquippedSpellData[i].SpellCooldown);
-        }
-    }
-
+    
     // Casting and instantiating spells
     public void CastSpell(string attemptedSpellName)
     {
@@ -108,19 +65,19 @@ public class SpellManager : MonoBehaviour
         int cooldownIndex = Array.IndexOf(FullSpellNames, attemptedSpellName);
 
         //Check if spell is on cooldown
-        if (spellCooldowns[cooldownIndex] > 0)
+        if (playerInfo.SpellbookLogicScript.spellCooldowns[cooldownIndex] > 0)
         {
             Debug.Log("Spell on cooldown.");
             return;
         }
 
         //Checks if the player has enough mana
-        if (attemptedSpellData.ManaCost <= characterStats.CurrentManaStat)
+        if (attemptedSpellData.ManaCost <= playerInfo.CharacterStatsScript.CurrentManaStat)
         {
             //Spend Mana
-            characterStats.CurrentManaStat -= attemptedSpellData.ManaCost;
+            playerInfo.CharacterStatsScript.CurrentManaStat -= attemptedSpellData.ManaCost;
 
-            spellCooldowns[cooldownIndex] = attemptedSpellData.SpellCooldown;
+            playerInfo.SpellbookLogicScript.spellCooldowns[cooldownIndex] = attemptedSpellData.SpellCooldown;
 
             // Instantiate the spell
             GameObject[] spellObjects = InstantiateSpell(attemptedSpellData);
@@ -235,7 +192,7 @@ public class SpellManager : MonoBehaviour
         {
             for (int i = 0; i < spellBehaviors.Length; i++)
             {
-                spellBehaviors[i].targetedPlayer = opponentObject;
+                spellBehaviors[i].targetedPlayer = playerInfo.opponentPlayerInfo.PlayerObject;
             }
         }
         else if (attemptedSpellData.TargetingType == ScriptableSpellData.TargetType.NotApplicable)

@@ -959,13 +959,13 @@ public partial class @GameControls : IInputActionCollection2, IDisposable
         }
     ]
 }");
-        // Left PlayerStats
+        // Left CharacterStatsScript
         m_LeftPlayer = asset.FindActionMap("Left Player", throwIfNotFound: true);
         m_LeftPlayer_Movement = m_LeftPlayer.FindAction("Movement", throwIfNotFound: true);
         m_LeftPlayer_CursorMovement = m_LeftPlayer.FindAction("CursorMovement", throwIfNotFound: true);
         m_LeftPlayer_AccelerateCursorMovement = m_LeftPlayer.FindAction("AccelerateCursorMovement", throwIfNotFound: true);
         m_LeftPlayer_SpellcastingSelection = m_LeftPlayer.FindAction("SpellcastingSelection", throwIfNotFound: true);
-        // Right PlayerStats
+        // Right CharacterStatsScript
         m_RightPlayer = asset.FindActionMap("Right Player", throwIfNotFound: true);
         m_RightPlayer_Movement = m_RightPlayer.FindAction("Movement", throwIfNotFound: true);
         m_RightPlayer_CursorMovement = m_RightPlayer.FindAction("CursorMovement", throwIfNotFound: true);
@@ -1037,7 +1037,7 @@ public partial class @GameControls : IInputActionCollection2, IDisposable
         return asset.FindBinding(bindingMask, out action);
     }
 
-    // Left PlayerStats
+    // Left CharacterStatsScript
     private readonly InputActionMap m_LeftPlayer;
     private ILeftPlayerActions m_LeftPlayerActionsCallbackInterface;
     private readonly InputAction m_LeftPlayer_Movement;
@@ -1094,7 +1094,7 @@ public partial class @GameControls : IInputActionCollection2, IDisposable
     }
     public LeftPlayerActions @LeftPlayer => new LeftPlayerActions(this);
 
-    // Right PlayerStats
+    // Right CharacterStatsScript
     private readonly InputActionMap m_RightPlayer;
     private IRightPlayerActions m_RightPlayerActionsCallbackInterface;
     private readonly InputAction m_RightPlayer_Movement;

@@ -12,7 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 49edd6b8dc170dd45940d7cf5e9145e8, type: 3}
   m_Name: Default Stats
   m_EditorClassIdentifier: 
-  invincibilityTime: 0.25
-  invincibilityAlphaMod: 0.5
+  InvincibilityTime: 0.5
+  InvincibilityAlphaMod: 0.5
   MaxHealthStat: 100
   MaxManaStat: 100
+  BaseManaRegen: 5
+  MovementSpeedMod: 2.5
+  StatLostVelocityMod: 1

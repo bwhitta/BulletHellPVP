@@ -1,21 +1,63 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using Unity.VisualScripting;
 using UnityEngine;
 using static BarLogic;
 
 public class CharacterStats : MonoBehaviour
 {
-    
+
     public PlayerInfo playerInfo;
 
     private float remainingInvincibilityTime = 0;
-    
+
+    // Monobehavior methods
     private void Update()
     {
         InvincibilityTick();
+    }
+    private void OnEnable()
+    {
+        CharacterEnabled(true);
+    }
+    private void OnDisable()
+    {
+        CharacterEnabled(false);
+    }
+    
+    // Actions upon enabling or disabling character
+    private void CharacterEnabled(bool enable)
+    {
+        if (enable)
+        {
+            // Get player info
+            playerInfo = PlayerInfoManager.JoinAvailableLocation();
+            if (playerInfo == null)
+            {
+                Debug.Log("Player destroyed - no available slot found");
+                Destroy(gameObject);
+                return;
+            }
+            // Debug.Log($"Set player info to {playerInfo.name}");
+
+            transform.position = playerInfo.CharacterStartLocation;
+        }
+        else
+        {
+            if (playerInfo == null || playerInfo.SpellbookLogicScript == null)
+            {
+                Debug.Log("Skipping disable, some info was found null");
+                return;
+            }
+        }
+
+        // Check tag
+        if (gameObject.CompareTag("Untagged"))
+        {
+            gameObject.tag = playerInfo.CharacterTag;
+        }
+
+        // Enable other objects
+        playerInfo.HealthBar.BarEnabled(enable);
+        playerInfo.ManaBar.BarEnabled(enable);
+        playerInfo.SpellbookLogicScript.SpellbookToggle(enable);
     }
 
     // Health
@@ -35,13 +77,12 @@ public class CharacterStats : MonoBehaviour
 
             else
                 _currentHealthStat = value;
-            playerInfo.HealthBar.UpdateStatDisplay(UpdatableStats.Remaining);
+            playerInfo.HealthBar.UpdateStatDisplays(UpdatableStats.Remaining);
 
             if (value < 0)
             {
                 _currentHealthStat = 0;
                 Debug.Log("dead");
-                GameplayManager.GameIsOver = true;
                 Destroy(gameObject);
             }
         }
@@ -63,7 +104,7 @@ public class CharacterStats : MonoBehaviour
                 _currentManaStat = playerInfo.defaultStats.MaxManaStat;
             else
                 _currentManaStat = value;
-            playerInfo.ManaBar.UpdateStatDisplay(UpdatableStats.Remaining);
+            playerInfo.ManaBar.UpdateStatDisplays(UpdatableStats.Remaining);
         }
     }
 
@@ -87,7 +128,7 @@ public class CharacterStats : MonoBehaviour
     private void CheckCollision(Collider2D collision)
     {
         Debug.Log($"{gameObject.name} is colliding with {collision.gameObject.name}");
-        if (GameplayManager.GameIsOver)
+        if (gameObject.activeSelf == false)
         {
             return;
         }

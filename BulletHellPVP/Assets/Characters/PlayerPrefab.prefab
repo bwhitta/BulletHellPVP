@@ -177,13 +177,15 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2971767381870167635}
+  - component: {fileID: 1892296493161063133}
   - component: {fileID: 2971767381870167634}
-  - component: {fileID: 2971767381870167633}
-  - component: {fileID: 2971767381870167662}
   - component: {fileID: 2971767381870167632}
   - component: {fileID: 2971767381870167663}
+  - component: {fileID: 2971767381870167633}
+  - component: {fileID: 2971767381870167662}
+  - component: {fileID: 2282364490640711688}
   m_Layer: 0
-  m_Name: PrefabChar
+  m_Name: PlayerPrefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -207,6 +209,22 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1892296493161063133
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2971767381870167636}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 951099334
+  AlwaysReplicateAsRoot: 0
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
 --- !u!95 &2971767381870167634
 Animator:
   serializedVersion: 5
@@ -227,40 +245,6 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
---- !u!114 &2971767381870167633
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2971767381870167636}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4d5f79528ac06b41a12b1066e076982, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  controllingPlayerMapName: Left Player
-  movementActionName: Movement
-  MovementSpeedMod: 2.5
-  CharacterAnimator: {fileID: 2971767381870167634}
-  AnimatorTreeParameterX: FacingX
-  AnimatorTreeParameterY: FacingY
---- !u!114 &2971767381870167662
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2971767381870167636}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 917941745e2aa8f47b9c2c6e3bad1959, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  defaultStats: {fileID: 11400000, guid: 4a3a84f4e9249ee4a836adc8dfb4fe9d, type: 2}
-  healthBarObject: {fileID: 0}
-  manaBarObject: {fileID: 0}
-  baseManaRegen: 5
 --- !u!70 &2971767381870167632
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -298,6 +282,45 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
+--- !u!114 &2971767381870167633
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2971767381870167636}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4d5f79528ac06b41a12b1066e076982, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &2971767381870167662
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2971767381870167636}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 917941745e2aa8f47b9c2c6e3bad1959, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerInfo: {fileID: 0}
+--- !u!114 &2282364490640711688
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2971767381870167636}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ef3a7222bef76e45a1ceadbf699cd99, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Position:
+    m_InternalValue: {x: 0, y: 0, z: 0}
 --- !u!1 &2971767382177758301
 GameObject:
   m_ObjectHideFlags: 0

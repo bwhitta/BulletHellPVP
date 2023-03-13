@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c9ee4449936a7034ab20aaceaba2ef65, type: 3}
+  m_Name: Left Player
+  m_EditorClassIdentifier: 
+  defaultStats: {fileID: 11400000, guid: 4a3a84f4e9249ee4a836adc8dfb4fe9d, type: 2}
+  opponentPlayerInfo: {fileID: 11400000, guid: 54331a60389e0df4a9a8faa6f1473c05, type: 2}
+  CharacterTag: Left Player
+  CharacterStartLocation: {x: -4, y: 0}
+  InputMapName: Left Player
+  MovementActionName: Movement
+  SpellbookSelectionActionName: SpellcastingSelection
+  AnimatorTreeParameterX: FacingX
+  AnimatorTreeParameterY: FacingY
