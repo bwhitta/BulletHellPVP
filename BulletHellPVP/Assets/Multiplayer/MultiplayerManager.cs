@@ -5,8 +5,8 @@ public class MultiplayerManager : MonoBehaviour
 {
     public enum MultiplayerTypes { Local, OnlineHost, OnlineClient }
     public static MultiplayerTypes multiplayerType;
-    [SerializeField] private GameObject playerPrefab;
-    private void Awake()
+    [SerializeField] private GameObject characterPrefab;
+    private void Start()
     {
         Debug.Log($"Multiplayer type: {multiplayerType}");
         switch (multiplayerType)
@@ -18,8 +18,8 @@ public class MultiplayerManager : MonoBehaviour
                 NetworkManager.Singleton.StartHost();
                 break;
             default:
-                Instantiate(playerPrefab);
-                Instantiate(playerPrefab);
+                Instantiate(characterPrefab);
+                Instantiate(characterPrefab);
                 break;
         }
     }
@@ -31,13 +31,18 @@ public class MultiplayerManager : MonoBehaviour
 
     static void SubmitNewPosition()
     {
-        if (NetworkManager.Singleton.IsServer)
+        if (multiplayerType == MultiplayerTypes.Local)
         {
-            Debug.Log("Player is server, host, or local player. Continuing position change.");
+            // Debug.Log("Skipping online location submitting (game is local).");
+            return;
+        }
+        else if (NetworkManager.Singleton.IsServer)
+        {
+            Debug.Log("Character is server or host. Continuing position change.");
         }
         else
         {
-            Debug.Log("Not server, aborting position change.");
+            Debug.Log("Game is neither local nor a server, aborting position change.");
             return;
         }
 
@@ -48,9 +53,9 @@ public class MultiplayerManager : MonoBehaviour
         }
         else
         {
-            NetworkObject playerObject = NetworkManager.Singleton.SpawnManager.GetLocalPlayerObject();
-            PlayerNetworking player = playerObject.GetComponent<PlayerNetworking>();
-            player.Move();
+            NetworkObject characterObject = NetworkManager.Singleton.SpawnManager.GetLocalPlayerObject();
+            PlayerNetworking character = characterObject.GetComponent<PlayerNetworking>();
+            character.Move();
         }
     }
 

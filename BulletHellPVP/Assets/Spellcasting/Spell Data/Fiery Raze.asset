@@ -23,12 +23,10 @@ MonoBehaviour:
   MovementSpeed: 7.5
   TargetingType: 0
   ProjectilePrefab: {fileID: 1062348163457161292, guid: a12a2eac476853e4184718ce4ef910dc, type: 3}
-  HasSprite: 1
+  SpellUsesSprite: 1
   ProjectileSprite: {fileID: 21300000, guid: 44a5aa0d5434a1b44ac0256937e6dfce, type: 3}
   SpriteScale: 0.07
-  SpellbookSprite: {fileID: 21300000, guid: eff13dcd2ff878f40b763e353c3a057a, type: 3}
-  UseParticles: 0
-  ParticleSystemPrefab: {fileID: 0}
+  Icon: {fileID: 21300000, guid: 83cc1d2946ff95749ba42a2a9417668d, type: 3}
   SecondaryCastingArea: 1.5
   AnimateSpell: 0
   SpellAnimatorController: {fileID: 0}
@@ -43,3 +41,4 @@ MonoBehaviour:
   - {x: 0, y: 2}
   - {x: 10, y: 4.5}
   - {x: 25, y: -0.5}
+  description: 

@@ -46,7 +46,7 @@ public class ControlsManager
         // Check if an index was found
         if (mapIndex < 0)
         {
-            Debug.LogError($"Invalid mapName {mapName}");
+            Debug.LogWarning($"Invalid mapName {mapName}");
             return null;
         }
 

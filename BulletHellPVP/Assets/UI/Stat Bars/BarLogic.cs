@@ -1,29 +1,22 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.UI;
-using static ControlsManager;
 
 // 249, 264 (margins around image)
 
 public class BarLogic : MonoBehaviour
 {
-        [Header("Character")]
-    [SerializeField] private PlayerInfo playerInfo;
+    // Info about the character
+    [SerializeField] private CharacterInfo characterInfo;
 
     public enum Stats { health, mana }
-    [Header("Stats")]
-    [Space]
+
+        [Header("Stats")]
     public Stats statToModify;
     [SerializeField] private GameObject statRemainingObject, statLostObject;
     [SerializeField] private int remainingEdgeLeft, remainingEdgeRight, lostEdgeLeft, lostEdgeRight;
     [SerializeField] private Text valueTextObject;
-
-        [Header("Stat loss bar")]
+    
+    // Stat loss bar
     private float statLost;
     private float statLostVelocity = 0;
 
@@ -32,21 +25,21 @@ public class BarLogic : MonoBehaviour
     {
         get
         {
-            if (playerInfo.PlayerObject == null)
+            if (characterInfo.CharacterObject == null)
             {
                 return 0.0f;
             }
             else if (statToModify == Stats.health)
             {
-                return playerInfo.CharacterStatsScript.CurrentHealthStat;
+                return characterInfo.CharacterStatsScript.CurrentHealthStat;
             }
             else if (statToModify == Stats.mana)
             {
-                return playerInfo.CharacterStatsScript.CurrentManaStat;
+                return characterInfo.CharacterStatsScript.CurrentManaStat;
             }
             else
             {
-                Debug.LogError("Invalid stat assigned!");
+                Debug.LogWarning("Invalid stat assigned!");
                 return 0f;
             }
         }
@@ -57,11 +50,11 @@ public class BarLogic : MonoBehaviour
         {
             if (statToModify == Stats.health)
             {
-                return playerInfo.defaultStats.MaxHealthStat;
+                return characterInfo.defaultStats.MaxHealthStat;
             }
             else if (statToModify == Stats.mana)
             {
-                return playerInfo.defaultStats.MaxManaStat;
+                return characterInfo.defaultStats.MaxManaStat;
             }
             else
             {
@@ -71,25 +64,17 @@ public class BarLogic : MonoBehaviour
         }
     }
 
-    // Monobehavior Methods
+    private void Awake()
+    {
+        gameObject.tag = characterInfo.CharacterTag;
+    }
     private void Start()
     {
-        if(playerInfo.PlayerObject == null)
+        if (characterInfo.CharacterObject == null)
         {
             BarEnabled(false);
         }
-        else {
-            BarEnabled(true);
-        }
     }
-    private void Update()
-    {
-        if (gameObject.activeSelf)
-        {
-            UpdateStatLost();
-        }
-    }
-
     public void BarEnabled(bool enable)
     {
         if (enable == gameObject.activeSelf)
@@ -109,11 +94,11 @@ public class BarLogic : MonoBehaviour
         {
             if(statToModify == Stats.health)
             {
-                playerInfo.HealthBar = gameObject.GetComponent<BarLogic>();
+                characterInfo.HealthBar = gameObject.GetComponent<BarLogic>();
             }
             else
             {
-                playerInfo.ManaBar = gameObject.GetComponent<BarLogic>();
+                characterInfo.ManaBar = gameObject.GetComponent<BarLogic>();
             }
         }
     }
@@ -161,6 +146,13 @@ public class BarLogic : MonoBehaviour
         displayImage.fillAmount = statPercentage;
     }
 
+    private void Update()
+    {
+        if (gameObject.activeSelf)
+        {
+            UpdateStatLost();
+        }
+    }
     private void UpdateStatLost()
     {
         // Checks if statLost is too high
@@ -168,7 +160,7 @@ public class BarLogic : MonoBehaviour
         {
             // Move statLost down and speed up velocity
             statLost -= statLostVelocity * Time.deltaTime;
-            statLostVelocity += playerInfo.defaultStats.StatLostVelocityMod;
+            statLostVelocity += characterInfo.defaultStats.StatLostVelocityMod;
 
             UpdateStatDisplays(UpdatableStats.Lost);
         }

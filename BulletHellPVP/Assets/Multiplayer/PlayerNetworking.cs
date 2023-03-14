@@ -38,9 +38,5 @@ public class PlayerNetworking : NetworkBehaviour
             Debug.Log("Syncing location to server position");
             transform.position = Position.Value;
         }
-        else
-        {
-            Debug.Log("Skipped server position sync because game is marked as Local.");
-        }
     }
 }

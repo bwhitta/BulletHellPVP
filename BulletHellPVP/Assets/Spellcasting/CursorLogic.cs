@@ -1,23 +1,17 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.UIElements;
-using static ControlsManager;
 
 public class CursorLogic : MonoBehaviour
 {
-    [SerializeField] private float acceleratedMovementMultiplier;
-    [SerializeField][Range(-30f, 30f)] private float location;
-
+    [SerializeField] private CharacterInfo characterInfo;
     // Movement
+    [SerializeField][Range(-30f, 30f)] private float location;
     [SerializeField] private float movementMultiplier;
+    [SerializeField] private float acceleratedMovementMultiplier;
     [SerializeField] private Transform squareTransform;
     public float squareSide;
-
     // Controls
-    [SerializeField] private string controllingPlayerMapName, cursorMovementInputName, cursorAccelerationInputName;
+    [SerializeField] private string cursorMovementInputName, cursorAccelerationInputName;
     private InputAction cursorMovementInput, cursorAccelerationInput;
 
     private void OnValidate()
@@ -26,18 +20,23 @@ public class CursorLogic : MonoBehaviour
         UpdateCursor();
     }
 
+    private void Awake()
+    {
+        gameObject.tag = characterInfo.CharacterTag;
+    }
+
     private void Start()
     {
         squareSide = squareTransform.localScale.x;
 
         //Get the InputActionMap
-        InputActionMap controllingPlayerMap = ControlsManager.GetActionMap(controllingPlayerMapName);
+        InputActionMap controlsMap = ControlsManager.GetActionMap(characterInfo.InputMapName);
 
         // Set and enable 
-        cursorMovementInput = controllingPlayerMap.FindAction(cursorMovementInputName, true);
+        cursorMovementInput = controlsMap.FindAction(cursorMovementInputName, true);
         cursorMovementInput.Enable();
 
-        cursorAccelerationInput = controllingPlayerMap.FindAction(cursorAccelerationInputName, true);
+        cursorAccelerationInput = controlsMap.FindAction(cursorAccelerationInputName, true);
         cursorAccelerationInput.Enable();
     }
     private void Update()
@@ -99,7 +98,7 @@ public class CursorLogic : MonoBehaviour
     {
         if (!Mathf.Approximately(squareTransform.localScale.x, squareTransform.localScale.y))
         {
-            Debug.LogError("Square transform discrepancy");
+            Debug.LogWarning("Square transform discrepancy");
         }
         return GetSquareCorners(squareTransform.localScale.x, squareTransform.localPosition.x, squareTransform.localPosition.y);
     }

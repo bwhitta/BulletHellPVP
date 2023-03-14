@@ -406,7 +406,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1672376948}
         m_TargetAssemblyTypeName: MenuController, Assembly-CSharp
-        m_MethodName: StartBattle
+        m_MethodName: StartSpellSelection
         m_Mode: 5
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1615,7 +1615,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1672376948}
         m_TargetAssemblyTypeName: MenuController, Assembly-CSharp
-        m_MethodName: StartBattle
+        m_MethodName: StartSpellSelection
         m_Mode: 5
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2293,7 +2293,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1672376948}
         m_TargetAssemblyTypeName: MenuController, Assembly-CSharp
-        m_MethodName: StartBattle
+        m_MethodName: StartSpellSelection
         m_Mode: 5
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2848,6 +2848,7 @@ MonoBehaviour:
   - {fileID: 1273750206}
   StartingMenu: MainMenu
   battleStartScene: Battle
+  spellSelectionScene: Spell Selection
   localTypeName: Local
   hostTypeName: Host
   clientTypeName: Client

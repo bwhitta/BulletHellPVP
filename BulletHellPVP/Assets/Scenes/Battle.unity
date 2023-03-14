@@ -167,8 +167,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f3480022547dc4d46a0d0b9fbce8174a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  inspectorPlayerInfoLeft: {fileID: 11400000, guid: 78760bb3a3bdc6f40a42de23b6e09442, type: 2}
-  inspectorPlayerInfoRight: {fileID: 11400000, guid: 54331a60389e0df4a9a8faa6f1473c05, type: 2}
+  inspectorCharacterInfoLeft: {fileID: 11400000, guid: 78760bb3a3bdc6f40a42de23b6e09442, type: 2}
+  inspectorCharacterInfoRight: {fileID: 11400000, guid: 54331a60389e0df4a9a8faa6f1473c05, type: 2}
 --- !u!1 &85470664
 GameObject:
   m_ObjectHideFlags: 0
@@ -1085,7 +1085,7 @@ GameObject:
   - component: {fileID: 746061124}
   m_Layer: 0
   m_Name: SpellcastingObjectL
-  m_TagString: Left Player
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1118,7 +1118,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 687ff52990f4f674d9aa09fc307e8307, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerInfo: {fileID: 11400000, guid: 78760bb3a3bdc6f40a42de23b6e09442, type: 2}
+  characterInfo: {fileID: 11400000, guid: 78760bb3a3bdc6f40a42de23b6e09442, type: 2}
   fullSpellData:
   - {fileID: 11400000, guid: 1c21101c32748b945bbd912842cdb0ab, type: 2}
   - {fileID: 11400000, guid: 0ac8e34202f3aea4c82a25d8c2cf568f, type: 2}
@@ -1138,12 +1138,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6fe3db9c16f8e6f4aa701b8453fab269, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  acceleratedMovementMultiplier: 2.5
+  characterInfo: {fileID: 11400000, guid: 78760bb3a3bdc6f40a42de23b6e09442, type: 2}
   location: 3.75
   movementMultiplier: 5
+  acceleratedMovementMultiplier: 2.5
   squareTransform: {fileID: 1497467649}
   squareSide: 7.5
-  controllingPlayerMapName: Left Player
   cursorMovementInputName: CursorMovement
   cursorAccelerationInputName: AccelerateCursorMovement
 --- !u!1001 &782084515
@@ -1610,7 +1610,7 @@ GameObject:
   - component: {fileID: 1072472035}
   m_Layer: 0
   m_Name: Spellbook L
-  m_TagString: Left Player
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1660,7 +1660,7 @@ MonoBehaviour:
   - {fileID: 1904430189}
   - {fileID: 1199436686}
   - {fileID: 1768742020}
-  playerInfo: {fileID: 11400000, guid: 78760bb3a3bdc6f40a42de23b6e09442, type: 2}
+  characterInfo: {fileID: 11400000, guid: 78760bb3a3bdc6f40a42de23b6e09442, type: 2}
   spellCooldowns: []
 --- !u!1001 &1103968792
 PrefabInstance:
@@ -2012,6 +2012,10 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1298312776246448391, guid: ff31fbeb164f5304e914d0e71050725e, type: 3}
+      propertyPath: characterInfo
+      value: 
+      objectReference: {fileID: 11400000, guid: 54331a60389e0df4a9a8faa6f1473c05, type: 2}
+    - target: {fileID: 1298312776246448391, guid: ff31fbeb164f5304e914d0e71050725e, type: 3}
       propertyPath: characterObject
       value: 
       objectReference: {fileID: 0}
@@ -2025,7 +2029,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1298312776246448393, guid: ff31fbeb164f5304e914d0e71050725e, type: 3}
       propertyPath: m_TagString
-      value: Right Player
+      value: Untagged
       objectReference: {fileID: 0}
     - target: {fileID: 1298312776721041398, guid: ff31fbeb164f5304e914d0e71050725e, type: 3}
       propertyPath: m_AnchoredPosition.x
@@ -2183,7 +2187,7 @@ GameObject:
   - component: {fileID: 1269359566}
   m_Layer: 0
   m_Name: SpellcastingObjectR
-  m_TagString: Right Player
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2200,12 +2204,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6fe3db9c16f8e6f4aa701b8453fab269, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  acceleratedMovementMultiplier: 2.5
+  characterInfo: {fileID: 11400000, guid: 54331a60389e0df4a9a8faa6f1473c05, type: 2}
   location: 3.75
   movementMultiplier: 5
+  acceleratedMovementMultiplier: 2.5
   squareTransform: {fileID: 972675302}
   squareSide: 7.5
-  controllingPlayerMapName: Right Player
   cursorMovementInputName: CursorMovement
   cursorAccelerationInputName: AccelerateCursorMovement
 --- !u!114 &1269359567
@@ -2220,7 +2224,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 687ff52990f4f674d9aa09fc307e8307, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerInfo: {fileID: 11400000, guid: 54331a60389e0df4a9a8faa6f1473c05, type: 2}
+  characterInfo: {fileID: 11400000, guid: 54331a60389e0df4a9a8faa6f1473c05, type: 2}
   fullSpellData:
   - {fileID: 11400000, guid: 1c21101c32748b945bbd912842cdb0ab, type: 2}
   - {fileID: 11400000, guid: 0ac8e34202f3aea4c82a25d8c2cf568f, type: 2}
@@ -2480,6 +2484,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: 54331a60389e0df4a9a8faa6f1473c05, type: 2}
     - target: {fileID: 1298312776246448391, guid: ff31fbeb164f5304e914d0e71050725e, type: 3}
+      propertyPath: characterInfo
+      value: 
+      objectReference: {fileID: 11400000, guid: 54331a60389e0df4a9a8faa6f1473c05, type: 2}
+    - target: {fileID: 1298312776246448391, guid: ff31fbeb164f5304e914d0e71050725e, type: 3}
       propertyPath: characterObject
       value: 
       objectReference: {fileID: 0}
@@ -2497,7 +2505,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1298312776246448393, guid: ff31fbeb164f5304e914d0e71050725e, type: 3}
       propertyPath: m_TagString
-      value: Right Player
+      value: Untagged
       objectReference: {fileID: 0}
     - target: {fileID: 1298312776721041398, guid: ff31fbeb164f5304e914d0e71050725e, type: 3}
       propertyPath: m_AnchoredPosition.x
@@ -2658,6 +2666,10 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1298312776246448391, guid: ff31fbeb164f5304e914d0e71050725e, type: 3}
+      propertyPath: characterInfo
+      value: 
+      objectReference: {fileID: 11400000, guid: 78760bb3a3bdc6f40a42de23b6e09442, type: 2}
+    - target: {fileID: 1298312776246448391, guid: ff31fbeb164f5304e914d0e71050725e, type: 3}
       propertyPath: characterObject
       value: 
       objectReference: {fileID: 0}
@@ -2671,7 +2683,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1298312776246448393, guid: ff31fbeb164f5304e914d0e71050725e, type: 3}
       propertyPath: m_TagString
-      value: Left Player
+      value: Untagged
       objectReference: {fileID: 0}
     - target: {fileID: 1298312776721041398, guid: ff31fbeb164f5304e914d0e71050725e, type: 3}
       propertyPath: m_AnchoredPosition.x
@@ -3350,7 +3362,7 @@ GameObject:
   - component: {fileID: 1693363580}
   m_Layer: 0
   m_Name: Spellbook R
-  m_TagString: Right Player
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3400,7 +3412,7 @@ MonoBehaviour:
   - {fileID: 1830316915}
   - {fileID: 1647419843}
   - {fileID: 1420681479}
-  playerInfo: {fileID: 11400000, guid: 54331a60389e0df4a9a8faa6f1473c05, type: 2}
+  characterInfo: {fileID: 11400000, guid: 54331a60389e0df4a9a8faa6f1473c05, type: 2}
   spellCooldowns: []
 --- !u!1001 &1768742018
 PrefabInstance:
@@ -3889,7 +3901,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6aaab52e5e05a094280be49fc9fb4e8f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerPrefab: {fileID: 2971767381870167636, guid: ea266f9c11996f44d9ae68d1b56f64c5, type: 3}
+  characterPrefab: {fileID: 2971767381870167636, guid: ea266f9c11996f44d9ae68d1b56f64c5, type: 3}
 --- !u!4 &2077876314
 Transform:
   m_ObjectHideFlags: 0
@@ -4005,6 +4017,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: 78760bb3a3bdc6f40a42de23b6e09442, type: 2}
     - target: {fileID: 1298312776246448391, guid: ff31fbeb164f5304e914d0e71050725e, type: 3}
+      propertyPath: characterInfo
+      value: 
+      objectReference: {fileID: 11400000, guid: 78760bb3a3bdc6f40a42de23b6e09442, type: 2}
+    - target: {fileID: 1298312776246448391, guid: ff31fbeb164f5304e914d0e71050725e, type: 3}
       propertyPath: characterObject
       value: 
       objectReference: {fileID: 0}
@@ -4022,7 +4038,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1298312776246448393, guid: ff31fbeb164f5304e914d0e71050725e, type: 3}
       propertyPath: m_TagString
-      value: Left Player
+      value: Untagged
       objectReference: {fileID: 0}
     - target: {fileID: 1298312776721041398, guid: ff31fbeb164f5304e914d0e71050725e, type: 3}
       propertyPath: m_AnchoredPosition.x

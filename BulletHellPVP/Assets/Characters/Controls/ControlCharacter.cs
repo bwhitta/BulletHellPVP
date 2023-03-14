@@ -5,26 +5,27 @@ using static ControlsManager;
 public class ControlCharacter : MonoBehaviour
 {
     private InputAction movementAction;
-    private Rigidbody2D playerRigidbody;
-    private PlayerInfo playerInfo;
+    private Rigidbody2D characterRigidbody;
+    private CharacterInfo characterInfo;
 
     // Monobehavior methods
     private void Start()
     {
         SetObjectReferences();
         EnableMovement();
-        gameObject.transform.position = playerInfo.CharacterStartLocation;
+        gameObject.transform.position = characterInfo.CharacterStartLocation;
     }
     private void SetObjectReferences()
     {
-        playerRigidbody = gameObject.GetComponent<Rigidbody2D>();
-        playerInfo = gameObject.GetComponent<CharacterStats>().playerInfo;
+        characterRigidbody = gameObject.GetComponent<Rigidbody2D>();
+        characterInfo = gameObject.GetComponent<CharacterStats>().characterInfo;
     }
 
     private void EnableMovement()
     {
-        InputActionMap controllingPlayerMap = GetActionMap(playerInfo.InputMapName);
-        movementAction = controllingPlayerMap.FindAction(playerInfo.MovementActionName, true);
+        // Debug.Log($"Enabling Input for character {characterInfo.name}");
+        InputActionMap controllingMap = GetActionMap(characterInfo.InputMapName);
+        movementAction = controllingMap.FindAction(characterInfo.MovementActionName, true);
         movementAction.Enable();
     }
 
@@ -36,9 +37,9 @@ public class ControlCharacter : MonoBehaviour
     {
         Vector2 movementVector = movementAction.ReadValue<Vector2>();
 
-        playerRigidbody.velocity = playerInfo.defaultStats.MovementSpeedMod * movementVector;
+        characterRigidbody.velocity = characterInfo.defaultStats.MovementSpeedMod * movementVector;
 
-        gameObject.GetComponent<Animator>().SetFloat(playerInfo.AnimatorTreeParameterX, movementVector.x);
-        gameObject.GetComponent<Animator>().SetFloat(playerInfo.AnimatorTreeParameterY, movementVector.y);
+        gameObject.GetComponent<Animator>().SetFloat(characterInfo.AnimatorTreeParameterX, movementVector.x);
+        gameObject.GetComponent<Animator>().SetFloat(characterInfo.AnimatorTreeParameterY, movementVector.y);
     }
 }

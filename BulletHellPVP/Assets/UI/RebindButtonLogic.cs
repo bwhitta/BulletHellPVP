@@ -51,11 +51,11 @@ public class RebindButtonLogic : MonoBehaviour
     {
         if (actionWithRebind == null)
         {
-            Debug.LogError("Rebind target is null.");
+            Debug.LogWarning("Rebind target is null.");
             return;
         } else if (actionWithRebind.bindings.Count <= bindingTargetIndex)
         {
-            Debug.LogError("Invalid binding index.");
+            Debug.LogWarning("Invalid binding index.");
             return;
         }
 

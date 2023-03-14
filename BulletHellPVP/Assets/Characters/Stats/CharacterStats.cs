@@ -4,7 +4,7 @@ using static BarLogic;
 public class CharacterStats : MonoBehaviour
 {
 
-    public PlayerInfo playerInfo;
+    public CharacterInfo characterInfo;
 
     private float remainingInvincibilityTime = 0;
 
@@ -25,23 +25,24 @@ public class CharacterStats : MonoBehaviour
     // Actions upon enabling or disabling character
     private void CharacterEnabled(bool enable)
     {
+        
         if (enable)
         {
-            // Get player info
-            playerInfo = PlayerInfoManager.JoinAvailableLocation();
-            if (playerInfo == null)
+            // Get character info
+            characterInfo = CharacterInfoManager.JoinAvailableLocation();
+            if (characterInfo == null)
             {
-                Debug.Log("Player destroyed - no available slot found");
+                Debug.Log("Character destroyed - no available slot found");
                 Destroy(gameObject);
                 return;
             }
-            // Debug.Log($"Set player info to {playerInfo.name}");
+            // Debug.Log($"Set character info to {characterInfo.name}");
 
-            transform.position = playerInfo.CharacterStartLocation;
+            transform.position = characterInfo.CharacterStartLocation;
         }
         else
         {
-            if (playerInfo == null || playerInfo.SpellbookLogicScript == null)
+            if (characterInfo == null || characterInfo.SpellbookLogicScript == null)
             {
                 Debug.Log("Skipping disable, some info was found null");
                 return;
@@ -51,13 +52,13 @@ public class CharacterStats : MonoBehaviour
         // Check tag
         if (gameObject.CompareTag("Untagged"))
         {
-            gameObject.tag = playerInfo.CharacterTag;
+            gameObject.tag = characterInfo.CharacterTag;
         }
 
         // Enable other objects
-        playerInfo.HealthBar.BarEnabled(enable);
-        playerInfo.ManaBar.BarEnabled(enable);
-        playerInfo.SpellbookLogicScript.SpellbookToggle(enable);
+        characterInfo.HealthBar.BarEnabled(enable);
+        characterInfo.ManaBar.BarEnabled(enable);
+        characterInfo.SpellbookLogicScript.SpellbookToggle(enable);
     }
 
     // Health
@@ -72,12 +73,12 @@ public class CharacterStats : MonoBehaviour
         set
         {
             StatConfigCheck();
-            if (value > playerInfo.defaultStats.MaxHealthStat)
-                _currentHealthStat = playerInfo.defaultStats.MaxHealthStat;
+            if (value > characterInfo.defaultStats.MaxHealthStat)
+                _currentHealthStat = characterInfo.defaultStats.MaxHealthStat;
 
             else
                 _currentHealthStat = value;
-            playerInfo.HealthBar.UpdateStatDisplays(UpdatableStats.Remaining);
+            characterInfo.HealthBar.UpdateStatDisplays(UpdatableStats.Remaining);
 
             if (value < 0)
             {
@@ -100,11 +101,11 @@ public class CharacterStats : MonoBehaviour
         set
         {
             StatConfigCheck();
-            if (value > playerInfo.defaultStats.MaxManaStat)
-                _currentManaStat = playerInfo.defaultStats.MaxManaStat;
+            if (value > characterInfo.defaultStats.MaxManaStat)
+                _currentManaStat = characterInfo.defaultStats.MaxManaStat;
             else
                 _currentManaStat = value;
-            playerInfo.ManaBar.UpdateStatDisplays(UpdatableStats.Remaining);
+            characterInfo.ManaBar.UpdateStatDisplays(UpdatableStats.Remaining);
         }
     }
 
@@ -114,8 +115,8 @@ public class CharacterStats : MonoBehaviour
     {
         if (!statsConfigured)
         {
-            _currentHealthStat = playerInfo.defaultStats.MaxHealthStat;
-            _currentManaStat = playerInfo.defaultStats.MaxManaStat;
+            _currentHealthStat = characterInfo.defaultStats.MaxHealthStat;
+            _currentManaStat = characterInfo.defaultStats.MaxManaStat;
         }
         statsConfigured = true;
     }
@@ -139,7 +140,7 @@ public class CharacterStats : MonoBehaviour
             
             if(remainingInvincibilityTime <= 0)
             {
-                remainingInvincibilityTime = playerInfo.defaultStats.InvincibilityTime;
+                remainingInvincibilityTime = characterInfo.defaultStats.InvincibilityTime;
                 gameObject.GetComponent<CharacterStats>().CurrentHealthStat -= collisionSpellBehavior.spellData.Damage;
                 Debug.Log($"{collisionSpellBehavior.spellData.Damage} health lost ");
             }
@@ -153,7 +154,7 @@ public class CharacterStats : MonoBehaviour
         {
             remainingInvincibilityTime -= Time.deltaTime;
 
-            SetChildAlpha(playerInfo.defaultStats.InvincibilityAlphaMod);
+            SetChildAlpha(characterInfo.defaultStats.InvincibilityAlphaMod);
         }
         if (remainingInvincibilityTime < 0)
         {
@@ -161,7 +162,7 @@ public class CharacterStats : MonoBehaviour
             SetChildAlpha(1);
         }
 
-        CurrentManaStat += playerInfo.defaultStats.BaseManaRegen * Time.deltaTime;
+        CurrentManaStat += characterInfo.defaultStats.BaseManaRegen * Time.deltaTime;
     }
     private float currentAlpha;
     private void SetChildAlpha(float alpha)

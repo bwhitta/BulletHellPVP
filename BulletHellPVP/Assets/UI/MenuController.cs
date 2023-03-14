@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UIElements;
 
 public class MenuController : MonoBehaviour
 {
@@ -9,7 +10,7 @@ public class MenuController : MonoBehaviour
     [SerializeField] private GameObject[] MenuCanvasParents; // The parents for each menu's canvas elements
     [SerializeField] private GameObject[] MenuNonCanvasParents; // The parents for each menu's non-canvas elements
     [SerializeField] private string StartingMenu; // The menu the game opens to
-    [SerializeField] private string battleStartScene;
+    [SerializeField] private string battleStartScene, spellSelectionScene;
 
     [Space]
     [SerializeField] private string localTypeName, hostTypeName, clientTypeName;
@@ -59,7 +60,7 @@ public class MenuController : MonoBehaviour
         int IndexCoords;
         if (MenuNames.Contains(MenuToEnable) == false)
         {
-            Debug.LogError("The menu to enable, '" + MenuToEnable + "', is not listed. Menu enabling cancelled.");
+            Debug.LogWarning("The menu to enable, '" + MenuToEnable + "', is not listed. Menu enabling cancelled.");
             return;
         }
 
@@ -86,25 +87,30 @@ public class MenuController : MonoBehaviour
         SceneManager.LoadScene(SceneToSet);
     }
 
-    public void StartBattle(string gameTypeName)
+    
+    public void StartSpellSelection(string gameType) // Called from the buttons on the main menu
     {
-        if (gameTypeName == localTypeName)  
+        SetMultiplayerType(gameType);
+        SetScene(spellSelectionScene);
+    }
+    private void SetMultiplayerType(string gameType)
+    {
+        if (gameType == localTypeName)
         {
             MultiplayerManager.multiplayerType = MultiplayerManager.MultiplayerTypes.Local;
         }
-        else if (gameTypeName == clientTypeName)
+        else if (gameType == clientTypeName)
         {
             MultiplayerManager.multiplayerType = MultiplayerManager.MultiplayerTypes.OnlineClient;
         }
-        else if (gameTypeName == hostTypeName)
+        else if (gameType == hostTypeName)
         {
             MultiplayerManager.multiplayerType = MultiplayerManager.MultiplayerTypes.OnlineHost;
         }
         else
         {
-            Debug.LogError("invalid game type");
+            Debug.LogWarning("invalid game type");
             return;
         }
-        SetScene(battleStartScene);
     }
 }

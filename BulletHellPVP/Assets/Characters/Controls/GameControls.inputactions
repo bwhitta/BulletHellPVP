@@ -2,7 +2,7 @@
     "name": "GameControls",
     "maps": [
         {
-            "name": "Left Player",
+            "name": "Left Character",
             "id": "f80398c3-75bd-4dfc-bd48-07244e4d52d4",
             "actions": [
                 {
@@ -222,7 +222,7 @@
             ]
         },
         {
-            "name": "Right Player",
+            "name": "Right Character",
             "id": "cd7360b4-26bc-46be-be37-72fe512905b7",
             "actions": [
                 {

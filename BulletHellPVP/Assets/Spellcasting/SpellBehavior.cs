@@ -9,12 +9,12 @@ public class SpellBehavior : MonoBehaviour
     public float distanceToMove;
     private float distanceMoved;
 
-    // For target mode - player. 
-    public GameObject targetedPlayer;
+    // For target mode - character. 
+    public GameObject targetedCharacter;
 
     private void Start()
     {
-        if (spellData.HasSprite)
+        if (spellData.SpellUsesSprite)
         {
             GetComponent<SpriteRenderer>().sprite = spellData.ProjectileSprite;
         }
@@ -52,16 +52,16 @@ public class SpellBehavior : MonoBehaviour
 
     private void PointTowardsTarget()
     {
-        // If TargetingType is CharacterStatsScript, point towards the player
-        if (spellData.TargetingType == ScriptableSpellData.TargetType.Player)
+        // If TargetingType is CharacterStatsScript, point towards the character
+        if (spellData.TargetingType == ScriptableSpellData.TargetType.Character)
         {
-            if (targetedPlayer == null)
+            if (targetedCharacter == null)
             {
-                Debug.LogWarning("Targeted player assigned as null");
+                Debug.LogWarning("Targeted character assigned as null");
             }
             else
             {
-                transform.right = targetedPlayer.transform.position - transform.position; // Point towards player
+                transform.right = targetedCharacter.transform.position - transform.position; // Point towards character
             }
         }
         else if (spellData.TargetingType == ScriptableSpellData.TargetType.NotApplicable)

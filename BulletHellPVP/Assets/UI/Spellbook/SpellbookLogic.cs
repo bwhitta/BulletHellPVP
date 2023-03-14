@@ -6,57 +6,78 @@ public class SpellbookLogic : MonoBehaviour
 {
     [SerializeField] private GameObject spellManagerObject;
     [SerializeField] private GameObject[] spellDisplays;
-    [SerializeField] private PlayerInfo playerInfo;
+    [SerializeField] private CharacterInfo characterInfo;
     [HideInInspector] public float[] spellCooldowns;
 
+    private void Awake()
+    {
+        gameObject.tag = characterInfo.CharacterTag;
+    }
     private void Start()
     {
-        if (playerInfo.PlayerObject == null)
+        // Turn off spellbook if character doesn't exist
+        if (characterInfo.CharacterObject == null)
         {
             SpellbookToggle(false);
         }
-        else
-        {
-            SpellbookToggle(true);
-        }
     }
 
-    public void SpellbookToggle(bool enabled)
+    public void SpellbookToggle(bool enable)
     {
-        gameObject.SetActive(enabled);
-        EnableSpellControls();
-        if (enabled)
+        gameObject.SetActive(enable);
+        EnableSpellControls(enable);
+        if (enable)
         {
             UpdateSpellbookUI();
         }
         else
         {
-            playerInfo.SpellbookLogicScript = this;
+            characterInfo.SpellbookLogicScript = this;
         }
     }
 
-    private void UpdateSpellbookUI()
+    // Enabling spell controls
+    private InputActionMap controlsMap;
+    private InputAction castingAction;
+    private void EnableSpellControls(bool enable)
     {
-        if (spellDisplays.Length < playerInfo.CharacterSpellManager.equippedSpellNames.Length)
+        if (enable)
         {
-            Debug.LogWarning("Too many equipped spells! Final spells will not be rendered.");
+            // Finds the controls
+            controlsMap ??= ControlsManager.GetActionMap(characterInfo.InputMapName);
+            castingAction ??= controlsMap.FindAction(characterInfo.SpellbookSelectionActionName, true);
+            // Enable controls
+            castingAction.Enable();
+            castingAction.performed += context => CastingInputPerformed((int)castingAction.ReadValue<float>() - 1);
         }
-
-        // Loop through and update each sprite using the data from 
-        for (var i = 0; i < spellDisplays.Length; i++)
+        else
         {
-            if (playerInfo.CharacterSpellManager.equippedSpellNames.Length <= i) {
-                //Debug.Log("No equipped spell in slot, skipping render");
-                spellDisplays[i].SetActive(false);
-                continue;
-            }
-            spellDisplays[i].GetComponent<SpriteRenderer>().enabled = true;
-            spellDisplays[i].GetComponent<SpriteRenderer>().sprite = playerInfo.CharacterSpellManager.EquippedSpellData[i].SpellbookSprite;
-            //Debug.Log($"UI {i} updated");
+            // Finds the controls
+            controlsMap ??= ControlsManager.GetActionMap(characterInfo.InputMapName);
+            castingAction ??= controlsMap.FindAction(characterInfo.SpellbookSelectionActionName, true);
+            // Disable controls
+            castingAction.Disable();
         }
-        
     }
 
+    private void CastingInputPerformed(int spellbookSlotIndex)
+    {
+        if (gameObject.activeSelf == false)
+        {
+            Debug.Log($"Casting cancelled, spellbook disabled.");
+            return;
+        }
+        if (characterInfo.CharacterSpellManager.equippedSpellNames.Length <= spellbookSlotIndex)
+        {
+            Debug.Log("Not enough equipped spells, casting cancelled.");
+            return;
+        }
+
+        characterInfo.CharacterSpellManager.CastSpell(characterInfo.CharacterSpellManager.equippedSpellNames[spellbookSlotIndex]);
+    }
+
+
+    
     private void Update()
     {
         UpdateCooldown();
@@ -64,9 +85,9 @@ public class SpellbookLogic : MonoBehaviour
     private void UpdateCooldown()
     {
         // Set up cooldowns if data is invalid
-        if (spellCooldowns == null || spellCooldowns.Length < playerInfo.CharacterSpellManager.equippedSpellNames.Length)
+        if (spellCooldowns == null || spellCooldowns.Length < characterInfo.CharacterSpellManager.equippedSpellNames.Length)
         {
-            spellCooldowns = new float[playerInfo.CharacterSpellManager.equippedSpellNames.Length];
+            spellCooldowns = new float[characterInfo.CharacterSpellManager.equippedSpellNames.Length];
         }
 
         // Loop through cooldowns and tick down by time.deltatime
@@ -82,10 +103,10 @@ public class SpellbookLogic : MonoBehaviour
                 spellCooldowns[i] = 0;
             }
             //Updates the cooldown UI for i with the current percent
-            UpdateCooldownUI(i, spellCooldowns[i] / playerInfo.CharacterSpellManager.EquippedSpellData[i].SpellCooldown);
+            SetCooldownUI(i, spellCooldowns[i] / characterInfo.CharacterSpellManager.EquippedSpellData[i].SpellCooldown);
         }
     }
-    private void UpdateCooldownUI(int index, float percentFilled)
+    private void SetCooldownUI(int index, float percentFilled)
     {
         // Gets the top bar GameObject
         GameObject bottomBar = spellDisplays[index].transform.GetChild(0).gameObject;
@@ -93,29 +114,27 @@ public class SpellbookLogic : MonoBehaviour
 
         topBar.GetComponent<Image>().fillAmount = percentFilled;
     }
-
-    public void EnableSpellControls ()
+    private void UpdateSpellbookUI()
     {
-        InputActionMap controllingPlayerMap = ControlsManager.GetActionMap(playerInfo.InputMapName);
-        InputAction castingAction = controllingPlayerMap.FindAction(playerInfo.SpellbookSelectionActionName, true);
-            
-        castingAction.Enable();
-        castingAction.performed += context => CastingInputPerformed((int)castingAction.ReadValue<float>() - 1);
-    }
-
-    private void CastingInputPerformed(int spellbookSlotIndex)
-    {
-        if (gameObject.activeSelf == false)
+        if (spellDisplays.Length < characterInfo.CharacterSpellManager.equippedSpellNames.Length)
         {
-            Debug.Log($"Casting cancelled, spellbook disabled.");
-            return;
-        }
-        if (playerInfo.CharacterSpellManager.equippedSpellNames.Length <= spellbookSlotIndex)
-        {
-            Debug.LogWarning("Error - not enough equipped spells.");
-            return;
+            Debug.LogWarning("Too many equipped spells! Final spells will not be rendered.");
         }
 
-        playerInfo.CharacterSpellManager.CastSpell(playerInfo.CharacterSpellManager.equippedSpellNames[spellbookSlotIndex]);
+        // Loop through and update each sprite using the data from 
+        for (var i = 0; i < spellDisplays.Length; i++)
+        {
+            if (characterInfo.CharacterSpellManager.equippedSpellNames.Length <= i)
+            {
+                //Debug.Log("No equipped spell in slot, skipping render");
+                spellDisplays[i].SetActive(false);
+                continue;
+            }
+            spellDisplays[i].GetComponent<SpriteRenderer>().enabled = true;
+            spellDisplays[i].GetComponent<SpriteRenderer>().sprite = characterInfo.CharacterSpellManager.EquippedSpellData[i].Icon;
+            //Debug.Log($"UI {i} updated");
+        }
+
     }
+
 }

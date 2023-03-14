@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class SpellManager : MonoBehaviour
 {
-    [SerializeField] private PlayerInfo playerInfo;
+    [SerializeField] private CharacterInfo characterInfo;
 
     [Space]
     //Spell data
@@ -53,7 +53,7 @@ public class SpellManager : MonoBehaviour
     // Casting and instantiating spells
     public void CastSpell(string attemptedSpellName)
     {
-        // Debug.Log($"Casting spell {attemptedSpellName}");
+        Debug.Log($"Casting spell {attemptedSpellName}");
         ScriptableSpellData attemptedSpellData = GetSpellData(attemptedSpellName);
         
         if (attemptedSpellData == null)
@@ -65,19 +65,19 @@ public class SpellManager : MonoBehaviour
         int cooldownIndex = Array.IndexOf(FullSpellNames, attemptedSpellName);
 
         //Check if spell is on cooldown
-        if (playerInfo.SpellbookLogicScript.spellCooldowns[cooldownIndex] > 0)
+        if (characterInfo.SpellbookLogicScript.spellCooldowns[cooldownIndex] > 0)
         {
             Debug.Log("Spell on cooldown.");
             return;
         }
 
-        //Checks if the player has enough mana
-        if (attemptedSpellData.ManaCost <= playerInfo.CharacterStatsScript.CurrentManaStat)
+        //Checks if the character has enough mana
+        if (attemptedSpellData.ManaCost <= characterInfo.CharacterStatsScript.CurrentManaStat)
         {
             //Spend Mana
-            playerInfo.CharacterStatsScript.CurrentManaStat -= attemptedSpellData.ManaCost;
+            characterInfo.CharacterStatsScript.CurrentManaStat -= attemptedSpellData.ManaCost;
 
-            playerInfo.SpellbookLogicScript.spellCooldowns[cooldownIndex] = attemptedSpellData.SpellCooldown;
+            characterInfo.SpellbookLogicScript.spellCooldowns[cooldownIndex] = attemptedSpellData.SpellCooldown;
 
             // Instantiate the spell
             GameObject[] spellObjects = InstantiateSpell(attemptedSpellData);
@@ -188,11 +188,11 @@ public class SpellManager : MonoBehaviour
     // Spell configuration - run from CastSpell and InstantiateSpell
     private void SpellTargets(ScriptableSpellData attemptedSpellData, SpellBehavior[] spellBehaviors)
     {
-        if (attemptedSpellData.TargetingType == ScriptableSpellData.TargetType.Player)
+        if (attemptedSpellData.TargetingType == ScriptableSpellData.TargetType.Character)
         {
             for (int i = 0; i < spellBehaviors.Length; i++)
             {
-                spellBehaviors[i].targetedPlayer = playerInfo.opponentPlayerInfo.PlayerObject;
+                spellBehaviors[i].targetedCharacter = characterInfo.opponentCharacterInfo.CharacterObject;
             }
         }
         else if (attemptedSpellData.TargetingType == ScriptableSpellData.TargetType.NotApplicable)
