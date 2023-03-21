@@ -40,7 +40,7 @@ public class RebindButtonLogic : MonoBehaviour
             return;
         }
         InputAction foundAction = controls.FindAction(actionName);
-        Debug.Log(actionName + " clicked!");
+        Debug.Log(actionName + " dragging!");
         InteractiveRebind(foundAction, bindingIndex);
     }
 

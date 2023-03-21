@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a08710c6bdc2c44da560834e93877dd, type: 3}
+  m_Name: Fiery Raze
+  m_EditorClassIdentifier: 
+  SpellName: Fiery Raze
+  ManaCost: 50
+  SpellCooldown: 2
+  Prefab: {fileID: 1062348163457161292, guid: a12a2eac476853e4184718ce4ef910dc, type: 3}
+  InstantiationQuantity: 0
+  Icon: {fileID: 21300000, guid: 83cc1d2946ff95749ba42a2a9417668d, type: 3}
+  Description: 
+  SpellUsesMovement: 0
+  SpawningArea: 0
+  TargetingType: 0
+  MovementType: 0
+  MovementSpeed: 2
+  SpellDealsDamage: 0
+  Damage: 50
+  SpellUsesCollider: 0
+  ColliderPath: []
+  SpellUsesSprite: 1
+  SpellSprite: {fileID: 0}
+  SpriteScale: 0.07
+  AnimatedSpell: 0
+  SpellAnimatorController: {fileID: 0}
+  MultipartAnimationPrefabs: []
+  SpellScales: 0
+  ScalingStartPercent: 0
+  MaxScaleMultiplier: 0
+  DestroyOnScalingCompleted: 1

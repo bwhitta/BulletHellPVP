@@ -20,7 +20,7 @@ public class BarLogic : MonoBehaviour
     private float statLost;
     private float statLostVelocity = 0;
 
-    // Gets and/or sets the correct value from CharacterStatsScript
+    // Gets and/or sets the correct value from CharacterStats
     private float StatRemaining
     {
         get
@@ -31,11 +31,11 @@ public class BarLogic : MonoBehaviour
             }
             else if (statToModify == Stats.health)
             {
-                return characterInfo.CharacterStatsScript.CurrentHealthStat;
+                return characterInfo.CharacterStats.CurrentHealthStat;
             }
             else if (statToModify == Stats.mana)
             {
-                return characterInfo.CharacterStatsScript.CurrentManaStat;
+                return characterInfo.CharacterStats.CurrentManaStat;
             }
             else
             {
@@ -50,11 +50,11 @@ public class BarLogic : MonoBehaviour
         {
             if (statToModify == Stats.health)
             {
-                return characterInfo.defaultStats.MaxHealthStat;
+                return characterInfo.DefaultStats.MaxHealthStat;
             }
             else if (statToModify == Stats.mana)
             {
-                return characterInfo.defaultStats.MaxManaStat;
+                return characterInfo.DefaultStats.MaxManaStat;
             }
             else
             {
@@ -160,7 +160,7 @@ public class BarLogic : MonoBehaviour
         {
             // Move statLost down and speed up velocity
             statLost -= statLostVelocity * Time.deltaTime;
-            statLostVelocity += characterInfo.defaultStats.StatLostVelocityMod;
+            statLostVelocity += characterInfo.DefaultStats.StatLostVelocityMod;
 
             UpdateStatDisplays(UpdatableStats.Lost);
         }

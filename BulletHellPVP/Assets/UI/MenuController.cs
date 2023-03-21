@@ -10,7 +10,7 @@ public class MenuController : MonoBehaviour
     [SerializeField] private GameObject[] MenuCanvasParents; // The parents for each menu's canvas elements
     [SerializeField] private GameObject[] MenuNonCanvasParents; // The parents for each menu's non-canvas elements
     [SerializeField] private string StartingMenu; // The menu the game opens to
-    [SerializeField] private string battleStartScene, spellSelectionScene;
+    [SerializeField] private string spellSelectionScene;
 
     [Space]
     [SerializeField] private string localTypeName, hostTypeName, clientTypeName;
@@ -82,16 +82,10 @@ public class MenuController : MonoBehaviour
         EnableMenu(MenuToOpen);
     }
 
-    private void SetScene(string SceneToSet)
-    {
-        SceneManager.LoadScene(SceneToSet);
-    }
-
-    
     public void StartSpellSelection(string gameType) // Called from the buttons on the main menu
     {
         SetMultiplayerType(gameType);
-        SetScene(spellSelectionScene);
+        GetComponent<SceneButtonLogic>().SetScene(spellSelectionScene);
     }
     private void SetMultiplayerType(string gameType)
     {

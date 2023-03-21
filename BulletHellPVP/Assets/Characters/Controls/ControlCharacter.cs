@@ -37,7 +37,7 @@ public class ControlCharacter : MonoBehaviour
     {
         Vector2 movementVector = movementAction.ReadValue<Vector2>();
 
-        characterRigidbody.velocity = characterInfo.defaultStats.MovementSpeedMod * movementVector;
+        characterRigidbody.velocity = characterInfo.DefaultStats.MovementSpeedMod * movementVector;
 
         gameObject.GetComponent<Animator>().SetFloat(characterInfo.AnimatorTreeParameterX, movementVector.x);
         gameObject.GetComponent<Animator>().SetFloat(characterInfo.AnimatorTreeParameterY, movementVector.y);
