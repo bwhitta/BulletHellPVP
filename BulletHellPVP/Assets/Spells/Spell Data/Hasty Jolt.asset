@@ -16,7 +16,7 @@ MonoBehaviour:
   ManaCost: 0
   SpellCooldown: 1
   Prefab: {fileID: 1062348163457161292, guid: a12a2eac476853e4184718ce4ef910dc, type: 3}
-  InstantiationQuantity: 0
+  InstantiationQuantity: 1
   Icon: {fileID: 21300000, guid: ab48d11a46de21c4691be3bdf99d7c05, type: 3}
   Description: bolt the bird
   SpellUsesMovement: 1

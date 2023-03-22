@@ -92,7 +92,8 @@ public class SpellManager : MonoBehaviour
                 case SpellData.SpawningAreas.AdjacentCorners:
                     behavior.spellData = spellData;
                     behavior.distanceToMove = (CursorLogic.squareSide) / 2;
-
+                    
+                    Debug.Log($"Square side: {CursorLogic.squareSide}.");
                     behavior.transform.position = CalculateAdjacentCorners()[behavior.indexWithinSpell];
                     behavior.transform.rotation = this.transform.rotation * Quaternion.Euler(0, 0, -90);
                     break;
@@ -158,6 +159,7 @@ public class SpellManager : MonoBehaviour
             GameObject currentAnimationPrefab = Instantiate(spellData.MultipartAnimationPrefabs[i], spellBehavior.transform);
 
             currentAnimationPrefab.transform.SetPositionAndRotation(spellBehavior.transform.position, spellBehavior.transform.rotation);
+            currentAnimationPrefab.transform.localScale = Vector3.one;
 
             // Animator does not work with changed name, so this line resets the name.
             currentAnimationPrefab.name = spellData.MultipartAnimationPrefabs[i].name;

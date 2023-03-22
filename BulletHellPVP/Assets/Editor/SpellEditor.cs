@@ -6,8 +6,6 @@ using UnityEngine.UIElements;
 [CustomEditor(typeof(SpellData))]
 public class SpellEditor : Editor
 {
-    private bool openFoldout;
-
     private readonly int spaceWidth = 25;
 
     private readonly string[] SpellUsesMovementChildren = new[] { "SpawningArea", "TargetingType", "MovementType", "MovementSpeed" };
@@ -18,7 +16,7 @@ public class SpellEditor : Editor
     private readonly string[] SpellScalesChildren = new[] { "ScalingStartPercent", "MaxScaleMultiplier", "DestroyOnScalingCompleted" };
     public override void OnInspectorGUI()
     {
-        FoldoutHeader();
+        BasicSpellInfo();
 
         EditorGUILayout.Space(spaceWidth);
 
@@ -48,19 +46,16 @@ public class SpellEditor : Editor
         serializedObject.ApplyModifiedProperties();
     }
 
-    private void FoldoutHeader()
+    private void BasicSpellInfo()
     {
-        openFoldout = EditorGUILayout.BeginFoldoutHeaderGroup(openFoldout, "Basic Spell Info");
-        if (openFoldout)
-        {
-            EditorGUI.indentLevel = 1;
-            DisplayField("SpellName");
-            DisplayField("ManaCost");
-            DisplayField("SpellCooldown");
-            DisplayField("InstantiationQuantity");
-            EditorGUI.indentLevel = 0;
-        }
-        EditorGUILayout.EndFoldoutHeaderGroup();
+        EditorGUILayout.LabelField("Basic Spell Info");
+        EditorGUI.indentLevel = 1;
+        DisplayField("SpellName");
+        DisplayField("ManaCost");
+        DisplayField("SpellCooldown");
+        DisplayField("Prefab");
+        DisplayField("InstantiationQuantity");
+        EditorGUI.indentLevel = 0;
     }
 
     private void CustomToggle (string togglePropertyString, string[] fields)

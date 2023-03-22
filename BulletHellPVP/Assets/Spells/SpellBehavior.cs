@@ -1,5 +1,3 @@
-using System;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class SpellBehavior : MonoBehaviour
@@ -103,11 +101,12 @@ public class SpellBehavior : MonoBehaviour
     }
     private void UpdateScaling()
     {
+        Debug.Log("Updating scaling");
         float distanceForScaling = distanceToMove * spellData.ScalingStartPercent;
+
         if (distanceMoved >= distanceForScaling)
         {
             float currentScale = Scaling(distanceToMove, spellData.ScalingStartPercent, distanceMoved, spellData.MaxScaleMultiplier - 1);
-
             transform.localScale = new Vector3(spellData.SpriteScale * currentScale, spellData.SpriteScale * currentScale, 1);
         }
 
@@ -120,8 +119,10 @@ public class SpellBehavior : MonoBehaviour
         float scalingStart = totalMove * totalMoveScalingStartPercent;
         // The percentage (0.0 to 1.0) of scaling completed
         float scalingCompletionPercentage = (currentlyMoved - scalingStart) / (totalMove - scalingStart);
+        // Cap at 1.0 (100%)
+        scalingCompletionPercentage = Mathf.Min(scalingCompletionPercentage, 1f);
 
-        return (scaleTargetPercentage * scalingCompletionPercentage) + 1;
+        return (scaleTargetPercentage * scalingCompletionPercentage) + 1f;
     }
     private void AnimatorSetup()
     {

@@ -82,9 +82,21 @@ public class SpellbookLogic : MonoBehaviour
             Debug.Log($"Casting cancelled, spellbook disabled.");
             return;
         }
-        if (characterInfo.EquippedSpells.Length <= spellbookSlotIndex || characterInfo.EquippedSpells[spellbookSlotIndex] == null)
+        if(spellbookSlotIndex < 0)
         {
-            Debug.Log("Spell not equipped");
+            // Debug.Log("The given spellbook slot index is negative. Good luck...");
+            return;
+        }
+
+        if (characterInfo.EquippedSpells.Length <= spellbookSlotIndex)
+        {
+            // Debug.Log("Spell not equipped");
+            return;
+        }
+        Debug.Log(spellbookSlotIndex);
+        if (characterInfo.EquippedSpells[spellbookSlotIndex] == null)
+        {
+            // Debug.Log("Slot null");
             return;
         }
 
