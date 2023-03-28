@@ -10,7 +10,7 @@ public class SpellbookLogic : MonoBehaviour
 
     private void Awake()
     {
-        gameObject.tag = characterInfo.CharacterTag;
+        gameObject.tag = characterInfo.CharacterAndSortingTag;
     }
     private void Start()
     {
@@ -19,6 +19,8 @@ public class SpellbookLogic : MonoBehaviour
         {
             SpellbookToggle(false);
         }
+
+        AllCooldownUIs();
     }
     public void SpellbookToggle(bool enable)
     {
@@ -82,24 +84,6 @@ public class SpellbookLogic : MonoBehaviour
             Debug.Log($"Casting cancelled, spellbook disabled.");
             return;
         }
-        if(spellbookSlotIndex < 0)
-        {
-            // Debug.Log("The given spellbook slot index is negative. Good luck...");
-            return;
-        }
-
-        if (characterInfo.EquippedSpells.Length <= spellbookSlotIndex)
-        {
-            // Debug.Log("Spell not equipped");
-            return;
-        }
-        Debug.Log(spellbookSlotIndex);
-        if (characterInfo.EquippedSpells[spellbookSlotIndex] == null)
-        {
-            // Debug.Log("Slot null");
-            return;
-        }
-
         characterInfo.CharacterSpellManager.AttemptSpell(spellbookSlotIndex);
     }
 
@@ -110,26 +94,28 @@ public class SpellbookLogic : MonoBehaviour
     private void UpdateCooldown()
     {
         // Set up cooldowns if data is invalid
-        if (spellCooldowns == null || spellCooldowns.Length < characterInfo.EquippedSpells.Length)
+        if (spellCooldowns == null || spellCooldowns.Length != characterInfo.gameSettings.TotalSpellSlots)
         {
             spellCooldowns = new float[characterInfo.gameSettings.TotalSpellSlots];
         }
 
         // Loop through cooldowns and tick down by time.deltatime
+        if (spellCooldowns == new float[characterInfo.gameSettings.TotalSpellSlots])
+        {
+            Debug.Log("skipping cooldown, all zero");
+            return;
+        }
         for (int i = 0; i < spellCooldowns.Length; i++)
         {
             if (spellCooldowns[i] > 0)
             {
-
                 spellCooldowns[i] -= Time.deltaTime;
+                SetCooldownUI(i, spellCooldowns[i] / characterInfo.EquippedSpells[i].SpellCooldown);
             }
             if (spellCooldowns[i] < 0)
             {
                 spellCooldowns[i] = 0;
             }
-            //Updates the cooldown UI for i with the current percent
-            if (characterInfo.EquippedSpells[i] != null)
-                SetCooldownUI(i, spellCooldowns[i] / characterInfo.EquippedSpells[i].SpellCooldown);
         }
     }
     private void SetCooldownUI(int index, float percentFilled)
@@ -140,6 +126,11 @@ public class SpellbookLogic : MonoBehaviour
 
         topBar.GetComponent<Image>().fillAmount = percentFilled;
     }
-
-
+    private void AllCooldownUIs(float percentFilled = 0)
+    {
+        for (int i = 0; i < characterInfo.gameSettings.TotalSpellSlots; i++)
+        {
+            SetCooldownUI(i, percentFilled);
+        }
+    }
 }

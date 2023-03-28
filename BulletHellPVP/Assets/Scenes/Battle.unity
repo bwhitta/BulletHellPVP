@@ -557,7 +557,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 301999736}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.5, y: 0.3, z: 0.5}
   m_ConstrainProportionsScale: 0
@@ -1119,7 +1119,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   characterInfo: {fileID: 11400000, guid: 78760bb3a3bdc6f40a42de23b6e09442, type: 2}
-  spellMaskLayer: Right Player
   spellbookObject: {fileID: 1072472033}
 --- !u!114 &746061124
 MonoBehaviour:
@@ -2219,7 +2218,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   characterInfo: {fileID: 11400000, guid: 54331a60389e0df4a9a8faa6f1473c05, type: 2}
-  spellMaskLayer: Left Player
   spellbookObject: {fileID: 1693363578}
 --- !u!4 &1269359568
 Transform:
@@ -2351,7 +2349,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1323493286
 Transform:
   m_ObjectHideFlags: 0

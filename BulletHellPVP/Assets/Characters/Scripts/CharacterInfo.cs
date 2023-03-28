@@ -16,7 +16,7 @@ public class CharacterInfo : ScriptableObject
     [Space(25)] // Character stats
     public BasicStats DefaultStats;
     [Space(25)] // The tag used for all objects relating to this character
-    public string CharacterTag;
+    public string CharacterAndSortingTag;
     [Space(25)] // Movement
     public Vector2 CharacterStartLocation;
     public string InputMapName;
@@ -25,16 +25,15 @@ public class CharacterInfo : ScriptableObject
     [Space(25)] // Animation
     public string AnimatorTreeParameterX;
     public string AnimatorTreeParameterY;
-
-    //Equipped Spells
-    private SpellData[] _equippedSpells;
+    [Space(25)] //Equipped Spells
+    [SerializeField] private SpellData[] _equippedSpells;
     public SpellData[] EquippedSpells
     {
         get
         {
             if (_equippedSpells.Length < gameSettings.TotalSpellSlots)
             {
-                Debug.Log($"Length {_equippedSpells.Length} is less than {gameSettings.TotalSpellSlots}, setting to new");
+                Debug.Log($"Equippable slots {_equippedSpells.Length} < total slots {gameSettings.TotalSpellSlots}, resetting equippable.");
                 _equippedSpells = new SpellData[gameSettings.TotalSpellSlots];
             }
             return _equippedSpells;
@@ -46,7 +45,7 @@ public class CharacterInfo : ScriptableObject
         }
     }
 
-    // --- --- --- Object references from tags for access from other objects --- --- --- //
+    #region TaggedObjectReferences
     // Health and Mana
     private BarLogic _healthBar;
     private BarLogic _manaBar;
@@ -55,7 +54,7 @@ public class CharacterInfo : ScriptableObject
         get
         {
             if (_healthBar == null)
-                _healthBar = TaggedObjectWithType<BarLogic>(true, BarLogic.Stats.health).GetComponent<BarLogic>();
+                _healthBar = TaggedObjectWithType<BarLogic>(BarLogic.Stats.health).GetComponent<BarLogic>();
             return _healthBar;
         }
         set
@@ -68,7 +67,7 @@ public class CharacterInfo : ScriptableObject
         get
         {
             if (_manaBar == null)
-                _manaBar = TaggedObjectWithType<BarLogic>(true,BarLogic.Stats.mana).GetComponent<BarLogic>();
+                _manaBar = TaggedObjectWithType<BarLogic>(BarLogic.Stats.mana).GetComponent<BarLogic>();
             return _manaBar;
         }
         set
@@ -84,7 +83,7 @@ public class CharacterInfo : ScriptableObject
         {
             if (_characterObject == null)
             {
-                _characterObject = TaggedObjectWithType<CharacterStats>(false);
+                _characterObject = TaggedObjectWithType<CharacterStats>();
             }
             return _characterObject;
         }
@@ -151,10 +150,10 @@ public class CharacterInfo : ScriptableObject
     }
 
     /// <summary> Find a gameobject with a specific type from a tag </summary>
-    private GameObject TaggedObjectWithType<objectType>(bool throwOnFailure = true, BarLogic.Stats? barStat = null)
+    private GameObject TaggedObjectWithType<objectType>(BarLogic.Stats? barStat = null)
     {
         // Find the list of objects that share a tag with the character
-        GameObject[] tagged = GameObject.FindGameObjectsWithTag(CharacterTag);
+        GameObject[] tagged = GameObject.FindGameObjectsWithTag(CharacterAndSortingTag);
         bool findingBarStat = false;
         if(barStat != null)
         {
@@ -180,8 +179,8 @@ public class CharacterInfo : ScriptableObject
                 return tagged[i];
             }
         }
-        if (throwOnFailure)
-            Debug.LogWarning($"No tagged object with type {typeof(objectType)} and tag {CharacterTag}");
         return null;
     }
+
+    #endregion ObjectReferences
 }

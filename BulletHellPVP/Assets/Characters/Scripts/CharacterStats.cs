@@ -51,7 +51,7 @@ public class CharacterStats : MonoBehaviour
         // Check tag
         if (gameObject.CompareTag("Untagged"))
         {
-            gameObject.tag = characterInfo.CharacterTag;
+            gameObject.tag = characterInfo.CharacterAndSortingTag;
         }
 
         // Enable other objects
@@ -133,15 +133,22 @@ public class CharacterStats : MonoBehaviour
             return;
         }
 
-        if (collision.GetComponent<SpellBehavior>() != null)
+        if (collision.GetComponent<SpellModuleBehavior>() != null)
         {
-            SpellBehavior collisionSpellBehavior = collision.GetComponent<SpellBehavior>();
+            SpellModuleBehavior collisionSpellBehavior = collision.GetComponent<SpellModuleBehavior>();
             
             if(remainingInvincibilityTime <= 0)
             {
-                remainingInvincibilityTime = characterInfo.DefaultStats.InvincibilityTime;
-                gameObject.GetComponent<CharacterStats>().CurrentHealthStat -= collisionSpellBehavior.spellData.Damage;
-                Debug.Log($"{collisionSpellBehavior.spellData.Damage} health lost ");
+                if (collisionSpellBehavior.module.AbilityDealsDamage)
+                {
+                    remainingInvincibilityTime = characterInfo.DefaultStats.InvincibilityTime;
+                    gameObject.GetComponent<CharacterStats>().CurrentHealthStat -= collisionSpellBehavior.module.Damage;
+                    Debug.Log($"{collisionSpellBehavior.module.Damage} health lost ");
+                }
+                else
+                {
+                    Debug.Log($"AbilityDealsDamage is false for {collisionSpellBehavior}");
+                }
             }
         }
     }

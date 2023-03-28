@@ -15,33 +15,39 @@ MonoBehaviour:
   SpellName: Hasty Jolt
   ManaCost: 0
   SpellCooldown: 1
-  Prefab: {fileID: 1062348163457161292, guid: a12a2eac476853e4184718ce4ef910dc, type: 3}
-  InstantiationQuantity: 1
   Icon: {fileID: 21300000, guid: ab48d11a46de21c4691be3bdf99d7c05, type: 3}
-  Description: bolt the bird
-  SpellUsesMovement: 1
-  SpawningArea: 0
-  TargetingType: 0
-  MovementType: 0
-  MovementSpeed: 5
-  SpellDealsDamage: 1
-  Damage: 25
-  SpellUsesCollider: 1
-  ColliderPath:
-  - {x: 0, y: 0}
-  - {x: 0, y: 0}
-  - {x: 0, y: 0}
-  - {x: 0, y: 0}
-  - {x: 0, y: 0}
-  SpellUsesSprite: 0
-  SpellSprite: {fileID: 21300000, guid: 3fdad2ade7c9a354d95c7d06a81d7ac0, type: 3}
-  SpriteScale: 0
-  AnimatedSpell: 1
-  SpellAnimatorController: {fileID: 9100000, guid: 8456e04db8d577746aab1099fc21ee10, type: 2}
-  MultipartAnimationPrefabs:
-  - {fileID: 6875562524064102678, guid: bd654d109af0f0f4cbb6bb3a3103c2ab, type: 3}
-  - {fileID: 1315184325858685254, guid: 28fa8b636c1e7ff438e1664159b8b936, type: 3}
-  SpellScales: 0
-  ScalingStartPercent: 0
-  MaxScaleMultiplier: 0
-  DestroyOnScalingCompleted: 0
+  Description: jolt the bird
+  ModuleQuantity: 1
+  UsedModules:
+  - FoldoutOpen: 1
+    Prefab: {fileID: 1062348163457161292, guid: a12a2eac476853e4184718ce4ef910dc, type: 3}
+    ModuleType: 0
+    SpawningArea: 0
+    TargetingType: 0
+    MovementType: 0
+    MovementSpeed: 5
+    AbilityDealsDamage: 1
+    Damage: 25
+    AttachmentTime: 0
+    InstantiationQuantity: 1
+    InstantiationScale: 0.07
+    UsesCollider: 1
+    ColliderPath:
+    - {x: 4, y: 1}
+    - {x: 5, y: 0}
+    - {x: 4, y: -1}
+    - {x: -4, y: -1}
+    - {x: -5, y: 0}
+    - {x: -4, y: 1}
+    UsesSprite: 0
+    Sprite: {fileID: 0}
+    Animated: 1
+    AnimatorController: {fileID: 9100000, guid: 8456e04db8d577746aab1099fc21ee10, type: 2}
+    MultipartAnimationPrefabs:
+    - {fileID: 6875562524064102678, guid: bd654d109af0f0f4cbb6bb3a3103c2ab, type: 3}
+    - {fileID: 1315184325858685254, guid: 28fa8b636c1e7ff438e1664159b8b936, type: 3}
+    AnimationScaleMultiplier: 1
+    ScalesOverTime: 0
+    ScalingStartPercent: 0
+    MaxScaleMultiplier: 0
+    DestroyOnScalingCompleted: 0

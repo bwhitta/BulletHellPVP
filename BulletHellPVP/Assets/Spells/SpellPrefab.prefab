@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 5693598059765770263}
   - component: {fileID: 2555750260823406239}
   m_Layer: 0
-  m_Name: SpellProjectile
+  m_Name: SpellPrefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -29,7 +29,7 @@ Transform:
   m_GameObject: {fileID: 1062348163457161292}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.07, y: 0.07, z: 0.07}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -99,8 +99,31 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df0be96589aa441469b84fe625710e5d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spellData: {fileID: 0}
-  indexWithinSpell: 0
+  module:
+    FoldoutOpen: 0
+    Prefab: {fileID: 0}
+    ModuleType: 0
+    SpawningArea: 0
+    TargetingType: 0
+    MovementType: 0
+    MovementSpeed: 0
+    AbilityDealsDamage: 0
+    Damage: 0
+    AttachmentTime: 0
+    InstantiationQuantity: 0
+    UsesCollider: 0
+    ColliderPath: []
+    UsesSprite: 0
+    Sprite: {fileID: 0}
+    SpriteScale: 0
+    Animated: 0
+    AnimatorController: {fileID: 0}
+    MultipartAnimationPrefabs: []
+    ScalesOverTime: 0
+    ScalingStartPercent: 0
+    MaxScaleMultiplier: 0
+    DestroyOnScalingCompleted: 0
+  spellBehaviorID: 0
   distanceToMove: 0
   targetedCharacter: {fileID: 0}
 --- !u!95 &5693598059765770263

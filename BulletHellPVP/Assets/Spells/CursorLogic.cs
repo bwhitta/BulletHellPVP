@@ -22,7 +22,7 @@ public class CursorLogic : MonoBehaviour
 
     private void Awake()
     {
-        gameObject.tag = characterInfo.CharacterTag;
+        gameObject.tag = characterInfo.CharacterAndSortingTag;
     }
 
     private void Start()

@@ -1,0 +1,89 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a08710c6bdc2c44da560834e93877dd, type: 3}
+  m_Name: Fire Dash
+  m_EditorClassIdentifier: 
+  SpellName: Fire Dash
+  ManaCost: 10
+  SpellCooldown: 5
+  Icon: {fileID: 21300000, guid: 31b3fef382c915b40a26e1dd067fd219, type: 3}
+  Description: 
+  ModuleQuantity: 2
+  UsedModules:
+  - FoldoutOpen: 1
+    Prefab: {fileID: 1062348163457161292, guid: a12a2eac476853e4184718ce4ef910dc, type: 3}
+    ModuleType: 1
+    ProjectileSpawningArea: 0
+    TargetingType: 0
+    MovementType: 0
+    MovementSpeed: 0
+    AbilityDealsDamage: 0
+    Damage: 0
+    AttachmentTime: 0.35
+    PushesPlayer: 1
+    PlayerPushSpeed: 7.5
+    SpriteFacingPush: 1
+    AngleAfterStart: 1
+    AngleChangeSpeed: 180
+    AffectsPlayerMovement: 1
+    PlayerMovementMod: 0
+    InstantiationQuantity: 1
+    InstantiationScale: 2
+    UsesCollider: 0
+    ColliderPath: []
+    UsesSprite: 1
+    Sprite: {fileID: 21300000, guid: 2ff53b2763b0ef0439592ec321fc9a83, type: 3}
+    Animated: 0
+    AnimatorController: {fileID: 0}
+    MultipartAnimationPrefabs: []
+    AnimationScaleMultiplier: 0
+    GeneratesParticles: 0
+    ParticleSystemPrefab: {fileID: 3023061968540518342, guid: 40065156cfa0f0b4eb4b261de24ea888, type: 3}
+    ParticleSystemZ: 0
+    ScalesOverTime: 0
+    ScalingStartPercent: 0
+    MaxScaleMultiplier: 0
+    DestroyOnScalingCompleted: 0
+  - FoldoutOpen: 1
+    Prefab: {fileID: 1062348163457161292, guid: a12a2eac476853e4184718ce4ef910dc, type: 3}
+    ModuleType: 1
+    ProjectileSpawningArea: 0
+    TargetingType: 0
+    MovementType: 0
+    MovementSpeed: 0
+    AbilityDealsDamage: 0
+    Damage: 0
+    AttachmentTime: 1
+    PushesPlayer: 0
+    PlayerPushSpeed: 7.5
+    SpriteFacingPush: 0
+    AngleAfterStart: 1
+    AngleChangeSpeed: 180
+    AffectsPlayerMovement: 0
+    PlayerMovementMod: 0
+    InstantiationQuantity: 1
+    InstantiationScale: 0.07
+    UsesCollider: 0
+    ColliderPath: []
+    UsesSprite: 0
+    Sprite: {fileID: 21300000, guid: 2ff53b2763b0ef0439592ec321fc9a83, type: 3}
+    Animated: 0
+    AnimatorController: {fileID: 0}
+    MultipartAnimationPrefabs: []
+    AnimationScaleMultiplier: 0
+    GeneratesParticles: 1
+    ParticleSystemPrefab: {fileID: 3023061968540518342, guid: 40065156cfa0f0b4eb4b261de24ea888, type: 3}
+    ParticleSystemZ: -2
+    ScalesOverTime: 0
+    ScalingStartPercent: 0
+    MaxScaleMultiplier: 0
+    DestroyOnScalingCompleted: 0

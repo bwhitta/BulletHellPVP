@@ -7,9 +7,6 @@ using UnityEngine;
 public class SpellManager : MonoBehaviour
 {
     [SerializeField] private CharacterInfo characterInfo;
-    [SerializeField] private string spellMaskLayer;
-
-    // References
     [SerializeField] private GameObject spellbookObject;
 
     private CursorLogic _cursorLogic;
@@ -25,82 +22,107 @@ public class SpellManager : MonoBehaviour
         }
     }
     
-    // Casting and instantiating spells
+
     public void AttemptSpell(int equippedIndex)
     {
-        SpellData attemptedSpellData = characterInfo.EquippedSpells[equippedIndex];
-        // Check mana
-        if (attemptedSpellData.ManaCost >= characterInfo.CharacterStats.CurrentManaStat)
+        // Check if the slot is valid
+        if (equippedIndex < 0 || characterInfo.EquippedSpells.Length <= equippedIndex || characterInfo.EquippedSpells[equippedIndex] == null)
         {
-            Debug.Log("Not enough mana.");
+            Debug.Log($"No spell in slot {equippedIndex}");
             return;
         }
-        else
-        {
-            characterInfo.CharacterStats.CurrentManaStat -= attemptedSpellData.ManaCost;
-        }
-        // Check cooldown
-        if (characterInfo.SpellbookLogicScript.spellCooldowns[equippedIndex] > 0)
-        {
-            Debug.Log("Spell on cooldown.");
-            return;
-        }
-        else
-        {
-            characterInfo.SpellbookLogicScript.spellCooldowns[equippedIndex] = attemptedSpellData.SpellCooldown;
-        }
+
+        // Gets the spell in the slot
+        SpellData spellData = characterInfo.EquippedSpells[equippedIndex];
         
-
-        ResolveSpell(attemptedSpellData);
-
-        // Local Method
-        void ResolveSpell(SpellData spellData)
+        // Check cooldown and mana
+        if (CooldownAndManaAvailable() == false)
         {
-            SpellBehavior[] spellBehaviors = CreateSpell(spellData);
+            Debug.Log("Spell cancelled - cooldown or mana requirements not met.");
+            return;
+        }
 
-            foreach (SpellBehavior spell in spellBehaviors)
+        Debug.Log(spellData.UsedModules.Length);
+        foreach(SpellData.Module module in spellData.UsedModules)
+        {
+            // Instantiate the spell
+            SpellModuleBehavior[] moduleBehaviors = InstantiateModule(module);
+            // Configure the spell
+            for (int i = 0; i < moduleBehaviors.Length; i++)
             {
-                SpellDisplaySetup(spell, spellData);
-                SpellTargets(spellData, spell);
+                ConfigureModule(moduleBehaviors[i], module, i);
+            }
+        }
+
+        // Local Method:
+        bool CooldownAndManaAvailable()
+        {
+            if (characterInfo.SpellbookLogicScript.spellCooldowns[equippedIndex] > 0)
+            {
+                Debug.Log("Spell on cooldown.");
+                return false;
+            }
+            else if (spellData.ManaCost >= characterInfo.CharacterStats.CurrentManaStat)
+            {
+                Debug.Log("Not enough mana.");
+                return false;
+            }
+            else
+            {
+                characterInfo.SpellbookLogicScript.spellCooldowns[equippedIndex] = spellData.SpellCooldown;
+                characterInfo.CharacterStats.CurrentManaStat -= spellData.ManaCost;
+                return true;
             }
         }
     }
-
-    
-    private SpellBehavior[] CreateSpell(SpellData spellData)
+    private SpellModuleBehavior[] InstantiateModule(SpellData.Module module)
     {
-        SpellBehavior[] spellBehaviors = InstantiateSpell(spellData);
-        
-        for (var i = 0; i < spellBehaviors.Length; i++)
+        SpellModuleBehavior[] spellBehaviors = new SpellModuleBehavior[module.InstantiationQuantity];
+        for (var i = 0; i < module.InstantiationQuantity; i++)
         {
-            SpellBehavior spell = spellBehaviors[i];
-
-            spell.indexWithinSpell = i;
-            ConfigureBehavior(spell, spellData);
+            spellBehaviors[i] = Instantiate(module.Prefab).GetComponent<SpellModuleBehavior>();
         }
-        return spellBehaviors;
 
-        // Local Methods
-        void ConfigureBehavior(SpellBehavior behavior, SpellData spellData)
+        return spellBehaviors;
+    }
+    private void ConfigureModule(SpellModuleBehavior moduleBehavior, SpellData.Module module, int indexWithinSpell)
+    {
+        // Give the spell its ID
+        moduleBehavior.spellBehaviorID = indexWithinSpell;
+
+        switch (module.ModuleType)
         {
-            switch (spellData.SpawningArea)
+            case SpellData.ModuleTypes.Projectile:
+                SetProjectileTransform();
+                break;
+            case SpellData.ModuleTypes.PlayerAttached:
+                AttachToPlayer();
+                break;
+        }
+
+
+        GiveSpellTargets();
+        moduleBehavior.module = module;
+        
+        #region LocalMethods
+        void SetProjectileTransform()
+        {
+            switch (module.ProjectileSpawningArea)
             {
-                case SpellData.SpawningAreas.Points:
-                    behavior.spellData = spellData;
-                    behavior.transform.position = transform.position;
+                case SpellData.SpawningAreas.Point:
+                    moduleBehavior.transform.position = transform.position;
                     break;
                 case SpellData.SpawningAreas.AdjacentCorners:
-                    behavior.spellData = spellData;
-                    behavior.distanceToMove = (CursorLogic.squareSide) / 2;
-                    
-                    Debug.Log($"Square side: {CursorLogic.squareSide}.");
-                    behavior.transform.position = CalculateAdjacentCorners()[behavior.indexWithinSpell];
-                    behavior.transform.rotation = this.transform.rotation * Quaternion.Euler(0, 0, -90);
+                    moduleBehavior.distanceToMove = (CursorLogic.squareSide) / 2;
+                    moduleBehavior.transform.position = CalculateAdjacentCorners()[moduleBehavior.spellBehaviorID];
+                    moduleBehavior.transform.rotation = this.transform.rotation * Quaternion.Euler(0, 0, -90);
                     break;
                 default:
-                    Debug.LogWarning($"Casting Area {spellData.SpawningArea} does not exist.");
+                    Debug.LogWarning($"Casting Area {module.ProjectileSpawningArea} does not exist.");
                     break;
             }
+
+            moduleBehavior.spellMaskLayer = characterInfo.OpponentCharacterInfo.CharacterAndSortingTag;
 
             // Local Method
             Vector2[] CalculateAdjacentCorners()
@@ -114,58 +136,30 @@ public class SpellManager : MonoBehaviour
                 };
             }
         }
-        SpellBehavior[] InstantiateSpell(SpellData spellData)
+        void AttachToPlayer()
         {
-            SpellBehavior[] spellBehaviors;
-            spellBehaviors = new SpellBehavior[spellData.InstantiationQuantity];
-            for (var i = 0; i < spellData.InstantiationQuantity; i++)
+            moduleBehavior.transform.parent = characterInfo.CharacterObject.transform;
+            moduleBehavior.transform.localPosition = Vector3.zero;
+            moduleBehavior.spellMaskLayer = characterInfo.CharacterAndSortingTag;
+        }
+        void GiveSpellTargets()
+        {
+            switch (module.TargetingType)
             {
-                spellBehaviors[i] = Instantiate(spellData.Prefab).GetComponent<SpellBehavior>();
+                case SpellData.TargetTypes.Character:
+                    moduleBehavior.targetedCharacter = characterInfo.OpponentCharacterInfo.CharacterObject;
+                    break;
+                case SpellData.TargetTypes.Center:
+                    // Not yet implemented
+                    break;
+                case SpellData.TargetTypes.Opposing:
+                    // Not yet implemented
+                    break;
+                case SpellData.TargetTypes.InvertedOpposing:
+                    // Not yet implemented
+                    break;
             }
-            return spellBehaviors;
         }
-    }
-
-
-    private void SpellDisplaySetup(SpellBehavior spellBehavior, SpellData spellData)
-    {
-        spellBehavior.GetComponent<Renderer>().sortingLayerName = spellMaskLayer;
-        if (spellData.AnimatedSpell)
-        {
-            AnimatedChildrenSetup(spellData, spellBehavior);
-        }
-    }
-
-    private void SpellTargets(SpellData spellData, SpellBehavior spellBehavior)
-    {
-        if (spellData.TargetingType == SpellData.TargetTypes.Character)
-        {
-            spellBehavior.targetedCharacter = characterInfo.OpponentCharacterInfo.CharacterObject;
-        }
-        else if (spellData.TargetingType == SpellData.TargetTypes.NotApplicable)
-        {
-            // N/A, nothing should happen
-            return;
-        }
-        else
-        {
-            Debug.Log("Targeting type not yet implemented");
-        }
-    }
-    private void AnimatedChildrenSetup(SpellData spellData, SpellBehavior spellBehavior)
-    {
-        for (var i = 0; i < spellData.MultipartAnimationPrefabs.Length; i++)
-        {
-            GameObject currentAnimationPrefab = Instantiate(spellData.MultipartAnimationPrefabs[i], spellBehavior.transform);
-
-            currentAnimationPrefab.transform.SetPositionAndRotation(spellBehavior.transform.position, spellBehavior.transform.rotation);
-            currentAnimationPrefab.transform.localScale = Vector3.one;
-
-            // Animator does not work with changed name, so this line resets the name.
-            currentAnimationPrefab.name = spellData.MultipartAnimationPrefabs[i].name;
-
-            // Set the mask layer
-            currentAnimationPrefab.GetComponent<Renderer>().sortingLayerName = spellMaskLayer;
-        }
+        #endregion
     }
 }
