@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 4900698460716851981}
   - component: {fileID: -2739748819430087086}
   m_Layer: 0
-  m_Name: Spell Icon Prefab
+  m_Name: P_SetSpellIcon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -98,7 +98,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dfba24a583f64364599b00f3be3fd2ef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dragging: 0
+  spellData: {fileID: 0}
+  sucessfullyPlaced: 0
 --- !u!58 &-2739748819430087086
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -112,6 +113,6 @@ CircleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -1, y: 1.5}
+  m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 7

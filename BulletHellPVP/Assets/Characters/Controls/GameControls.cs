@@ -62,13 +62,22 @@ public partial class @GameControls : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""NextBook"",
+                    ""type"": ""Button"",
+                    ""id"": ""d6a19fe6-aab5-4822-b5b6-9cdf431ec486"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
                 {
-                    ""name"": ""Vector2"",
+                    ""name"": ""2D Vector"",
                     ""id"": ""00ca640b-d935-4593-8157-c05846ea39b3"",
-                    ""path"": ""Dpad"",
+                    ""path"": ""2DVector"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -77,7 +86,7 @@ public partial class @GameControls : IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 },
                 {
-                    ""name"": ""up"",
+                    ""name"": ""Up"",
                     ""id"": ""e2062cb9-1b15-46a2-838c-2f8d72a0bdd9"",
                     ""path"": ""<Keyboard>/w"",
                     ""interactions"": """",
@@ -88,7 +97,7 @@ public partial class @GameControls : IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": true
                 },
                 {
-                    ""name"": ""down"",
+                    ""name"": ""Down"",
                     ""id"": ""320bffee-a40b-4347-ac70-c210eb8bc73a"",
                     ""path"": ""<Keyboard>/s"",
                     ""interactions"": """",
@@ -99,7 +108,7 @@ public partial class @GameControls : IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": true
                 },
                 {
-                    ""name"": ""left"",
+                    ""name"": ""Left"",
                     ""id"": ""d2581a9b-1d11-4566-b27d-b92aff5fabbc"",
                     ""path"": ""<Keyboard>/a"",
                     ""interactions"": """",
@@ -110,8 +119,8 @@ public partial class @GameControls : IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": true
                 },
                 {
-                    ""name"": ""right"",
-                    ""id"": ""fcfe95b8-67b9-4526-84b5-5d0bc98d6400"",
+                    ""name"": ""Right"",
+                    ""id"": ""3f839028-efa5-4202-b4fc-143a76e7c678"",
                     ""path"": ""<Keyboard>/d"",
                     ""interactions"": """",
                     ""processors"": """",
@@ -240,6 +249,17 @@ public partial class @GameControls : IInputActionCollection2, IDisposable
                     ""action"": ""SpellcastingSelection"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c898f478-d88a-4e1f-8784-52d76194c6d2"",
+                    ""path"": ""<Keyboard>/tab"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""NextBook"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -282,6 +302,15 @@ public partial class @GameControls : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""NextBook"",
+                    ""type"": ""Button"",
+                    ""id"": ""38cb4baa-57cf-4a92-a8ee-6d5b8e17bd44"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -302,7 +331,7 @@ public partial class @GameControls : IInputActionCollection2, IDisposable
                     ""path"": ""<Gamepad>/dpad/left"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Keyboard&Mouse"",
+                    ""groups"": ""Keyboard&Mouse;Joystick"",
                     ""action"": ""CursorMovement"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
@@ -313,7 +342,7 @@ public partial class @GameControls : IInputActionCollection2, IDisposable
                     ""path"": ""<Gamepad>/dpad/right"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Keyboard&Mouse"",
+                    ""groups"": ""Keyboard&Mouse;Joystick"",
                     ""action"": ""CursorMovement"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
@@ -324,7 +353,7 @@ public partial class @GameControls : IInputActionCollection2, IDisposable
                     ""path"": ""<Gamepad>/leftTrigger"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Gamepad"",
+                    ""groups"": ""Gamepad;Joystick"",
                     ""action"": ""AccelerateCursorMovement"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -335,7 +364,7 @@ public partial class @GameControls : IInputActionCollection2, IDisposable
                     ""path"": ""<Gamepad>/buttonSouth"",
                     ""interactions"": """",
                     ""processors"": ""Scale"",
-                    ""groups"": ""Gamepad"",
+                    ""groups"": ""Gamepad;Joystick"",
                     ""action"": ""SpellcastingSelection"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -346,7 +375,7 @@ public partial class @GameControls : IInputActionCollection2, IDisposable
                     ""path"": ""<Gamepad>/buttonEast"",
                     ""interactions"": """",
                     ""processors"": ""Scale(factor=2)"",
-                    ""groups"": ""Gamepad"",
+                    ""groups"": ""Gamepad;Joystick"",
                     ""action"": ""SpellcastingSelection"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -357,7 +386,7 @@ public partial class @GameControls : IInputActionCollection2, IDisposable
                     ""path"": ""<Gamepad>/buttonNorth"",
                     ""interactions"": """",
                     ""processors"": ""Scale(factor=3)"",
-                    ""groups"": ""Gamepad"",
+                    ""groups"": ""Gamepad;Joystick"",
                     ""action"": ""SpellcastingSelection"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -368,7 +397,7 @@ public partial class @GameControls : IInputActionCollection2, IDisposable
                     ""path"": ""<Gamepad>/buttonWest"",
                     ""interactions"": """",
                     ""processors"": ""Scale(factor=4)"",
-                    ""groups"": ""Gamepad"",
+                    ""groups"": ""Gamepad;Joystick"",
                     ""action"": ""SpellcastingSelection"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -379,7 +408,7 @@ public partial class @GameControls : IInputActionCollection2, IDisposable
                     ""path"": ""<Gamepad>/leftShoulder"",
                     ""interactions"": """",
                     ""processors"": ""Scale(factor=5)"",
-                    ""groups"": ""Gamepad"",
+                    ""groups"": ""Gamepad;Joystick"",
                     ""action"": ""SpellcastingSelection"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -390,7 +419,7 @@ public partial class @GameControls : IInputActionCollection2, IDisposable
                     ""path"": ""<Gamepad>/rightShoulder"",
                     ""interactions"": """",
                     ""processors"": ""Scale(factor=6)"",
-                    ""groups"": ""Gamepad"",
+                    ""groups"": ""Gamepad;Joystick"",
                     ""action"": ""SpellcastingSelection"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -401,7 +430,7 @@ public partial class @GameControls : IInputActionCollection2, IDisposable
                     ""path"": ""<Gamepad>/rightTrigger"",
                     ""interactions"": ""Press"",
                     ""processors"": ""Clamp(min=1,max=1),Scale(factor=7)"",
-                    ""groups"": ""Gamepad"",
+                    ""groups"": ""Gamepad;Joystick"",
                     ""action"": ""SpellcastingSelection"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -412,8 +441,19 @@ public partial class @GameControls : IInputActionCollection2, IDisposable
                     ""path"": ""<Gamepad>/leftStick"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Gamepad"",
+                    ""groups"": ""Gamepad;Joystick"",
                     ""action"": ""Movement"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""61651e69-e603-47b6-99f1-996dea193c17"",
+                    ""path"": ""<Gamepad>/start"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad;Joystick"",
+                    ""action"": ""NextBook"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -965,12 +1005,14 @@ public partial class @GameControls : IInputActionCollection2, IDisposable
         m_LeftCharacter_CursorMovement = m_LeftCharacter.FindAction("CursorMovement", throwIfNotFound: true);
         m_LeftCharacter_AccelerateCursorMovement = m_LeftCharacter.FindAction("AccelerateCursorMovement", throwIfNotFound: true);
         m_LeftCharacter_SpellcastingSelection = m_LeftCharacter.FindAction("SpellcastingSelection", throwIfNotFound: true);
+        m_LeftCharacter_NextBook = m_LeftCharacter.FindAction("NextBook", throwIfNotFound: true);
         // Right Character
         m_RightCharacter = asset.FindActionMap("Right Character", throwIfNotFound: true);
         m_RightCharacter_Movement = m_RightCharacter.FindAction("Movement", throwIfNotFound: true);
         m_RightCharacter_CursorMovement = m_RightCharacter.FindAction("CursorMovement", throwIfNotFound: true);
         m_RightCharacter_AccelerateCursorMovement = m_RightCharacter.FindAction("AccelerateCursorMovement", throwIfNotFound: true);
         m_RightCharacter_SpellcastingSelection = m_RightCharacter.FindAction("SpellcastingSelection", throwIfNotFound: true);
+        m_RightCharacter_NextBook = m_RightCharacter.FindAction("NextBook", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -1044,6 +1086,7 @@ public partial class @GameControls : IInputActionCollection2, IDisposable
     private readonly InputAction m_LeftCharacter_CursorMovement;
     private readonly InputAction m_LeftCharacter_AccelerateCursorMovement;
     private readonly InputAction m_LeftCharacter_SpellcastingSelection;
+    private readonly InputAction m_LeftCharacter_NextBook;
     public struct LeftCharacterActions
     {
         private @GameControls m_Wrapper;
@@ -1052,6 +1095,7 @@ public partial class @GameControls : IInputActionCollection2, IDisposable
         public InputAction @CursorMovement => m_Wrapper.m_LeftCharacter_CursorMovement;
         public InputAction @AccelerateCursorMovement => m_Wrapper.m_LeftCharacter_AccelerateCursorMovement;
         public InputAction @SpellcastingSelection => m_Wrapper.m_LeftCharacter_SpellcastingSelection;
+        public InputAction @NextBook => m_Wrapper.m_LeftCharacter_NextBook;
         public InputActionMap Get() { return m_Wrapper.m_LeftCharacter; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1073,6 +1117,9 @@ public partial class @GameControls : IInputActionCollection2, IDisposable
                 @SpellcastingSelection.started -= m_Wrapper.m_LeftCharacterActionsCallbackInterface.OnSpellcastingSelection;
                 @SpellcastingSelection.performed -= m_Wrapper.m_LeftCharacterActionsCallbackInterface.OnSpellcastingSelection;
                 @SpellcastingSelection.canceled -= m_Wrapper.m_LeftCharacterActionsCallbackInterface.OnSpellcastingSelection;
+                @NextBook.started -= m_Wrapper.m_LeftCharacterActionsCallbackInterface.OnNextBook;
+                @NextBook.performed -= m_Wrapper.m_LeftCharacterActionsCallbackInterface.OnNextBook;
+                @NextBook.canceled -= m_Wrapper.m_LeftCharacterActionsCallbackInterface.OnNextBook;
             }
             m_Wrapper.m_LeftCharacterActionsCallbackInterface = instance;
             if (instance != null)
@@ -1089,6 +1136,9 @@ public partial class @GameControls : IInputActionCollection2, IDisposable
                 @SpellcastingSelection.started += instance.OnSpellcastingSelection;
                 @SpellcastingSelection.performed += instance.OnSpellcastingSelection;
                 @SpellcastingSelection.canceled += instance.OnSpellcastingSelection;
+                @NextBook.started += instance.OnNextBook;
+                @NextBook.performed += instance.OnNextBook;
+                @NextBook.canceled += instance.OnNextBook;
             }
         }
     }
@@ -1101,6 +1151,7 @@ public partial class @GameControls : IInputActionCollection2, IDisposable
     private readonly InputAction m_RightCharacter_CursorMovement;
     private readonly InputAction m_RightCharacter_AccelerateCursorMovement;
     private readonly InputAction m_RightCharacter_SpellcastingSelection;
+    private readonly InputAction m_RightCharacter_NextBook;
     public struct RightCharacterActions
     {
         private @GameControls m_Wrapper;
@@ -1109,6 +1160,7 @@ public partial class @GameControls : IInputActionCollection2, IDisposable
         public InputAction @CursorMovement => m_Wrapper.m_RightCharacter_CursorMovement;
         public InputAction @AccelerateCursorMovement => m_Wrapper.m_RightCharacter_AccelerateCursorMovement;
         public InputAction @SpellcastingSelection => m_Wrapper.m_RightCharacter_SpellcastingSelection;
+        public InputAction @NextBook => m_Wrapper.m_RightCharacter_NextBook;
         public InputActionMap Get() { return m_Wrapper.m_RightCharacter; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1130,6 +1182,9 @@ public partial class @GameControls : IInputActionCollection2, IDisposable
                 @SpellcastingSelection.started -= m_Wrapper.m_RightCharacterActionsCallbackInterface.OnSpellcastingSelection;
                 @SpellcastingSelection.performed -= m_Wrapper.m_RightCharacterActionsCallbackInterface.OnSpellcastingSelection;
                 @SpellcastingSelection.canceled -= m_Wrapper.m_RightCharacterActionsCallbackInterface.OnSpellcastingSelection;
+                @NextBook.started -= m_Wrapper.m_RightCharacterActionsCallbackInterface.OnNextBook;
+                @NextBook.performed -= m_Wrapper.m_RightCharacterActionsCallbackInterface.OnNextBook;
+                @NextBook.canceled -= m_Wrapper.m_RightCharacterActionsCallbackInterface.OnNextBook;
             }
             m_Wrapper.m_RightCharacterActionsCallbackInterface = instance;
             if (instance != null)
@@ -1146,6 +1201,9 @@ public partial class @GameControls : IInputActionCollection2, IDisposable
                 @SpellcastingSelection.started += instance.OnSpellcastingSelection;
                 @SpellcastingSelection.performed += instance.OnSpellcastingSelection;
                 @SpellcastingSelection.canceled += instance.OnSpellcastingSelection;
+                @NextBook.started += instance.OnNextBook;
+                @NextBook.performed += instance.OnNextBook;
+                @NextBook.canceled += instance.OnNextBook;
             }
         }
     }
@@ -1290,6 +1348,7 @@ public partial class @GameControls : IInputActionCollection2, IDisposable
         void OnCursorMovement(InputAction.CallbackContext context);
         void OnAccelerateCursorMovement(InputAction.CallbackContext context);
         void OnSpellcastingSelection(InputAction.CallbackContext context);
+        void OnNextBook(InputAction.CallbackContext context);
     }
     public interface IRightCharacterActions
     {
@@ -1297,6 +1356,7 @@ public partial class @GameControls : IInputActionCollection2, IDisposable
         void OnCursorMovement(InputAction.CallbackContext context);
         void OnAccelerateCursorMovement(InputAction.CallbackContext context);
         void OnSpellcastingSelection(InputAction.CallbackContext context);
+        void OnNextBook(InputAction.CallbackContext context);
     }
     public interface IUIActions
     {

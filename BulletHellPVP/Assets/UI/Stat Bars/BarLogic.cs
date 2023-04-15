@@ -10,7 +10,7 @@ public class BarLogic : MonoBehaviour
 
     public enum Stats { health, mana }
 
-        [Header("Stats")]
+    [Header("Stats")]
     public Stats statToModify;
     [SerializeField] private GameObject statRemainingObject, statLostObject;
     [SerializeField] private int remainingEdgeLeft, remainingEdgeRight, lostEdgeLeft, lostEdgeRight;
@@ -54,7 +54,7 @@ public class BarLogic : MonoBehaviour
             }
             else if (statToModify == Stats.mana)
             {
-                return characterInfo.DefaultStats.MaxManaStat;
+                return characterInfo.CharacterStats.maxMana;
             }
             else
             {

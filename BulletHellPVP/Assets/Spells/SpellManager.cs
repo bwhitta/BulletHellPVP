@@ -23,26 +23,23 @@ public class SpellManager : MonoBehaviour
     }
     
 
-    public void AttemptSpell(int equippedIndex)
+    public void AttemptSpell(int spellIndex)
     {
+        SpellData[] currentBook = characterInfo.EquippedSpellBooks[characterInfo.CurrentBook];
         // Check if the slot is valid
-        if (equippedIndex < 0 || characterInfo.EquippedSpells.Length <= equippedIndex || characterInfo.EquippedSpells[equippedIndex] == null)
+        if (spellIndex < 0 || currentBook.Length <= spellIndex || currentBook[spellIndex] == null)
         {
-            Debug.Log($"No spell in slot {equippedIndex}");
+            Debug.Log($"No spell in slot {spellIndex}");
             return;
         }
 
         // Gets the spell in the slot
-        SpellData spellData = characterInfo.EquippedSpells[equippedIndex];
+        SpellData spellData = characterInfo.EquippedSpellBooks[characterInfo.CurrentBook][spellIndex];
         
         // Check cooldown and mana
         if (CooldownAndManaAvailable() == false)
-        {
-            Debug.Log("Spell cancelled - cooldown or mana requirements not met.");
             return;
-        }
 
-        Debug.Log(spellData.UsedModules.Length);
         foreach(SpellData.Module module in spellData.UsedModules)
         {
             // Instantiate the spell
@@ -57,7 +54,7 @@ public class SpellManager : MonoBehaviour
         // Local Method:
         bool CooldownAndManaAvailable()
         {
-            if (characterInfo.SpellbookLogicScript.spellCooldowns[equippedIndex] > 0)
+            if (characterInfo.SpellbookLogicScript.spellCooldowns[spellIndex] > 0)
             {
                 Debug.Log("Spell on cooldown.");
                 return false;
@@ -69,7 +66,7 @@ public class SpellManager : MonoBehaviour
             }
             else
             {
-                characterInfo.SpellbookLogicScript.spellCooldowns[equippedIndex] = spellData.SpellCooldown;
+                characterInfo.SpellbookLogicScript.spellCooldowns[spellIndex] = spellData.SpellCooldown;
                 characterInfo.CharacterStats.CurrentManaStat -= spellData.ManaCost;
                 return true;
             }

@@ -11,6 +11,7 @@ public class ControlCharacter : MonoBehaviour
     {
         get
         {
+            Debug.Log($"Getting movement vector - {movementAction.ReadValue<Vector2>()}");
             return movementAction.ReadValue<Vector2>();
         }
     }
@@ -41,14 +42,13 @@ public class ControlCharacter : MonoBehaviour
 
     private void LateUpdate()
     {
-        //Debug.Log(InputVector);
         MoveCharacter();
         void MoveCharacter()
         {
             float movementMod = characterInfo.DefaultStats.MovementSpeedMod * tempMovementMod;
             characterRigidbody.velocity = movementMod * InputVector;
             characterRigidbody.velocity += tempPush;
-
+                
             gameObject.GetComponent<Animator>().SetFloat(characterInfo.AnimatorTreeParameterX, InputVector.x);
             gameObject.GetComponent<Animator>().SetFloat(characterInfo.AnimatorTreeParameterY, InputVector.y);
         }

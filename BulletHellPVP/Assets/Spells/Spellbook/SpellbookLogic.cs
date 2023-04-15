@@ -1,10 +1,21 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Rendering;
 using UnityEngine.UI;
 
 public class SpellbookLogic : MonoBehaviour
 {
     [SerializeField] private GameObject[] spellDisplays;
+    [SerializeField] private GameObject bookNumberTextObject;
+    private Text _bookNumberText;
+    private Text BookNumberText
+    {
+        get
+        {
+            _bookNumberText ??= bookNumberTextObject.GetComponent<Text>();
+            return _bookNumberText;
+        }
+    }
     [SerializeField] private CharacterInfo characterInfo;
     [HideInInspector] public float[] spellCooldowns;
 
@@ -26,6 +37,7 @@ public class SpellbookLogic : MonoBehaviour
     {
         gameObject.SetActive(enable);
         EnableSpellControls(enable);
+        EnableBookControl(enable);
         if (enable)
         {
             UpdateSpellbookUI();
@@ -39,46 +51,93 @@ public class SpellbookLogic : MonoBehaviour
     // Enabling spell controls
     private InputActionMap controlsMap;
     private InputAction castingAction;
+    private InputAction nextBookAction;
     private void EnableSpellControls(bool enable)
     {
         if (enable)
         {
-            // Finds the controls
-            controlsMap ??= ControlsManager.GetActionMap(characterInfo.InputMapName);
-            castingAction ??= controlsMap.FindAction(characterInfo.SpellbookSelectionActionName, true);
+            FindControls();
             // Enable controls
             castingAction.Enable();
+            Debug.Log($"Casting Action: {castingAction}");
             castingAction.performed += context => CastingInputPerformed((int)castingAction.ReadValue<float>() - 1);
         }
         else
         {
-            // Finds the controls
-            controlsMap ??= ControlsManager.GetActionMap(characterInfo.InputMapName);
-            castingAction ??= controlsMap.FindAction(characterInfo.SpellbookSelectionActionName, true);
+            FindControls();
             // Disable controls
             castingAction.Disable();
+        }
+
+        // Local Methods
+        void FindControls()
+        {
+            controlsMap ??= ControlsManager.GetActionMap(characterInfo.InputMapName);
+            castingAction ??= controlsMap.FindAction(characterInfo.CastingActionName, true);
+        }
+    }
+    private void EnableBookControl(bool enable)
+    {
+        if (enable)
+        {
+            FindControls();
+            // Enable controls
+            nextBookAction.Enable();
+            nextBookAction.performed += context => NextBookInputPerformed();
+        }
+        else
+        {
+            FindControls();
+            // Disable controls
+            nextBookAction.Disable();
+        }
+
+        // Local Methods
+        void FindControls()
+        {
+            controlsMap ??= ControlsManager.GetActionMap(characterInfo.InputMapName);
+            nextBookAction ??= controlsMap.FindAction(characterInfo.NextBookActionName, true);
         }
     }
     private void UpdateSpellbookUI()
     {
+        // Update text
+        BookNumberText.text = characterInfo.CurrentBook + 1.ToString();
+
+        if (characterInfo.EquippedSpellBooks == null)
+        {
+            characterInfo.CreateBooks();
+        }
         // Loop through and update each sprite using the data from 
         for (var i = 0; i < spellDisplays.Length; i++)
         {
-            if (characterInfo.EquippedSpells.Length <= i || characterInfo.EquippedSpells[i] == null)
+            if (characterInfo.EquippedSpellBooks[characterInfo.CurrentBook].Length <= i || characterInfo.EquippedSpellBooks[characterInfo.CurrentBook][i] == null)
             {
-                // Debug.Log($"No equipped spell in slot {i}, skipping render");
                 spellDisplays[i].SetActive(false);
                 continue;
             }
             SpriteRenderer spriteRenderer = spellDisplays[i].GetComponent<SpriteRenderer>();
             spriteRenderer.enabled = true;
-            spellDisplays[i].GetComponent<SpriteRenderer>().sprite = characterInfo.EquippedSpells[i].Icon;
+            spellDisplays[i].GetComponent<SpriteRenderer>().sprite = characterInfo.EquippedSpellBooks[characterInfo.CurrentBook][i].Icon;
         }
     }
 
-
+    private void NextBookInputPerformed()
+    {
+        if (characterInfo.UsedGameSettings.CanLoopBooks)
+        {
+            characterInfo.CurrentBook = Mathf.Min((characterInfo.CurrentBook + 1), characterInfo.EquippedSpellBooks.Length);
+        }
+        else
+        {
+            characterInfo.CurrentBook = (characterInfo.CurrentBook + 1) % characterInfo.EquippedSpellBooks.Length;
+        }
+        
+        UpdateSpellbookUI();
+    }
     private void CastingInputPerformed(int spellbookSlotIndex)
     {
+        Debug.Log("Casting input performed");
         if (gameObject.activeSelf == false)
         {
             Debug.Log($"Casting cancelled, spellbook disabled.");
@@ -94,13 +153,13 @@ public class SpellbookLogic : MonoBehaviour
     private void UpdateCooldown()
     {
         // Set up cooldowns if data is invalid
-        if (spellCooldowns == null || spellCooldowns.Length != characterInfo.gameSettings.TotalSpellSlots)
+        if (spellCooldowns == null || spellCooldowns.Length != characterInfo.UsedGameSettings.TotalSpellSlots)
         {
-            spellCooldowns = new float[characterInfo.gameSettings.TotalSpellSlots];
+            spellCooldowns = new float[characterInfo.UsedGameSettings.TotalSpellSlots];
         }
 
         // Loop through cooldowns and tick down by time.deltatime
-        if (spellCooldowns == new float[characterInfo.gameSettings.TotalSpellSlots])
+        if (spellCooldowns == new float[characterInfo.UsedGameSettings.TotalSpellSlots])
         {
             Debug.Log("skipping cooldown, all zero");
             return;
@@ -110,7 +169,7 @@ public class SpellbookLogic : MonoBehaviour
             if (spellCooldowns[i] > 0)
             {
                 spellCooldowns[i] -= Time.deltaTime;
-                SetCooldownUI(i, spellCooldowns[i] / characterInfo.EquippedSpells[i].SpellCooldown);
+                SetCooldownUI(i, spellCooldowns[i] / characterInfo.EquippedSpellBooks[characterInfo.CurrentBook][i].SpellCooldown);
             }
             if (spellCooldowns[i] < 0)
             {
@@ -128,7 +187,11 @@ public class SpellbookLogic : MonoBehaviour
     }
     private void AllCooldownUIs(float percentFilled = 0)
     {
-        for (int i = 0; i < characterInfo.gameSettings.TotalSpellSlots; i++)
+        if(characterInfo.UsedGameSettings == null)
+        {
+            Debug.LogWarning("Used Game Settings is null. Did you forget a reference in the Character Info?");
+        }
+        for (int i = 0; i < characterInfo.UsedGameSettings.TotalSpellSlots; i++)
         {
             SetCooldownUI(i, percentFilled);
         }

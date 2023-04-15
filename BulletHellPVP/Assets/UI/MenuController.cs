@@ -21,11 +21,11 @@ public class MenuController : MonoBehaviour
         // The following If/Else statements check to make sure the variables are properly filled
         if (MenuCanvasParents.Length != MenuNames.Length)
         {
-            Debug.LogWarning("The number of menu canvas parents is different from the number of menus. (" + MenuCanvasParents.Length.ToString() + " and " + MenuNames.Length.ToString() + ")");
+            Debug.LogWarning($"The number of menu canvas parents is different from the number of menus. ({MenuCanvasParents.Length} and {MenuNames.Length})");
         }
         else if (MenuNonCanvasParents.Length != MenuNames.Length)
         {
-            Debug.LogWarning("The number of non-canvas menu parents is different from the number of menus. (" + MenuNonCanvasParents.Length.ToString() + " and " + MenuNames.Length.ToString() + ")");
+            Debug.LogWarning($"The number of non-canvas menu parents is different from the number of menus. ({MenuNonCanvasParents.Length} and {MenuNames.Length})");
         }
         else
         {

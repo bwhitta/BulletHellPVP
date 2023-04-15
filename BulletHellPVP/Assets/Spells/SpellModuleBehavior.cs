@@ -23,7 +23,7 @@ public class SpellModuleBehavior : MonoBehaviour
     private Animator animator;
 
     // Readonlys
-    private readonly float outOfBoundsDistance;
+    private readonly float outOfBoundsDistance = 15f;
 
 
     private void Start()
@@ -70,7 +70,6 @@ public class SpellModuleBehavior : MonoBehaviour
 
                 currentAnimationPrefab.transform.SetPositionAndRotation(transform.position, transform.rotation);
                 currentAnimationPrefab.transform.localScale = new Vector2(module.AnimationScaleMultiplier, module.AnimationScaleMultiplier);
-                Debug.Log(currentAnimationPrefab);
                 // Animator does not work with changed name, so this line resets the name.
                 currentAnimationPrefab.name = animationPrefab.name;
 
@@ -87,7 +86,6 @@ public class SpellModuleBehavior : MonoBehaviour
         void EnableSprite()
         {
             spriteRenderer.sprite = module.Sprite;
-            Debug.Log($"Setting mask layer to {spellMaskLayer}");
             // Set the mask layer
             spriteRenderer.sortingLayerName = spellMaskLayer;
         }
@@ -122,8 +120,8 @@ public class SpellModuleBehavior : MonoBehaviour
         // Local Methods
         void CheckBounds()
         {
-            float outOfBoundsDistance = Vector2.Distance(transform.position, Vector2.zero);
-            if (outOfBoundsDistance >= 15.0f)
+            float distanceFromCenter = Vector2.Distance(transform.position, Vector2.zero);
+            if (distanceFromCenter >= outOfBoundsDistance)
             {
                 Destroy(gameObject);
             }
@@ -153,7 +151,6 @@ public class SpellModuleBehavior : MonoBehaviour
             if (module.SpriteFacingPush)
             {
                 transform.rotation = Quaternion.Euler(0, 0, 180 + GetAngle(movementDirection));
-                Debug.Log(transform);
             }
             //transform.right = targetedCharacter.transform.position
         }

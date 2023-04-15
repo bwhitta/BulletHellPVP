@@ -15,7 +15,12 @@ MonoBehaviour:
   InvincibilityTime: 0.5
   InvincibilityAlphaMod: 0.5
   MaxHealthStat: 100
-  MaxManaStat: 100
-  BaseManaRegen: 5
+  ScalingTime: 300
+  StartingMaxMana: 50
+  EndingMaxMana: 200
+  StartingManaRegen: 2.5
+  EndingManaRegen: 10
+  RegenOnDamageMod: 0.25
+  ManaDamageRegenTime: 0.25
   MovementSpeedMod: 2.5
   StatLostVelocityMod: 1

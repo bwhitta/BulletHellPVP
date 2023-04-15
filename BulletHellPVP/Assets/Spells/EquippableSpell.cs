@@ -55,10 +55,7 @@ public class EquippableSpell : MonoBehaviour
     {
         dragging = false;
 
-        // Check if it was dropped on a slot
-        Debug.Log("Mouse up");
         CheckSlots();
-
     }
     private void ReplaceSelf()
     {
@@ -67,15 +64,7 @@ public class EquippableSpell : MonoBehaviour
 
     private void CheckSlots()
     {
-        Debug.Log("Checking slots.");
-        sucessfullyPlaced = spellSelectionManager.PlaceInSlot(this);
-        if (sucessfullyPlaced)
-        {
-            transform.parent = spellSelectionManager.equippedSpellArea.transform;
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
+        spellSelectionManager.PlaceInSlot(this);
+        Destroy(gameObject);
     }
 }

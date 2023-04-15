@@ -13,12 +13,7 @@ public class ControlsManager
         {
             get
             {
-#pragma warning disable IDE0074 // Use compound assignment
-                if (_gameControls == null)
-                {
-                    _gameControls = new GameControls();
-                }
-#pragma warning restore IDE0074 // Use compound assignment
+                _gameControls ??= new GameControls();
                 return _gameControls;
             }
         }

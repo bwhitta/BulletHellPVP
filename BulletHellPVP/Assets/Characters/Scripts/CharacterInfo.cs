@@ -10,38 +10,40 @@ using UnityEngineInternal.XR.WSA;
 public class CharacterInfo : ScriptableObject
 {
     // Game Settings
-    public GameSettings gameSettings;
+    public GameSettings UsedGameSettings;
     [Space(25)]// Opponent info
     public CharacterInfo OpponentCharacterInfo;
     [Space(25)] // Character stats
     public BasicStats DefaultStats;
     [Space(25)] // The tag used for all objects relating to this character
     public string CharacterAndSortingTag;
-    [Space(25)] // Movement
-    public Vector2 CharacterStartLocation;
+    [Space(25)] // Controls
     public string InputMapName;
     public string MovementActionName;
-    public string SpellbookSelectionActionName;
+    public string NextBookActionName;
+    public string CastingActionName;
+    [Space(25)] // Movement
+    public Vector2 CharacterStartLocation;
     [Space(25)] // Animation
     public string AnimatorTreeParameterX;
     public string AnimatorTreeParameterY;
-    [Space(25)] //Equipped Spells
-    [SerializeField] private SpellData[] _equippedSpells;
-    public SpellData[] EquippedSpells
+    [Space(25)] // Equipped Spells
+    public int CurrentBook;
+    public SpellData[][] EquippedSpellBooks;
+    [SerializeField] private bool OverrideBooksForDebug;
+    [SerializeField] private SpellData[] OverrideBook;
+    public void CreateBooks()
     {
-        get
+        EquippedSpellBooks = new SpellData[UsedGameSettings.TotalBooks][];
+
+        for (int j = 0; j < EquippedSpellBooks.Length; j++)
         {
-            if (_equippedSpells.Length < gameSettings.TotalSpellSlots)
-            {
-                Debug.Log($"Equippable slots {_equippedSpells.Length} < total slots {gameSettings.TotalSpellSlots}, resetting equippable.");
-                _equippedSpells = new SpellData[gameSettings.TotalSpellSlots];
-            }
-            return _equippedSpells;
+            EquippedSpellBooks[j] = new SpellData[UsedGameSettings.TotalSpellSlots];
         }
-        set
+
+        if (OverrideBooksForDebug)
         {
-            Debug.Log($"Setting EquippedSpells to {value}");
-            _equippedSpells = value;
+            EquippedSpellBooks[0] = OverrideBook;
         }
     }
 

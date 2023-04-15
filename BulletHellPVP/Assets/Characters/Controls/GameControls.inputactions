@@ -40,13 +40,22 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
+                },
+                {
+                    "name": "NextBook",
+                    "type": "Button",
+                    "id": "d6a19fe6-aab5-4822-b5b6-9cdf431ec486",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
                 {
-                    "name": "Vector2",
+                    "name": "2D Vector",
                     "id": "00ca640b-d935-4593-8157-c05846ea39b3",
-                    "path": "Dpad",
+                    "path": "2DVector",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -55,7 +64,7 @@
                     "isPartOfComposite": false
                 },
                 {
-                    "name": "up",
+                    "name": "Up",
                     "id": "e2062cb9-1b15-46a2-838c-2f8d72a0bdd9",
                     "path": "<Keyboard>/w",
                     "interactions": "",
@@ -66,7 +75,7 @@
                     "isPartOfComposite": true
                 },
                 {
-                    "name": "down",
+                    "name": "Down",
                     "id": "320bffee-a40b-4347-ac70-c210eb8bc73a",
                     "path": "<Keyboard>/s",
                     "interactions": "",
@@ -77,7 +86,7 @@
                     "isPartOfComposite": true
                 },
                 {
-                    "name": "left",
+                    "name": "Left",
                     "id": "d2581a9b-1d11-4566-b27d-b92aff5fabbc",
                     "path": "<Keyboard>/a",
                     "interactions": "",
@@ -88,8 +97,8 @@
                     "isPartOfComposite": true
                 },
                 {
-                    "name": "right",
-                    "id": "fcfe95b8-67b9-4526-84b5-5d0bc98d6400",
+                    "name": "Right",
+                    "id": "3f839028-efa5-4202-b4fc-143a76e7c678",
                     "path": "<Keyboard>/d",
                     "interactions": "",
                     "processors": "",
@@ -218,6 +227,17 @@
                     "action": "SpellcastingSelection",
                     "isComposite": false,
                     "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "c898f478-d88a-4e1f-8784-52d76194c6d2",
+                    "path": "<Keyboard>/tab",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "NextBook",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         },
@@ -260,6 +280,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
+                },
+                {
+                    "name": "NextBook",
+                    "type": "Button",
+                    "id": "38cb4baa-57cf-4a92-a8ee-6d5b8e17bd44",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -280,7 +309,7 @@
                     "path": "<Gamepad>/dpad/left",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Keyboard&Mouse",
+                    "groups": "Keyboard&Mouse;Joystick",
                     "action": "CursorMovement",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -291,7 +320,7 @@
                     "path": "<Gamepad>/dpad/right",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Keyboard&Mouse",
+                    "groups": "Keyboard&Mouse;Joystick",
                     "action": "CursorMovement",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -302,7 +331,7 @@
                     "path": "<Gamepad>/leftTrigger",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Gamepad",
+                    "groups": "Gamepad;Joystick",
                     "action": "AccelerateCursorMovement",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -313,7 +342,7 @@
                     "path": "<Gamepad>/buttonSouth",
                     "interactions": "",
                     "processors": "Scale",
-                    "groups": "Gamepad",
+                    "groups": "Gamepad;Joystick",
                     "action": "SpellcastingSelection",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -324,7 +353,7 @@
                     "path": "<Gamepad>/buttonEast",
                     "interactions": "",
                     "processors": "Scale(factor=2)",
-                    "groups": "Gamepad",
+                    "groups": "Gamepad;Joystick",
                     "action": "SpellcastingSelection",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -335,7 +364,7 @@
                     "path": "<Gamepad>/buttonNorth",
                     "interactions": "",
                     "processors": "Scale(factor=3)",
-                    "groups": "Gamepad",
+                    "groups": "Gamepad;Joystick",
                     "action": "SpellcastingSelection",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -346,7 +375,7 @@
                     "path": "<Gamepad>/buttonWest",
                     "interactions": "",
                     "processors": "Scale(factor=4)",
-                    "groups": "Gamepad",
+                    "groups": "Gamepad;Joystick",
                     "action": "SpellcastingSelection",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -357,7 +386,7 @@
                     "path": "<Gamepad>/leftShoulder",
                     "interactions": "",
                     "processors": "Scale(factor=5)",
-                    "groups": "Gamepad",
+                    "groups": "Gamepad;Joystick",
                     "action": "SpellcastingSelection",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -368,7 +397,7 @@
                     "path": "<Gamepad>/rightShoulder",
                     "interactions": "",
                     "processors": "Scale(factor=6)",
-                    "groups": "Gamepad",
+                    "groups": "Gamepad;Joystick",
                     "action": "SpellcastingSelection",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -379,7 +408,7 @@
                     "path": "<Gamepad>/rightTrigger",
                     "interactions": "Press",
                     "processors": "Clamp(min=1,max=1),Scale(factor=7)",
-                    "groups": "Gamepad",
+                    "groups": "Gamepad;Joystick",
                     "action": "SpellcastingSelection",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -390,8 +419,19 @@
                     "path": "<Gamepad>/leftStick",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Gamepad",
+                    "groups": "Gamepad;Joystick",
                     "action": "Movement",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "61651e69-e603-47b6-99f1-996dea193c17",
+                    "path": "<Gamepad>/start",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad;Joystick",
+                    "action": "NextBook",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
