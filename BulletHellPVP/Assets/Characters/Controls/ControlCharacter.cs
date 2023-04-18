@@ -11,7 +11,6 @@ public class ControlCharacter : MonoBehaviour
     {
         get
         {
-            Debug.Log($"Getting movement vector - {movementAction.ReadValue<Vector2>()}");
             return movementAction.ReadValue<Vector2>();
         }
     }

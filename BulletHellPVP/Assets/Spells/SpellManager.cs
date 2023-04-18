@@ -1,7 +1,3 @@
-using System;
-using Unity.VisualScripting;
-using UnityEditor.Experimental.GraphView;
-using UnityEditor.U2D.Path;
 using UnityEngine;
 
 public class SpellManager : MonoBehaviour

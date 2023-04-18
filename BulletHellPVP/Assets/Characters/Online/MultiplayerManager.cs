@@ -36,17 +36,17 @@ public class MultiplayerManager : MonoBehaviour
             // Debug.Log("Skipping online location submitting (game is local).");
             return;
         }
+        /*
         else if (NetworkManager.Singleton.IsServer)
         {
             Debug.Log("Character is server or host. Continuing position change.");
         }
         else
         {
-            Debug.Log("Game is neither local nor a server, aborting position change.");
+            Debug.Log("Game is not a server, aborting position change.");
             return;
-        }
-
-        if (!NetworkManager.Singleton.IsClient)
+        }*/
+        if (NetworkManager.Singleton.IsClient == false)
         {
             foreach (ulong uid in NetworkManager.Singleton.ConnectedClientsIds)
                 NetworkManager.Singleton.SpawnManager.GetPlayerNetworkObject(uid).GetComponent<PlayerNetworking>().Move();
@@ -56,6 +56,7 @@ public class MultiplayerManager : MonoBehaviour
             NetworkObject characterObject = NetworkManager.Singleton.SpawnManager.GetLocalPlayerObject();
             PlayerNetworking character = characterObject.GetComponent<PlayerNetworking>();
             character.Move();
+            Debug.Log($"Character object: {characterObject} character: {character}");
         }
     }
 

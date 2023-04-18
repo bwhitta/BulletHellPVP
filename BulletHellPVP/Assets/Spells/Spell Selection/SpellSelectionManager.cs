@@ -1,8 +1,3 @@
-using System.Data;
-using System.Runtime.CompilerServices;
-using TMPro;
-using Unity.VisualScripting;
-using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.UI;
 
