@@ -86,7 +86,7 @@ public class CharacterStats : MonoBehaviour
         }
     }
 
-    // Monobehavior Methods
+    #region Monobehavior Methods
     private void OnEnable()
     {
         CharacterEnabled(true);
@@ -101,7 +101,8 @@ public class CharacterStats : MonoBehaviour
         ManaScalingTick();
         ManaRegenTick();
     }
-    
+    #endregion
+
     // Actions upon enabling or disabling character
     private void CharacterEnabled(bool enable)
     {
@@ -116,6 +117,7 @@ public class CharacterStats : MonoBehaviour
                 return;
             }
             transform.position = characterInfo.CharacterStartLocation;
+            name = characterInfo.name;
 
             // Mana
             maxMana = characterInfo.DefaultStats.StartingMaxMana;
@@ -140,8 +142,8 @@ public class CharacterStats : MonoBehaviour
         characterInfo.ManaBar.BarEnabled(enable);
         characterInfo.SpellbookLogicScript.SpellbookToggle(enable);
     }
-    
-    // Ticked from Update
+
+    #region Ticked From Update
     private void ManaScalingTick()
     {
         if (manaScalingTime < characterInfo.DefaultStats.ScalingTime)
@@ -172,7 +174,6 @@ public class CharacterStats : MonoBehaviour
         }
         CurrentManaStat += deltaManaChange * Time.deltaTime;
     }
-
     private void InvincibilityTick()
     {
         if (remainingInvincibilityTime > 0)
@@ -187,8 +188,9 @@ public class CharacterStats : MonoBehaviour
             }
         }
     }
+    #endregion
 
-    // Collision
+    #region Collision
     private void OnTriggerEnter2D(Collider2D collision)
     {
         CheckCollision(collision);
@@ -225,4 +227,5 @@ public class CharacterStats : MonoBehaviour
             gameObject.transform.GetChild(i).GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, alpha);
         }
     }
+    #endregion
 }

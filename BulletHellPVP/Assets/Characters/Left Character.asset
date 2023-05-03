@@ -12,9 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c9ee4449936a7034ab20aaceaba2ef65, type: 3}
   m_Name: Left Character
   m_EditorClassIdentifier: 
+  characterName: 
   UsedGameSettings: {fileID: 11400000, guid: 3f0be8a9d474c2a4aa8c3837ebe92267, type: 2}
-  OpponentCharacterInfo: {fileID: 11400000, guid: 54331a60389e0df4a9a8faa6f1473c05, type: 2}
   DefaultStats: {fileID: 11400000, guid: 4a3a84f4e9249ee4a836adc8dfb4fe9d, type: 2}
+  OpponentCharacterInfo: {fileID: 11400000, guid: 54331a60389e0df4a9a8faa6f1473c05, type: 2}
   CharacterAndSortingTag: Left Character
   InputMapName: Left Character
   MovementActionName: Movement
@@ -24,7 +25,7 @@ MonoBehaviour:
   AnimatorTreeParameterX: FacingX
   AnimatorTreeParameterY: FacingY
   CurrentBook: 0
-  OverrideBooksForDebug: 1
+  DeveloperBookOverride: 1
   OverrideBook:
   - {fileID: 11400000, guid: 0ac8e34202f3aea4c82a25d8c2cf568f, type: 2}
   - {fileID: 11400000, guid: 1f7e3902536dd8f488ca7172e7b6e65f, type: 2}

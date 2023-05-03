@@ -14,7 +14,7 @@ public class SpellModuleBehavior : MonoBehaviour
 
     // Player Attached
     private float attachmentTime;
-    private ControlCharacter characterControls;
+    private CharacterControls characterControls;
     private Vector2 movementDirection;
 
     // Display
@@ -43,10 +43,10 @@ public class SpellModuleBehavior : MonoBehaviour
         {
             case SpellData.ModuleTypes.PlayerAttached:
                 attachmentTime = module.AttachmentTime;
-                characterControls = transform.parent.GetComponent<ControlCharacter>();
+                characterControls = transform.parent.GetComponent<CharacterControls>();
                 if (module.PushesPlayer)
                 {
-                    movementDirection = characterControls.InputVector.normalized;
+                    movementDirection = characterControls.movementAction.ReadValue<Vector2>().normalized;
                     // If the player is stationary, send down
                     if(movementDirection == Vector2.zero)
                     {
@@ -165,9 +165,10 @@ public class SpellModuleBehavior : MonoBehaviour
         {
             if (module.AngleAfterStart)
             {
+                Vector2 inputVector = characterControls.movementAction.ReadValue<Vector2>();
                 float movingDirection = GetAngle(movementDirection);
-                float inputDirection = GetAngle(characterControls.InputVector);
-                if (characterControls.InputVector == Vector2.zero)
+                float inputDirection = GetAngle(inputVector);
+                if (inputVector == Vector2.zero)
                     return;
                 float movementCap = module.AngleChangeSpeed * Time.deltaTime;
                 float rotationAngle = Mathf.MoveTowardsAngle(movingDirection, inputDirection, movementCap);

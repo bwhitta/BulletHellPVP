@@ -12,7 +12,7 @@ public class SpellbookLogic : MonoBehaviour
     {
         get
         {
-            _bookNumberText ??= bookNumberTextObject.GetComponent<Text>();
+            _bookNumberText = _bookNumberText != null ? _bookNumberText : bookNumberTextObject.GetComponent<Text>();
             return _bookNumberText;
         }
     }
@@ -59,7 +59,6 @@ public class SpellbookLogic : MonoBehaviour
             FindControls();
             // Enable controls
             castingAction.Enable();
-            Debug.Log($"Casting Action: {castingAction}");
             castingAction.performed += context => CastingInputPerformed((int)castingAction.ReadValue<float>() - 1);
         }
         else
@@ -158,7 +157,7 @@ public class SpellbookLogic : MonoBehaviour
             spellCooldowns = new float[characterInfo.UsedGameSettings.TotalSpellSlots];
         }
 
-        // Loop through cooldowns and tick down by time.deltatime
+        // Loop through cooldowns and serverTick down by time.deltatime
         if (spellCooldowns == new float[characterInfo.UsedGameSettings.TotalSpellSlots])
         {
             Debug.Log("skipping cooldown, all zero");

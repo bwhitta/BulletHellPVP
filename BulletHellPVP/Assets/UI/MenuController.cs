@@ -29,7 +29,7 @@ public class MenuController : MonoBehaviour
         }
         else
         {
-            Debug.Log(MenuNames.Length.ToString() + " menus loaded sucessfully.");
+            //Debug.Log(MenuNames.Length.ToString() + " menus loaded sucessfully.");
             OpenMenu("MainMenu");
         }
     }

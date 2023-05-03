@@ -9,12 +9,11 @@ using UnityEngineInternal.XR.WSA;
 [CreateAssetMenu(menuName = "Character Information")]
 public class CharacterInfo : ScriptableObject
 {
-    // Game Settings
+    [Space(25)] // Options
     public GameSettings UsedGameSettings;
-    [Space(25)]// Opponent info
-    public CharacterInfo OpponentCharacterInfo;
-    [Space(25)] // Character stats
     public BasicStats DefaultStats;
+    [Space(25)] // Opponent info
+    public CharacterInfo OpponentCharacterInfo;
     [Space(25)] // The tag used for all objects relating to this character
     public string CharacterAndSortingTag;
     [Space(25)] // Controls
@@ -30,7 +29,7 @@ public class CharacterInfo : ScriptableObject
     [Space(25)] // Equipped Spells
     public int CurrentBook;
     public SpellData[][] EquippedSpellBooks;
-    [SerializeField] private bool OverrideBooksForDebug;
+    [SerializeField] private bool DeveloperBookOverride;
     [SerializeField] private SpellData[] OverrideBook;
     public void CreateBooks()
     {
@@ -41,7 +40,7 @@ public class CharacterInfo : ScriptableObject
             EquippedSpellBooks[j] = new SpellData[UsedGameSettings.TotalSpellSlots];
         }
 
-        if (OverrideBooksForDebug)
+        if (DeveloperBookOverride)
         {
             EquippedSpellBooks[0] = OverrideBook;
         }

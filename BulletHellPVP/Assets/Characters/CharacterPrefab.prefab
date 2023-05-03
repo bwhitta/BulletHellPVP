@@ -180,10 +180,9 @@ GameObject:
   - component: {fileID: 1892296493161063133}
   - component: {fileID: 2971767381870167634}
   - component: {fileID: 2971767381870167632}
-  - component: {fileID: 2971767381870167663}
   - component: {fileID: 2971767381870167633}
   - component: {fileID: 2971767381870167662}
-  - component: {fileID: 2282364490640711688}
+  - component: {fileID: -2673506372471646632}
   m_Layer: 0
   m_Name: CharacterPrefab
   m_TagString: Untagged
@@ -261,27 +260,6 @@ CapsuleCollider2D:
   m_Offset: {x: 0, y: -1.75}
   m_Size: {x: 13.5, y: 7.5}
   m_Direction: 1
---- !u!50 &2971767381870167663
-Rigidbody2D:
-  serializedVersion: 4
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2971767381870167636}
-  m_BodyType: 0
-  m_Simulated: 1
-  m_UseFullKinematicContacts: 0
-  m_UseAutoMass: 0
-  m_Mass: 1
-  m_LinearDrag: 0
-  m_AngularDrag: 0
-  m_GravityScale: 0
-  m_Material: {fileID: 0}
-  m_Interpolate: 0
-  m_SleepingMode: 1
-  m_CollisionDetection: 0
-  m_Constraints: 4
 --- !u!114 &2971767381870167633
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -294,6 +272,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4d5f79528ac06b41a12b1066e076982, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  movementAction:
+    m_Name: Movement
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: 0fe9c491-d384-485f-8385-8dbd734d21a4
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0
+  tempPush: {x: 0, y: 0}
+  tempMovementMod: 0
 --- !u!114 &2971767381870167662
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -307,7 +296,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   characterInfo: {fileID: 0}
---- !u!114 &2282364490640711688
+  maxMana: 0
+--- !u!114 &-2673506372471646632
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -316,11 +306,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 2971767381870167636}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9ef3a7222bef76e45a1ceadbf699cd99, type: 3}
+  m_Script: {fileID: 11500000, guid: e8d0727d5ae3244e3b569694d3912374, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Position:
-    m_InternalValue: {x: 0, y: 0, z: 0}
+  TransitionStateInfoList: []
+  m_Animator: {fileID: 2971767381870167634}
 --- !u!1 &2971767382177758301
 GameObject:
   m_ObjectHideFlags: 0

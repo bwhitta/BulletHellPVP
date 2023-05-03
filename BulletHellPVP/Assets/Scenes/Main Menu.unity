@@ -509,6 +509,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1454146120033674008, guid: 0c141fea58f7cce42b4ffa53f0763b33, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0c141fea58f7cce42b4ffa53f0763b33, type: 3}
 --- !u!4 &397604969 stripped
@@ -2848,7 +2852,6 @@ MonoBehaviour:
   - {fileID: 2094927116}
   - {fileID: 1273750206}
   StartingMenu: MainMenu
-  battleStartScene: Battle
   spellSelectionScene: Spell Selection
   localTypeName: Local
   hostTypeName: Host

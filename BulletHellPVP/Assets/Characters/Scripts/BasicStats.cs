@@ -4,21 +4,29 @@ using UnityEngine;
 [Serializable]
 public class BasicStats: ScriptableObject
 {
-    public float InvincibilityTime;
-    public float InvincibilityAlphaMod;
+    [Header("Movement")]
+    public float MovementSpeedMod;
+
     [Space]
+    [Header("Health")]
     public float MaxHealthStat;
+
     [Space]
-    public float ScalingTime;
+    [Header("Mana")]
     public float StartingMaxMana;
     public float EndingMaxMana;
-    [Space]
+    public float ScalingTime;
     public float StartingManaRegen;
     public float EndingManaRegen;
+
     [Space]
-    public float MovementSpeedMod;
-    [Space]
+    [Header("Health/Mana Bar Visuals")]
     public float StatLostVelocityMod;
+
+    [Space]
+    [Header("Damage Invincibility")]
+    public float InvincibilityTime;
+    public float InvincibilityAlphaMod;
 
     /* (UNUSED) Mana regen on damage
     [Space]
