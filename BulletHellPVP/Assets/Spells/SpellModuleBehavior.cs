@@ -6,7 +6,6 @@ public class SpellModuleBehavior : NetworkBehaviour
     #region Fields
     private SpellData.Module module;
     public byte setIndex, spellIndex, moduleIndex, behaviorID, ownerID;
-    private bool startedUp = false;
 
     // Projectile
     public GameObject targetedCharacter;
@@ -21,8 +20,13 @@ public class SpellModuleBehavior : NetworkBehaviour
     private SpriteRenderer spriteRenderer;
     private Animator animator;
 
+    // Network Variables
+    private readonly NetworkVariable<Vector2> serverSidePosition = new();
+    private int ticksSincePositionUpdate;
+
+
     // Readonlys
-    // private readonly float outOfBoundsDistance = 15f; DISABLED WHILE REWORKING SCRIPT
+    private readonly float outOfBoundsDistance = 15f;
     #endregion
 
     void Start()
@@ -33,7 +37,7 @@ public class SpellModuleBehavior : NetworkBehaviour
     private void StartModule()
     {
         Debug.Log($"Starting module! OwnerID: {ownerID}, Owner character: {GameSettings.Used.Characters[ownerID]}");
-        
+
         if (IsServer)
         {
             Debug.Log($"Sending module data to clients (calling ModuleDataClientRpc)");
@@ -42,27 +46,32 @@ public class SpellModuleBehavior : NetworkBehaviour
 
         // Set variables
         module = GetModule();
-        //SetStartingPosition();
-        //SetScale();
+        SetStartingPosition();
+        SetScale();
 
+        //Enables sprite, animator, particles, and collider as needed
         Debug.Log($"Uses Sprite: {module.UsesSprite}, Animated: {module.Animated}, Generates Particles: {module.GeneratesParticles}");
-
         if (module.UsesSprite)
         {
             Debug.Log($"Sprite would be enabled here");
-            //EnableSprite();
+            EnableSprite();
         }
         if (module.Animated)
         {
             Debug.Log($"Animator would be enabled here");
-            //EnableAnimator();
+            EnableAnimator();
         }
         if (module.GeneratesParticles)
         {
             Debug.Log($"Particle System would be enabled here");
-            //EnableParticleSystem();
+            EnableParticleSystem();
         }
-        
+        if (module.UsesCollider)
+        {
+            gameObject.GetComponent<PolygonCollider2D>().enabled = true;
+            SetCollider();
+        }
+
         switch (module.ModuleType)
         {
             case SpellData.ModuleTypes.PlayerAttached:
@@ -79,11 +88,6 @@ public class SpellModuleBehavior : NetworkBehaviour
                 }
                 break;
         }
-
-        //gameObject.GetComponent<PolygonCollider2D>().enabled = module.UsesCollider;
-        //SetCollider();
-
-        startedUp = true;
 
         void SetStartingPosition()
         {
@@ -170,7 +174,7 @@ public class SpellModuleBehavior : NetworkBehaviour
             gameObject.GetComponent<PolygonCollider2D>().points = module.ColliderPath;
         }
     }
-    
+
     private SpellData.Module GetModule()
     {
         SpellSetInfo set = GameSettings.Used.SpellSets[spellIndex];
@@ -196,28 +200,19 @@ public class SpellModuleBehavior : NetworkBehaviour
 
     private void FixedUpdate()
     {
-        // If not instantiated on network, skip this frame
-        if (!startedUp)
-        {
-            Debug.Log($"Not started up, skipping...");
-            return;
-        }
+        if (IsServer) ServerPositionTick();
 
         switch (module.ModuleType)
         {
             case SpellData.ModuleTypes.Projectile:
-                Debug.Log($"if it was enabled the projectile would be moved here");
-                //MoveSpell();
+                MoveSpell();
                 break;
             case SpellData.ModuleTypes.PlayerAttached:
                 PlayerAttachedUpdate();
                 break;
         }
-        /* TEMPORARILY DISABLED WHILE REWORKING SCRIPT
         // Delete if too far away
         CheckBounds();
-
-        // Local Methods
         void CheckBounds()
         {
             float distanceFromCenter = Vector2.Distance(transform.position, Vector2.zero);
@@ -227,7 +222,6 @@ public class SpellModuleBehavior : NetworkBehaviour
                 Destroy(gameObject);
             }
         }
-        */
     }
     private void PlayerAttachedUpdate()
     {
@@ -275,7 +269,7 @@ public class SpellModuleBehavior : NetworkBehaviour
                 float rotationAngle = Mathf.MoveTowardsAngle(movingDirection, inputDirection, movementCap);
                 movementDirection = Quaternion.Euler(0, 0, rotationAngle) * Vector2.up;
             }
-            
+
         }
         float GetAngle(Vector2 vector)
         {
@@ -284,7 +278,15 @@ public class SpellModuleBehavior : NetworkBehaviour
         }
         #endregion
     }
-
+    private void ServerPositionTick()
+    {
+        ticksSincePositionUpdate++;
+        if (ticksSincePositionUpdate >= GameSettings.Used.ServerLocationTickFrequency)
+        {
+            serverSidePosition.Value = transform.position;
+            ticksSincePositionUpdate = 0;
+        }
+    }
 
     private void PointTowardsTarget()
     {
@@ -336,7 +338,7 @@ public class SpellModuleBehavior : NetworkBehaviour
         }
 
         // Scaling
-        if(module.ScalesOverTime)
+        if (module.ScalesOverTime)
             UpdateScaling();
     }
     private void UpdateScaling()
@@ -353,9 +355,9 @@ public class SpellModuleBehavior : NetworkBehaviour
         if (distanceMoved >= distanceToMove && module.DestroyOnScalingCompleted)
         {
             Debug.Log($"Fully moved, destroying {name}. Distance moved: {distanceMoved}. Distance to move: {distanceToMove}");
-            Destroy(gameObject);
+            DestroySelfNetworkSafe();
         }
-           
+
     }
     private float Scaling(float totalMove, float totalMoveScalingStartPercent, float currentlyMoved, float scaleTargetPercentage)
     {
@@ -367,5 +369,18 @@ public class SpellModuleBehavior : NetworkBehaviour
         scalingCompletionPercentage = Mathf.Min(scalingCompletionPercentage, 1f);
 
         return (scaleTargetPercentage * scalingCompletionPercentage) + 1f;
+    }
+
+    private void DestroySelfNetworkSafe()
+    {
+        if (MultiplayerManager.IsOnline == false || (IsClient && !IsHost))
+        {
+            Destroy(gameObject);
+        }
+        else if (IsServer)
+        {
+            Debug.Log($"Despawning projectile.");
+            NetworkObject.Despawn(gameObject);
+        }
     }
 }
