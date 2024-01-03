@@ -50,7 +50,7 @@ public class BarLogic : MonoBehaviour
         {
             if (statToModify == Stats.health)
             {
-                return characterInfo.DefaultStats.MaxHealthStat;
+                return GameSettings.Used.MaxHealth;
             }
             else if (statToModify == Stats.mana)
             {
@@ -160,7 +160,7 @@ public class BarLogic : MonoBehaviour
         {
             // Move statLost down and speed up velocity
             statLost -= statLostVelocity * Time.deltaTime;
-            statLostVelocity += characterInfo.DefaultStats.StatLostVelocityMod;
+            statLostVelocity += GameSettings.Used.StatLostVelocity;
 
             UpdateStatDisplays(UpdatableStats.Lost);
         }

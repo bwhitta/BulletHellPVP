@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class SpellbookLogic : MonoBehaviour
 {
-    [SerializeField] private GameObject[] spellDisplays;
+    [SerializeField] private SpriteRenderer[] spellDisplays;
     [SerializeField] private GameObject bookNumberTextObject;
     private Text _bookNumberText;
     private Text BookNumberText
@@ -59,7 +59,7 @@ public class SpellbookLogic : MonoBehaviour
             FindControls();
             // Enable controls
             castingAction.Enable();
-            castingAction.performed += context => CastingInputPerformed((int)castingAction.ReadValue<float>() - 1);
+            castingAction.performed += context => CastingInputPerformed((byte)(castingAction.ReadValue<float>() - 1f));
         }
         else
         {
@@ -101,48 +101,63 @@ public class SpellbookLogic : MonoBehaviour
     private void UpdateSpellbookUI()
     {
         // Update text
-        BookNumberText.text = characterInfo.CurrentBook + 1.ToString();
+        BookNumberText.text = characterInfo.CurrentBookIndex + 1.ToString();
 
-        if (characterInfo.EquippedSpellBooks == null)
-        {
-            characterInfo.CreateBooks();
-        }
+        characterInfo.CreateBooks();
+
         // Loop through and update each sprite using the data from 
-        for (var i = 0; i < spellDisplays.Length; i++)
+        for (int i = 0; i < spellDisplays.Length; i++)
         {
-            if (characterInfo.EquippedSpellBooks[characterInfo.CurrentBook].Length <= i || characterInfo.EquippedSpellBooks[characterInfo.CurrentBook][i] == null)
+            if (characterInfo.CurrentBook == null)
             {
-                spellDisplays[i].SetActive(false);
+                spellDisplays[i].gameObject.SetActive(false);
                 continue;
             }
-            SpriteRenderer spriteRenderer = spellDisplays[i].GetComponent<SpriteRenderer>();
-            spriteRenderer.enabled = true;
-            spellDisplays[i].GetComponent<SpriteRenderer>().sprite = characterInfo.EquippedSpellBooks[characterInfo.CurrentBook][i].Icon;
+            spellDisplays[i].enabled = true;
+            spellDisplays[i].sprite = SpellDataFromSlot((byte)i).Icon;
         }
+    }
+
+    private SpellData SpellDataFromSlot(byte slotIndex)
+    {
+        byte setIndex = characterInfo.CurrentBook.SetIndexes[slotIndex];
+        byte spellIndex = characterInfo.CurrentBook.SpellIndexes[slotIndex];
+
+        SpellSetInfo setInfo = GameSettings.Used.SpellSets[setIndex];
+        SpellData spell = setInfo.spellsInSet[spellIndex];
+        return spell;
     }
 
     private void NextBookInputPerformed()
     {
-        if (characterInfo.UsedGameSettings.CanLoopBooks)
+        if (GameSettings.Used.CanLoopBooks)
         {
-            characterInfo.CurrentBook = Mathf.Min((characterInfo.CurrentBook + 1), characterInfo.EquippedSpellBooks.Length);
+            characterInfo.CurrentBookIndex = (byte)((characterInfo.CurrentBookIndex + 1) % GameSettings.Used.TotalBooks);
+            
         }
         else
         {
-            characterInfo.CurrentBook = (characterInfo.CurrentBook + 1) % characterInfo.EquippedSpellBooks.Length;
+            characterInfo.CurrentBookIndex = (byte)Mathf.Min(characterInfo.CurrentBookIndex + 1, GameSettings.Used.TotalBooks);
         }
-        
+
         UpdateSpellbookUI();
     }
-    private void CastingInputPerformed(int spellbookSlotIndex)
+    private void CastingInputPerformed(byte spellbookSlotIndex)
     {
-        Debug.Log("Casting input performed");
         if (gameObject.activeSelf == false)
         {
             Debug.Log($"Casting cancelled, spellbook disabled.");
             return;
         }
-        characterInfo.CharacterSpellManager.AttemptSpell(spellbookSlotIndex);
+        if (MultiplayerManager.IsOnline)
+        {
+            Debug.Log($"Casting imput performed. Server will now attempt spell");
+            characterInfo.CharacterSpellManager.AttemptSpellServerRpc(spellbookSlotIndex);
+        }
+        else
+        {
+            characterInfo.CharacterSpellManager.AttemptSpell(spellbookSlotIndex);
+        }
     }
 
     private void Update()
@@ -152,13 +167,13 @@ public class SpellbookLogic : MonoBehaviour
     private void UpdateCooldown()
     {
         // Set up cooldowns if data is invalid
-        if (spellCooldowns == null || spellCooldowns.Length != characterInfo.UsedGameSettings.TotalSpellSlots)
+        if (spellCooldowns == null || spellCooldowns.Length != GameSettings.Used.TotalSpellSlots)
         {
-            spellCooldowns = new float[characterInfo.UsedGameSettings.TotalSpellSlots];
+            spellCooldowns = new float[GameSettings.Used.TotalSpellSlots];
         }
 
         // Loop through cooldowns and serverTick down by time.deltatime
-        if (spellCooldowns == new float[characterInfo.UsedGameSettings.TotalSpellSlots])
+        if (spellCooldowns == new float[GameSettings.Used.TotalSpellSlots])
         {
             Debug.Log("skipping cooldown, all zero");
             return;
@@ -168,7 +183,7 @@ public class SpellbookLogic : MonoBehaviour
             if (spellCooldowns[i] > 0)
             {
                 spellCooldowns[i] -= Time.deltaTime;
-                SetCooldownUI(i, spellCooldowns[i] / characterInfo.EquippedSpellBooks[characterInfo.CurrentBook][i].SpellCooldown);
+                SetCooldownUI(i, spellCooldowns[i] / SpellDataFromSlot((byte)i).SpellCooldown);
             }
             if (spellCooldowns[i] < 0)
             {
@@ -186,11 +201,11 @@ public class SpellbookLogic : MonoBehaviour
     }
     private void AllCooldownUIs(float percentFilled = 0)
     {
-        if(characterInfo.UsedGameSettings == null)
+        if(GameSettings.Used == null)
         {
             Debug.LogWarning("Used Game Settings is null. Did you forget a reference in the Character Info?");
         }
-        for (int i = 0; i < characterInfo.UsedGameSettings.TotalSpellSlots; i++)
+        for (int i = 0; i < GameSettings.Used.TotalSpellSlots; i++)
         {
             SetCooldownUI(i, percentFilled);
         }

@@ -3,22 +3,11 @@ using UnityEngine.InputSystem;
 
 public class CursorLogic : MonoBehaviour
 {
-    [SerializeField] private CharacterInfo characterInfo;
+    [HideInInspector] public CharacterInfo characterInfo;
     // Movement
-    [SerializeField][Range(-30f, 30f)] private float location;
-    [SerializeField] private float movementMultiplier;
-    [SerializeField] private float acceleratedMovementMultiplier;
-    [SerializeField] private Transform squareTransform;
-    public float squareSide;
+    private float location = 0;
     // Controls
-    [SerializeField] private string cursorMovementInputName, cursorAccelerationInputName;
     private InputAction cursorMovementInput, cursorAccelerationInput;
-
-    private void OnValidate()
-    {
-        squareSide = squareTransform.localScale.x;
-        UpdateCursor();
-    }
 
     private void Awake()
     {
@@ -27,34 +16,32 @@ public class CursorLogic : MonoBehaviour
 
     private void Start()
     {
-        squareSide = squareTransform.localScale.x;
-
         //Get the InputActionMap
         InputActionMap controlsMap = ControlsManager.GetActionMap(characterInfo.InputMapName);
 
         // Set and enable 
-        cursorMovementInput = controlsMap.FindAction(cursorMovementInputName, true);
+        cursorMovementInput = controlsMap.FindAction(GameSettings.Used.CursorMovementInputName, true);
         cursorMovementInput.Enable();
 
-        cursorAccelerationInput = controlsMap.FindAction(cursorAccelerationInputName, true);
+        cursorAccelerationInput = controlsMap.FindAction(GameSettings.Used.AccelerateCursorInputName, true);
         cursorAccelerationInput.Enable();
     }
     private void Update()
     {
         float cursorMovement = cursorMovementInput.ReadValue<float>();
-        cursorMovement = cursorMovement * Time.deltaTime * movementMultiplier;
+        cursorMovement *= GameSettings.Used.CursorMovementSpeed;
+
         if (cursorAccelerationInput.ReadValue<float>() >= 0.5f)
         {
-            cursorMovement *= acceleratedMovementMultiplier;
+            cursorMovement *= GameSettings.Used.CursorAcceleratedMovementMod;
         }
 
-        MoveCursor(cursorMovement);
+        MoveCursor(cursorMovement * Time.deltaTime);
     }
 
     private void MoveCursor(float movement)
     {
         location += movement;
-
         UpdateCursor();
         
     }
@@ -62,10 +49,10 @@ public class CursorLogic : MonoBehaviour
     private void UpdateCursor()
     {
 
-        float locationAroundSquare = Modulo(location, squareSide * 4);
+        float locationAroundSquare = Modulo(location, GameSettings.Used.BattleSquareWidth * 4);
 
         int sideNumber = GetCurrentWall();
-        float locationAroundSide = locationAroundSquare % squareSide;
+        float locationAroundSide = locationAroundSquare % GameSettings.Used.BattleSquareWidth;
 
         transform.rotation = Quaternion.Euler(0, 0, -90 * (sideNumber)); // Negative because it rotates counterclockwise
 
@@ -84,7 +71,7 @@ public class CursorLogic : MonoBehaviour
         
         int[,] cornerDirection = {{-1, 1},{1, 1},{1, -1},{-1, -1}}; // Starts in top left, continues clockwise
 
-        for (var i = 0; i < 4; i++)
+        for (int i = 0; i < 4; i++)
         {
             corners[i].x = posX + (sideLength * cornerDirection[i, 0] * 0.5f);
             corners[i].y = posY + (sideLength * cornerDirection[i, 1] * 0.5f);
@@ -96,11 +83,7 @@ public class CursorLogic : MonoBehaviour
     /// <returns> A list of the coordinates of the square. Starts in top left, continues clockwise </returns>
     public Vector2[] GetCurrentSquareCorners()
     {
-        if (!Mathf.Approximately(squareTransform.localScale.x, squareTransform.localScale.y))
-        {
-            Debug.LogWarning("Square transform discrepancy");
-        }
-        return GetSquareCorners(squareTransform.localScale.x, squareTransform.localPosition.x, squareTransform.localPosition.y);
+        return GetSquareCorners(GameSettings.Used.BattleSquareWidth, characterInfo.OpponentAreaCenterX, characterInfo.OpponentAreaCenterY);
     }
 
     private float Modulo(float numberToModify, float modifyingNumber)
@@ -110,7 +93,7 @@ public class CursorLogic : MonoBehaviour
 
     public int GetCurrentWall()
     {
-        float squareSide = squareTransform.localScale.x;
+        float squareSide = GameSettings.Used.BattleSquareWidth;
         float locationAroundSquare = Modulo(location, squareSide * 4);
 
         return (int)Mathf.Floor(locationAroundSquare / squareSide);

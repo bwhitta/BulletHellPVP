@@ -1,56 +1,85 @@
+using System;
+using Unity.Netcode;
 using UnityEngine;
 
-public class SpellManager : MonoBehaviour
+public class SpellManager : NetworkBehaviour
 {
-    [SerializeField] private CharacterInfo characterInfo;
-    [SerializeField] private GameObject spellbookObject;
-
-    private CursorLogic _cursorLogic;
-    private CursorLogic CursorLogic
+    #region Fields
+    [HideInInspector] public CharacterInfo characterInfo;
+    #endregion
+    #region Monobehavior Methods
+    private void Start()
     {
-        get
-        {
-            if (_cursorLogic == null)
-            {
-                _cursorLogic = GetComponent<CursorLogic>();
-            }
-            return _cursorLogic;
-        }
+        tag = characterInfo.CharacterObject.tag;
     }
-    
+    #endregion
 
-    public void AttemptSpell(int spellIndex)
+    public static SpellData GetSpellData(byte setIndex, byte spellIndex)
     {
-        SpellData[] currentBook = characterInfo.EquippedSpellBooks[characterInfo.CurrentBook];
-        // Check if the slot is valid
-        if (spellIndex < 0 || currentBook.Length <= spellIndex || currentBook[spellIndex] == null)
+        SpellSetInfo set = GameSettings.Used.SpellSets[setIndex];
+        if(spellIndex >= set.spellsInSet.Length)
         {
-            Debug.Log($"No spell in slot {spellIndex}");
+            Debug.LogWarning($"Set {set.name} does not have a spell at index {spellIndex}.");
+        }
+        return set.spellsInSet[spellIndex];
+    }
+    public static SpellData GetSpellData(CharacterInfo.Spellbook currentBook, byte slot)
+    {
+        return GetSpellData(currentBook.SetIndexes[slot], currentBook.SpellIndexes[slot]);
+    }
+
+    public void AttemptSpell(byte slot)
+    {
+        Debug.Log($"Spell in index {slot} attempted");
+
+        // Check slot validity
+        if (GetSpellData(characterInfo.CurrentBook, slot) == null)
+        {
+            Debug.Log($"No spell in slot {slot}");
             return;
         }
 
         // Gets the spell in the slot
-        SpellData spellData = characterInfo.EquippedSpellBooks[characterInfo.CurrentBook][spellIndex];
-        
+        SpellData spellData = GetSpellData(characterInfo.CurrentBook, slot);
+
         // Check cooldown and mana
         if (CooldownAndManaAvailable() == false)
             return;
 
-        foreach(SpellData.Module module in spellData.UsedModules)
+        Debug.Log($"Starting instantation");
+        for (byte i = 0; i < spellData.UsedModules.Length; i++)
         {
-            // Instantiate the spell
+            SpellData.Module module = spellData.UsedModules[i];
+
             SpellModuleBehavior[] moduleBehaviors = InstantiateModule(module);
-            // Configure the spell
-            for (int i = 0; i < moduleBehaviors.Length; i++)
+
+            for (byte j = 0; j < moduleBehaviors.Length; j++)
             {
-                ConfigureModule(moduleBehaviors[i], module, i);
+                Debug.Log($"Sending the data to the server's behaviors (will later be sent to clients)");
+                SpellModuleBehavior behavior = moduleBehaviors[j]; 
+                behavior.setIndex = characterInfo.CurrentBook.SetIndexes[slot];
+                behavior.spellIndex = characterInfo.CurrentBook.SpellIndexes[slot];
+                behavior.moduleIndex = i;
+                behavior.behaviorID = j;
+                behavior.ownerID = (byte)Array.IndexOf(GameSettings.Used.Characters, characterInfo);
+
+                if (IsServer)
+                {
+                    NetworkObject moduleObject = behavior.gameObject.GetComponent<NetworkObject>();
+                    moduleObject.Spawn(true);
+                    Debug.Log($"Spawned behavior {behavior}");
+                }
+                else
+                {
+                    Debug.LogWarning($"This client isn't a server.");
+                }
             }
         }
 
-        // Local Method:
+        // Local Methods
         bool CooldownAndManaAvailable()
         {
-            if (characterInfo.SpellbookLogicScript.spellCooldowns[spellIndex] > 0)
+            if (characterInfo.SpellbookLogicScript.spellCooldowns[slot] > 0)
             {
                 Debug.Log("Spell on cooldown.");
                 return false;
@@ -62,97 +91,28 @@ public class SpellManager : MonoBehaviour
             }
             else
             {
-                characterInfo.SpellbookLogicScript.spellCooldowns[spellIndex] = spellData.SpellCooldown;
+                characterInfo.SpellbookLogicScript.spellCooldowns[slot] = spellData.SpellCooldown;
                 characterInfo.CharacterStats.CurrentManaStat -= spellData.ManaCost;
                 return true;
             }
         }
     }
+
+    [ServerRpc]
+    public void AttemptSpellServerRpc(byte slotIndex)
+    {
+        Debug.Log($"AttemptSpellServerRpc (index of spell slot is {slotIndex})");
+        AttemptSpell(slotIndex);
+    }
+
     private SpellModuleBehavior[] InstantiateModule(SpellData.Module module)
     {
         SpellModuleBehavior[] spellBehaviors = new SpellModuleBehavior[module.InstantiationQuantity];
+
         for (var i = 0; i < module.InstantiationQuantity; i++)
         {
             spellBehaviors[i] = Instantiate(module.Prefab).GetComponent<SpellModuleBehavior>();
         }
-
         return spellBehaviors;
     }
-    private void ConfigureModule(SpellModuleBehavior moduleBehavior, SpellData.Module module, int indexWithinSpell)
-    {
-        // Give the spell its ID
-        moduleBehavior.spellBehaviorID = indexWithinSpell;
-
-        switch (module.ModuleType)
-        {
-            case SpellData.ModuleTypes.Projectile:
-                SetProjectileTransform();
-                break;
-            case SpellData.ModuleTypes.PlayerAttached:
-                AttachToPlayer();
-                break;
-        }
-
-
-        GiveSpellTargets();
-        moduleBehavior.module = module;
-        
-        #region LocalMethods
-        void SetProjectileTransform()
-        {
-            switch (module.ProjectileSpawningArea)
-            {
-                case SpellData.SpawningAreas.Point:
-                    moduleBehavior.transform.position = transform.position;
-                    break;
-                case SpellData.SpawningAreas.AdjacentCorners:
-                    moduleBehavior.distanceToMove = (CursorLogic.squareSide) / 2;
-                    moduleBehavior.transform.position = CalculateAdjacentCorners()[moduleBehavior.spellBehaviorID];
-                    moduleBehavior.transform.rotation = this.transform.rotation * Quaternion.Euler(0, 0, -90);
-                    break;
-                default:
-                    Debug.LogWarning($"Casting Area {module.ProjectileSpawningArea} does not exist.");
-                    break;
-            }
-
-            moduleBehavior.spellMaskLayer = characterInfo.OpponentCharacterInfo.CharacterAndSortingTag;
-
-            // Local Method
-            Vector2[] CalculateAdjacentCorners()
-            {
-                int cursorWall = CursorLogic.GetCurrentWall();
-                Vector2[] corners = CursorLogic.GetCurrentSquareCorners();
-                return new Vector2[]
-                {
-                corners[cursorWall],
-                corners[(cursorWall + 1) % 4]
-                };
-            }
-        }
-        void AttachToPlayer()
-        {
-            moduleBehavior.transform.parent = characterInfo.CharacterObject.transform;
-            moduleBehavior.transform.localPosition = Vector3.zero;
-            moduleBehavior.spellMaskLayer = characterInfo.CharacterAndSortingTag;
-        }
-        void GiveSpellTargets()
-        {
-            switch (module.TargetingType)
-            {
-                case SpellData.TargetTypes.Character:
-                    moduleBehavior.targetedCharacter = characterInfo.OpponentCharacterInfo.CharacterObject;
-                    break;
-                case SpellData.TargetTypes.Center:
-                    // Not yet implemented
-                    break;
-                case SpellData.TargetTypes.Opposing:
-                    // Not yet implemented
-                    break;
-                case SpellData.TargetTypes.InvertedOpposing:
-                    // Not yet implemented
-                    break;
-            }
-        }
-        #endregion
-    }
-}
+}   

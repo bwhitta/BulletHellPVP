@@ -29,7 +29,7 @@ public class ControlsManager
 
         //Get the index of the map
         int mapIndex = -1;
-        for (var i = 0; i < controls.asset.actionMaps.ToArray().Length; i++)
+        for (int i = 0; i < controls.asset.actionMaps.ToArray().Length; i++)
         {
             if (controls.asset.actionMaps.ToArray()[i].name == mapName)
             {

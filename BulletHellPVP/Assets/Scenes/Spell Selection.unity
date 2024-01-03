@@ -167,7 +167,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce753a19664aefb4b97f1f2f2f764237, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameSettings: {fileID: 11400000, guid: 3f0be8a9d474c2a4aa8c3837ebe92267, type: 2}
   currentCharacterIndex: 0
   inSetPrefab: {fileID: 2130220151547680756, guid: 89a835d8bd36dfb4b88305c1e43db7ad, type: 3}
   equippedPrefab: {fileID: 2130220151547680756, guid: 5fc17fea2aa728546ae7a9d109bc1877, type: 3}
@@ -1184,7 +1183,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 49d7c7419df1c4146a76725a9d5487c7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameSettings: {fileID: 11400000, guid: 3f0be8a9d474c2a4aa8c3837ebe92267, type: 2}
+  usedSettings: {fileID: 11400000, guid: 3f0be8a9d474c2a4aa8c3837ebe92267, type: 2}
   setDisplayPrefab: {fileID: 2130220151547680756, guid: 839a0f39ec5a9354fa29c1973d68b149, type: 3}
   distanceBetweenIcons: 1.5
   selectionDisplay: {fileID: 1204457584}

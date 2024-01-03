@@ -19,8 +19,23 @@ MonoBehaviour:
   SpellSets:
   - {fileID: 11400000, guid: 2254d440d774c7045a553d3c6a640f6e, type: 2}
   - {fileID: 11400000, guid: 696f88c2f7e58bb44b74c4601b71fd84, type: 2}
+  BattleSquareWidth: 7.5
   Characters:
   - {fileID: 11400000, guid: 78760bb3a3bdc6f40a42de23b6e09442, type: 2}
   - {fileID: 11400000, guid: 54331a60389e0df4a9a8faa6f1473c05, type: 2}
+  CharacterMovementSpeed: 5
+  MaxHealth: 100
+  StartingMaxMana: 50
+  EndingMaxMana: 200
+  StartingManaRegen: 5
+  EndingManaRegen: 20
+  ManaScalingTime: 60
+  InvincibilityTime: 1
+  InvincibilityAlphaMod: 0.25
   ServerLocationTickFrequency: 6
   ServerClientDiscrepancyLimit: 0.25
+  StatLostVelocity: 1
+  CursorMovementSpeed: 5
+  CursorAcceleratedMovementMod: 3
+  CursorMovementInputName: CursorMovement
+  AccelerateCursorInputName: AccelerateCursorMovement

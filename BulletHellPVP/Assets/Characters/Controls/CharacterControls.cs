@@ -1,4 +1,3 @@
-using Mono.CompilerServices.SymbolWriter;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -11,17 +10,17 @@ public class CharacterControls : NetworkBehaviour
     private CharacterInfo characterInfo;
     private Animator characterAnimator;
     #endregion
-
     #region Fields
     // Temporary variables, cleared after movement (IMPLEMENTATION IS CURRENTLY REMOVED - MAKE SURE TO ADD BACK IN ONCE MULTIPLAYER IS FUNCTIONAL)
     [HideInInspector] public Vector2 tempPush;
     [HideInInspector] public float tempMovementMod;
 
-    private NetworkVariable<Vector2> serverSidePosition = new();
+    private readonly NetworkVariable<Vector2> serverSidePosition = new();
     private Vector2 previousServerSidePosition;
     private int ticksSincePositionUpdate;
-    #endregion Fields
 
+    [SerializeField] private GameObject spellcastingObjectPrefab;
+    #endregion Fields
     #region Monobehavior Methods
     private void Start()
     {
@@ -30,6 +29,7 @@ public class CharacterControls : NetworkBehaviour
         transform.position = characterInfo.CharacterStartLocation;
         SetPositionOnline();
         NetworkVariableListeners();
+        InstantiateSpellManager();
 
         // Local Methods
         void SetObjectReferences()
@@ -68,8 +68,25 @@ public class CharacterControls : NetworkBehaviour
             previousServerSidePosition = prevLocation;
             ticksSincePositionUpdate = 0;
         }
+        void InstantiateSpellManager()
+        {
+            // Online
+            if (MultiplayerManager.IsOnline && IsServer)
+            {
+                GameObject spellManagerObject = null;
+                spellManagerObject = Instantiate(spellcastingObjectPrefab);
+                spellManagerObject.GetComponent<SpellManager>().characterInfo = characterInfo;
+                spellManagerObject.GetComponent<NetworkObject>().SpawnWithOwnership(OwnerClientId);
+            }
+            // Local
+            else if (!MultiplayerManager.IsOnline)
+            {
+                GameObject spellManagerObject = null;
+                spellManagerObject = Instantiate(spellcastingObjectPrefab);
+                spellManagerObject.GetComponent<SpellManager>().characterInfo = characterInfo;
+            }
+        }
     }
-
     private void FixedUpdate()
     {
         FixedMovementTick();
@@ -80,20 +97,23 @@ public class CharacterControls : NetworkBehaviour
         }
     }
     #endregion
-
     #region Methods
     private void FixedMovementTick()
     {
         Vector2 movementInput = movementAction.ReadValue<Vector2>();
+
+        if (MultiplayerManager.IsOnline)
+        {
+            if (IsOwner)
+            {
+                OwnerMovementTick();
+            }
+            else if (!IsServer)
+            {
+                OpponentTick();
+            }
+        }
         
-        if (IsOwner)
-        {
-            OwnerMovementTick();
-        }
-        else if (!IsServer)
-        {
-            OpponentTick();
-        }
         // Local
         if (MultiplayerManager.multiplayerType == MultiplayerManager.MultiplayerTypes.Local)
         {
@@ -105,42 +125,39 @@ public class CharacterControls : NetworkBehaviour
         {
             if (IsHost)
             {
-                Vector2 movementVector = MoveCharacter(movementInput);
+                MoveCharacter(movementInput);
             }
             else if (IsClient)
             {
-                Vector2 movementVector = MoveCharacter(movementInput);
+                MoveCharacter(movementInput);
                 MoveCharacterServerRpc(movementInput, transform.position);
             }
         }
         void OpponentTick()
         {
             ticksSincePositionUpdate++;
-            float cappedTicks = Mathf.Min(ticksSincePositionUpdate, characterInfo.UsedGameSettings.ServerLocationTickFrequency);
-            float interpolatePercent = cappedTicks / characterInfo.UsedGameSettings.ServerLocationTickFrequency;
+            float cappedTicks = Mathf.Min(ticksSincePositionUpdate, GameSettings.Used.ServerLocationTickFrequency);
+            float interpolatePercent = cappedTicks / GameSettings.Used.ServerLocationTickFrequency;
             transform.position = Calculations.RelativeTo(previousServerSidePosition, serverSidePosition.Value, interpolatePercent);
         }
     }
     private void ServerPositionTick()
     {
         ticksSincePositionUpdate++;
-        if (ticksSincePositionUpdate >= characterInfo.UsedGameSettings.ServerLocationTickFrequency)
+        if (ticksSincePositionUpdate >= GameSettings.Used.ServerLocationTickFrequency)
         {
             serverSidePosition.Value = transform.position;
 
             ticksSincePositionUpdate = 0;
         }
     }
-    public Vector2 MoveCharacter(Vector2 movementInput)
+    private void MoveCharacter(Vector2 movementInput)
     {
         Vector2 movement = 2.5f * movementInput.normalized;
-        
         transform.position += (Vector3)movement * Time.fixedDeltaTime;
 
         characterAnimator.SetFloat(characterInfo.AnimatorTreeParameterX, movementInput.x);
         characterAnimator.SetFloat(characterInfo.AnimatorTreeParameterY, movementInput.y);
-
-        return movement;
     }
     #endregion
     #region Server and Client RPCs
@@ -150,7 +167,7 @@ public class CharacterControls : NetworkBehaviour
         MoveCharacter(inputVector);
 
         Vector2 discrepancy = clientPosition - (Vector2)transform.position;
-        if (discrepancy.magnitude >= characterInfo.UsedGameSettings.ServerClientDiscrepancyLimit)
+        if (discrepancy.magnitude >= GameSettings.Used.ServerClientDiscrepancyLimit)
         {
             Debug.Log($"{name} has a discrepancy");
             UpdateLocationClientRpc(discrepancy);

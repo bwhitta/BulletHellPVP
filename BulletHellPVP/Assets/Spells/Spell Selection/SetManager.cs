@@ -4,22 +4,27 @@ using UnityEngine.UI;
 public class SetManager : MonoBehaviour
 {
     [Header("Sets")]
-    [SerializeField] private GameSettings gameSettings;
+    [SerializeField] private GameSettings usedSettings;
     
     [Header("Display")]
     [SerializeField] private GameObject setDisplayPrefab;
     [SerializeField] private float distanceBetweenIcons;
     
     [Header("Selection")]
-    private SpellSetInfo selectedSet;
+    private byte selectedSet;
     [SerializeField] private GameObject selectionDisplay;
 
     [Header("Spells")]
     [SerializeField] private SpellSelectionManager spellSelectionManager;
 
+    private void Awake()
+    {
+        GameSettings.Used = usedSettings;
+    }
+
     private void Start()
     {
-        if (gameSettings.SpellSets.Length == 0)
+        if (usedSettings.SpellSets.Length == 0)
             Debug.LogWarning("No sets given to set manager");
 
         SelectSet(0);
@@ -35,26 +40,26 @@ public class SetManager : MonoBehaviour
             Destroy(transform.GetChild(i).gameObject);
         }
 
-        for (int i = 0; i < gameSettings.SpellSets.Length; i++)
+        for (int i = 0; i < usedSettings.SpellSets.Length; i++)
         {
             // Instaniates the child
             GameObject childObject = Instantiate(setDisplayPrefab, transform);
             childObject.transform.position = transform.position + (distanceBetweenIcons * i * Vector3.down);
             
             //Set the child's sprite
-            childObject.GetComponent<SpriteRenderer>().sprite = gameSettings.SpellSets[i].SetSprite;
+            childObject.GetComponent<SpriteRenderer>().sprite = usedSettings.SpellSets[i].SetSprite;
 
             // Add a listener to the button
-            int localIndex = i;
+            byte localIndex = (byte)i;
             childObject.GetComponentInChildren<Button>().onClick.AddListener(delegate { SelectSet(localIndex); });
         }
     }
 
-    private void SelectSet(int index)
+    private void SelectSet(byte index)
     {
-        if (index >= gameSettings.SpellSets.Length)
+        if (index >= usedSettings.SpellSets.Length)
         {
-            Debug.LogWarning($"Index out of bounds (index {index} is greater than length {gameSettings.SpellSets.Length}");
+            Debug.LogWarning($"Index out of bounds (index {index} is greater than length {usedSettings.SpellSets.Length}");
             return;
         }
         else if (selectionDisplay == null)
@@ -63,8 +68,7 @@ public class SetManager : MonoBehaviour
             return;
         }
 
-        selectedSet = gameSettings.SpellSets[index];
-
+        selectedSet = index;
         spellSelectionManager.CreateSpellObjects(selectedSet);
 
         selectionDisplay.transform.position = transform.position + (distanceBetweenIcons * index * Vector3.down);

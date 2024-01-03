@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 1062348163457161295}
   - component: {fileID: 5693598059765770263}
   - component: {fileID: 2555750260823406239}
+  - component: {fileID: 2276715914097845871}
   m_Layer: 0
   m_Name: SpellPrefab
   m_TagString: Untagged
@@ -103,22 +104,33 @@ MonoBehaviour:
     FoldoutOpen: 0
     Prefab: {fileID: 0}
     ModuleType: 0
-    SpawningArea: 0
+    ProjectileSpawningArea: 0
     TargetingType: 0
     MovementType: 0
     MovementSpeed: 0
     AbilityDealsDamage: 0
     Damage: 0
     AttachmentTime: 0
+    PushesPlayer: 0
+    PlayerPushSpeed: 0
+    SpriteFacingPush: 0
+    AngleAfterStart: 0
+    AngleChangeSpeed: 0
+    AffectsPlayerMovement: 0
+    PlayerMovementMod: 0
     InstantiationQuantity: 0
+    InstantiationScale: 0
     UsesCollider: 0
     ColliderPath: []
     UsesSprite: 0
     Sprite: {fileID: 0}
-    SpriteScale: 0
     Animated: 0
     AnimatorController: {fileID: 0}
     MultipartAnimationPrefabs: []
+    AnimationScaleMultiplier: 0
+    GeneratesParticles: 0
+    ParticleSystemPrefab: {fileID: 0}
+    ParticleSystemZ: 0
     ScalesOverTime: 0
     ScalingStartPercent: 0
     MaxScaleMultiplier: 0
@@ -126,6 +138,7 @@ MonoBehaviour:
   spellBehaviorID: 0
   distanceToMove: 0
   targetedCharacter: {fileID: 0}
+  spellMaskLayer: 
 --- !u!95 &5693598059765770263
 Animator:
   serializedVersion: 5
@@ -176,3 +189,19 @@ PolygonCollider2D:
       - {x: -1, y: -1}
       - {x: 2, y: -0.5}
       - {x: 2, y: 0.5}
+--- !u!114 &2276715914097845871
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1062348163457161292}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 951099334
+  AlwaysReplicateAsRoot: 0
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1

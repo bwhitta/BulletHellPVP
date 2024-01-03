@@ -9,7 +9,7 @@ public class CharacterStats : MonoBehaviour
 {
     [HideInInspector] public CharacterInfo characterInfo;
 
-    private float remainingInvincibilityTime = 0;
+    //private float remainingInvincibilityTime = 0;
 
     // Mana scaling
     private float manaScalingTime;
@@ -24,12 +24,12 @@ public class CharacterStats : MonoBehaviour
     {
         get
         {
-            _currentHealthStat ??= characterInfo.DefaultStats.MaxHealthStat;
+            _currentHealthStat ??= GameSettings.Used.MaxHealth;
             return (float)_currentHealthStat;
         }
         set
         {
-            _currentHealthStat ??= characterInfo.DefaultStats.MaxHealthStat;
+            _currentHealthStat ??= GameSettings.Used.MaxHealth;
 
             /*// Mana Damage Ratio (UNUSED)
             if (value < _currentHealthStat)
@@ -45,9 +45,9 @@ public class CharacterStats : MonoBehaviour
                     $"Per second: {modifiedByTime}. ");
             }*/
 
-            if (value > characterInfo.DefaultStats.MaxHealthStat)
+            if (value > GameSettings.Used.MaxHealth)
             {
-                _currentHealthStat = characterInfo.DefaultStats.MaxHealthStat;
+                _currentHealthStat = GameSettings.Used.MaxHealth;
             }
             else
             {
@@ -97,7 +97,7 @@ public class CharacterStats : MonoBehaviour
     }
     private void Update()
     {
-        InvincibilityTick();
+        //InvincibilityTick();
         ManaScalingTick();
         ManaRegenTick();
     }
@@ -120,7 +120,7 @@ public class CharacterStats : MonoBehaviour
             name = characterInfo.name;
 
             // Mana
-            maxMana = characterInfo.DefaultStats.StartingMaxMana;
+            maxMana = GameSettings.Used.StartingMaxMana;
         }
         else
         {
@@ -143,21 +143,20 @@ public class CharacterStats : MonoBehaviour
         characterInfo.SpellbookLogicScript.SpellbookToggle(enable);
     }
 
-    #region Ticked From Update
+    
     private void ManaScalingTick()
     {
-        if (manaScalingTime < characterInfo.DefaultStats.ScalingTime)
+        if (manaScalingTime < GameSettings.Used.ManaScalingTime)
         {
             manaScalingTime += Time.deltaTime;
-            float percentageCompleted = manaScalingTime / characterInfo.DefaultStats.ScalingTime;
-            maxMana = Calculations.RelativeTo(characterInfo.DefaultStats.StartingMaxMana, characterInfo.DefaultStats.EndingMaxMana, percentageCompleted);
+            float percentageCompleted = manaScalingTime / GameSettings.Used.ManaScalingTime;
+            maxMana = Calculations.RelativeTo(GameSettings.Used.StartingMaxMana, GameSettings.Used.EndingMaxMana, percentageCompleted);
         }
     }
     private void ManaRegenTick()
     {
-        BasicStats defaultStats = characterInfo.DefaultStats;
-        float scalingPercent = manaScalingTime / defaultStats.ScalingTime;
-        float deltaManaChange = Calculations.RelativeTo(defaultStats.StartingManaRegen, defaultStats.EndingManaRegen, scalingPercent);
+        float scalingPercent = manaScalingTime / GameSettings.Used.ManaScalingTime;
+        float deltaManaChange = Calculations.RelativeTo(GameSettings.Used.StartingManaRegen, GameSettings.Used.EndingManaRegen, scalingPercent);
 
         // Temporary mana regen from effects
         for (int i = 0; i < effectManaRegenValues.Count; i++)
@@ -174,6 +173,8 @@ public class CharacterStats : MonoBehaviour
         }
         CurrentManaStat += deltaManaChange * Time.deltaTime;
     }
+
+    /*
     private void InvincibilityTick()
     {
         if (remainingInvincibilityTime > 0)
@@ -188,9 +189,6 @@ public class CharacterStats : MonoBehaviour
             }
         }
     }
-    #endregion
-
-    #region Collision
     private void OnTriggerEnter2D(Collider2D collision)
     {
         CheckCollision(collision);
@@ -205,10 +203,12 @@ public class CharacterStats : MonoBehaviour
         if (collision.GetComponent<SpellModuleBehavior>() != null)
         {
             SpellModuleBehavior collisionSpellBehavior = collision.GetComponent<SpellModuleBehavior>();
-            
+
+            Debug.Log($"Some collision code is currently disabled.");
             if(remainingInvincibilityTime <= 0 && collisionSpellBehavior.module.AbilityDealsDamage)
                 DamageDealt(collisionSpellBehavior);
         }
+        
         void DamageDealt(SpellModuleBehavior collisionSpellBehavior)
         {
             remainingInvincibilityTime = characterInfo.DefaultStats.InvincibilityTime;
@@ -227,5 +227,5 @@ public class CharacterStats : MonoBehaviour
             gameObject.transform.GetChild(i).GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, alpha);
         }
     }
-    #endregion
+    */
 }

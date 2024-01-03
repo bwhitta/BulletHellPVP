@@ -1,48 +1,61 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngineInternal.XR.WSA;
 
 [CreateAssetMenu(menuName = "Character Information")]
 public class CharacterInfo : ScriptableObject
 {
-    [Space(25)] // Options
-    public GameSettings UsedGameSettings;
-    public BasicStats DefaultStats;
     [Space(25)] // Opponent info
     public CharacterInfo OpponentCharacterInfo;
+
     [Space(25)] // The tag used for all objects relating to this character
     public string CharacterAndSortingTag;
+
     [Space(25)] // Controls
     public string InputMapName;
     public string MovementActionName;
     public string NextBookActionName;
     public string CastingActionName;
+
     [Space(25)] // Movement
     public Vector2 CharacterStartLocation;
+
     [Space(25)] // Animation
     public string AnimatorTreeParameterX;
     public string AnimatorTreeParameterY;
+
     [Space(25)] // Equipped Spells
-    public int CurrentBook;
-    public SpellData[][] EquippedSpellBooks;
+    public byte CurrentBookIndex;
+    public Spellbook[] EquippedBooks;
+    public Spellbook CurrentBook => EquippedBooks[CurrentBookIndex];
+    public class Spellbook
+    {
+        // Each spellbook class is one full book of equipped spells.
+        public byte[] SetIndexes;
+        public byte[] SpellIndexes;
+    }
     [SerializeField] private bool DeveloperBookOverride;
-    [SerializeField] private SpellData[] OverrideBook;
+    [SerializeField] private Spellbook OverrideBook;
+
+    [Space(25)] // Cursor
+    public float OpponentAreaCenterX;
+    public float OpponentAreaCenterY;
     public void CreateBooks()
     {
-        EquippedSpellBooks = new SpellData[UsedGameSettings.TotalBooks][];
-
-        for (int j = 0; j < EquippedSpellBooks.Length; j++)
+        if (EquippedBooks != null)
         {
-            EquippedSpellBooks[j] = new SpellData[UsedGameSettings.TotalSpellSlots];
+            return;
+        }
+            
+        EquippedBooks = new Spellbook[GameSettings.Used.TotalBooks];
+
+        for (int i = 0; i < EquippedBooks.Length; i++)
+        {
+            EquippedBooks[i].SetIndexes = new byte[GameSettings.Used.TotalSpellSlots];
+            EquippedBooks[i].SpellIndexes = new byte[GameSettings.Used.TotalSpellSlots];
         }
 
         if (DeveloperBookOverride)
         {
-            EquippedSpellBooks[0] = OverrideBook;
+            EquippedBooks[0] = OverrideBook;
         }
     }
 
@@ -122,6 +135,7 @@ public class CharacterInfo : ScriptableObject
                 }
                 else
                 {
+                    Debug.Log($"No spell manager found.");
                     _characterSpellManagerObject = null;
                 }
             }

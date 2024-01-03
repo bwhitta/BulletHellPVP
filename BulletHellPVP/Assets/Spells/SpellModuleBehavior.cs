@@ -1,16 +1,16 @@
-using Unity.VisualScripting;
+using Unity.Netcode;
 using UnityEngine;
-using static UnityEngine.ParticleSystem;
 
-public class SpellModuleBehavior : MonoBehaviour
+public class SpellModuleBehavior : NetworkBehaviour
 {
-    public SpellData.Module module;
-    public int spellBehaviorID;
-    
+    #region Fields
+    private SpellData.Module module;
+    public byte setIndex, spellIndex, moduleIndex, behaviorID, ownerID;
+    private bool startedUp = false;
+
     // Projectile
-    public float distanceToMove;
-    private float distanceMoved;
     public GameObject targetedCharacter;
+    private float distanceMoved;
 
     // Player Attached
     private float attachmentTime;
@@ -18,27 +18,51 @@ public class SpellModuleBehavior : MonoBehaviour
     private Vector2 movementDirection;
 
     // Display
-    public string spellMaskLayer;
     private SpriteRenderer spriteRenderer;
     private Animator animator;
 
     // Readonlys
-    private readonly float outOfBoundsDistance = 15f;
+    // private readonly float outOfBoundsDistance = 15f; DISABLED WHILE REWORKING SCRIPT
+    #endregion
 
-
-    private void Start()
+    void Start()
     {
-        spriteRenderer = GetComponent<SpriteRenderer>();
-        transform.localScale = new Vector3(module.InstantiationScale, module.InstantiationScale, 1);
+        Debug.Log($"Module would be started here. ownerID: {ownerID}, owner character: {GameSettings.Used.Characters[ownerID]}");
+        StartModule();
+    }
+    private void StartModule()
+    {
+        Debug.Log($"Starting module! OwnerID: {ownerID}, Owner character: {GameSettings.Used.Characters[ownerID]}");
+        
+        if (IsServer)
+        {
+            Debug.Log($"Sending module data to clients (calling ModuleDataClientRpc)");
+            ModuleDataClientRpc(setIndex, spellIndex, moduleIndex, behaviorID, ownerID);
+        }
 
-        spriteRenderer.enabled = module.UsesSprite;
+        // Set variables
+        module = GetModule();
+        //SetStartingPosition();
+        //SetScale();
+
+        Debug.Log($"Uses Sprite: {module.UsesSprite}, Animated: {module.Animated}, Generates Particles: {module.GeneratesParticles}");
+
         if (module.UsesSprite)
-            EnableSprite();
+        {
+            Debug.Log($"Sprite would be enabled here");
+            //EnableSprite();
+        }
         if (module.Animated)
-            EnableAnimator();
+        {
+            Debug.Log($"Animator would be enabled here");
+            //EnableAnimator();
+        }
         if (module.GeneratesParticles)
-            EnableParticleSystem();
-
+        {
+            Debug.Log($"Particle System would be enabled here");
+            //EnableParticleSystem();
+        }
+        
         switch (module.ModuleType)
         {
             case SpellData.ModuleTypes.PlayerAttached:
@@ -48,7 +72,7 @@ public class SpellModuleBehavior : MonoBehaviour
                 {
                     movementDirection = characterControls.movementAction.ReadValue<Vector2>().normalized;
                     // If the player is stationary, send down
-                    if(movementDirection == Vector2.zero)
+                    if (movementDirection == Vector2.zero)
                     {
                         movementDirection = new Vector2(0, -1);
                     }
@@ -56,11 +80,62 @@ public class SpellModuleBehavior : MonoBehaviour
                 break;
         }
 
-        gameObject.GetComponent<PolygonCollider2D>().enabled = module.UsesCollider;
-        SetCollider();
-        PointTowardsTarget();
+        //gameObject.GetComponent<PolygonCollider2D>().enabled = module.UsesCollider;
+        //SetCollider();
 
-        #region LocalMethods
+        startedUp = true;
+
+        void SetStartingPosition()
+        {
+            Debug.Log($"Setting starting position!");
+            switch (module.ProjectileSpawningArea)
+            {
+                case SpellData.SpawningAreas.Point:
+                    transform.position = GameSettings.Used.Characters[ownerID].CharacterSpellManager.transform.position;
+                    break;
+                case SpellData.SpawningAreas.AdjacentCorners:
+
+                    SpellManager spellManager = GameSettings.Used.Characters[ownerID].CharacterSpellManager;
+                    Quaternion alignment = spellManager.transform.rotation * Quaternion.Euler(0, 0, -90);
+                    // Sets the position and rotation
+                    transform.SetPositionAndRotation(AdjacentCornersPos(spellManager), alignment);
+                    break;
+                default:
+                    Debug.LogWarning("Not yet implemented spawning area!");
+                    break;
+            }
+
+            Vector2 AdjacentCornersPos(SpellManager spellManager)
+            {
+                CursorLogic cursorLogic = spellManager.GetComponent<CursorLogic>();
+                int cursorWall = cursorLogic.GetCurrentWall();
+                Vector2[] corners = cursorLogic.GetCurrentSquareCorners();
+
+                // Points to instantiate at
+                Vector2[] spawnPoints = new Vector2[]
+                {
+                        corners[cursorWall],
+                        corners[(cursorWall + 1) % 4]
+                };
+                return spawnPoints[behaviorID];
+            }
+        }
+        void SetScale()
+        {
+            transform.localScale = new Vector3(module.InstantiationScale, module.InstantiationScale, 1);
+        }
+        void EnableSprite()
+        {
+            Debug.Log($"Enabling sprite.");
+            spriteRenderer = GetComponent<SpriteRenderer>();
+            spriteRenderer.enabled = module.UsesSprite;
+            spriteRenderer.sprite = module.Sprite;
+
+            // Set the mask layer
+            string spellMaskLayer = GameSettings.Used.Characters[ownerID].OpponentCharacterInfo.CharacterAndSortingTag;
+            Debug.Log($"SpellMaskLayer: {spellMaskLayer}");
+            spriteRenderer.sortingLayerName = spellMaskLayer;
+        }
         void EnableAnimator()
         {
             animator = gameObject.GetComponent<Animator>();
@@ -74,6 +149,7 @@ public class SpellModuleBehavior : MonoBehaviour
                 currentAnimationPrefab.name = animationPrefab.name;
 
                 // Set the mask layer
+                string spellMaskLayer = GameSettings.Used.Characters[ownerID].OpponentCharacterInfo.CharacterAndSortingTag;
                 currentAnimationPrefab.GetComponent<SpriteRenderer>().sortingLayerName = spellMaskLayer;
             }
 
@@ -83,37 +159,61 @@ public class SpellModuleBehavior : MonoBehaviour
             // Sets the animation
             animator.runtimeAnimatorController = module.AnimatorController;
         }
-        void EnableSprite()
-        {
-            spriteRenderer.sprite = module.Sprite;
-            // Set the mask layer
-            spriteRenderer.sortingLayerName = spellMaskLayer;
-        }
         void EnableParticleSystem()
         {
+            Debug.Log($"Enabling module particle system");
             GameObject particleObject = Instantiate(module.ParticleSystemPrefab, transform);
             particleObject.transform.localPosition = new Vector3(0, 0, module.ParticleSystemZ);
         }
-        #endregion LocalMethods
+        void SetCollider()
+        {
+            gameObject.GetComponent<PolygonCollider2D>().points = module.ColliderPath;
+        }
+    }
+    
+    private SpellData.Module GetModule()
+    {
+        SpellSetInfo set = GameSettings.Used.SpellSets[spellIndex];
+        SpellData spell = set.spellsInSet[spellIndex];
+        return spell.UsedModules[moduleIndex];
     }
 
-    private void SetCollider()
+    [ClientRpc]
+    private void ModuleDataClientRpc(byte serverSetIndex, byte serverSpellIndex, byte serverModuleIndex, byte serverBehaviorID, byte serverOwnerID)
     {
-        gameObject.GetComponent<PolygonCollider2D>().points = module.ColliderPath;
+        if (IsHost)
+        {
+            Debug.Log($"Skipping recieving module data from server since this client is a host.");
+            return;
+        }
+        setIndex = serverSetIndex;
+        spellIndex = serverSpellIndex;
+        moduleIndex = serverModuleIndex;
+        behaviorID = serverBehaviorID;
+        ownerID = serverOwnerID;
+        Debug.Log($"This client recieved data from the server!\n(data was - setIndex: {setIndex}, spellIndex: {spellIndex}, moduleIndex: {moduleIndex}, behaviorID: {behaviorID}, ownerID: {ownerID})");
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
+        // If not instantiated on network, skip this frame
+        if (!startedUp)
+        {
+            Debug.Log($"Not started up, skipping...");
+            return;
+        }
+
         switch (module.ModuleType)
         {
             case SpellData.ModuleTypes.Projectile:
-                MoveSpell();
+                Debug.Log($"if it was enabled the projectile would be moved here");
+                //MoveSpell();
                 break;
             case SpellData.ModuleTypes.PlayerAttached:
                 PlayerAttachedUpdate();
                 break;
         }
-
+        /* TEMPORARILY DISABLED WHILE REWORKING SCRIPT
         // Delete if too far away
         CheckBounds();
 
@@ -123,10 +223,11 @@ public class SpellModuleBehavior : MonoBehaviour
             float distanceFromCenter = Vector2.Distance(transform.position, Vector2.zero);
             if (distanceFromCenter >= outOfBoundsDistance)
             {
+                Debug.Log($"Deleted - out of bounds");
                 Destroy(gameObject);
             }
         }
-        
+        */
     }
     private void PlayerAttachedUpdate()
     {
@@ -134,7 +235,7 @@ public class SpellModuleBehavior : MonoBehaviour
         TryAffectPlayerMovement();
 
         // Attatchment Time
-        attachmentTime -= Time.deltaTime;
+        attachmentTime -= Time.fixedDeltaTime;
         if (attachmentTime <= 0)
         {
             Destroy(gameObject);
@@ -170,7 +271,7 @@ public class SpellModuleBehavior : MonoBehaviour
                 float inputDirection = GetAngle(inputVector);
                 if (inputVector == Vector2.zero)
                     return;
-                float movementCap = module.AngleChangeSpeed * Time.deltaTime;
+                float movementCap = module.AngleChangeSpeed * Time.fixedDeltaTime;
                 float rotationAngle = Mathf.MoveTowardsAngle(movingDirection, inputDirection, movementCap);
                 movementDirection = Quaternion.Euler(0, 0, rotationAngle) * Vector2.up;
             }
@@ -214,22 +315,24 @@ public class SpellModuleBehavior : MonoBehaviour
         // Move the spell
         if (module.MovementType == SpellData.MovementTypes.Linear)
         {
-            transform.position += module.MovementSpeed * Time.deltaTime * transform.right;
-            distanceMoved += module.MovementSpeed * Time.deltaTime;
+            transform.position += module.MovementSpeed * Time.fixedDeltaTime * transform.right;
+            distanceMoved += module.MovementSpeed * Time.fixedDeltaTime;
         }
         else if (module.MovementType == SpellData.MovementTypes.Wall)
         {
-            switch (spellBehaviorID)
+            switch (behaviorID)
             {
                 case 0:
-                    transform.position += transform.rotation * Vector3.up * Time.deltaTime * module.MovementSpeed;
+                    transform.position += transform.rotation * Vector3.up * Time.fixedDeltaTime * module.MovementSpeed;
                     break;
                 case 1:
-                    transform.position += transform.rotation * Vector3.down * Time.deltaTime * module.MovementSpeed;
+                    transform.position += transform.rotation * Vector3.down * Time.fixedDeltaTime * module.MovementSpeed;
+                    break;
+                default:
+                    Debug.LogWarning($"BehaviorID {behaviorID} should not be possible in this situation.");
                     break;
             }
-
-            distanceMoved += Time.deltaTime * module.MovementSpeed;
+            distanceMoved += Time.fixedDeltaTime * module.MovementSpeed;
         }
 
         // Scaling
@@ -238,6 +341,7 @@ public class SpellModuleBehavior : MonoBehaviour
     }
     private void UpdateScaling()
     {
+        float distanceToMove = GameSettings.Used.BattleSquareWidth / 2;
         float distanceForScaling = distanceToMove * module.ScalingStartPercent;
 
         if (distanceMoved >= distanceForScaling)
@@ -247,7 +351,11 @@ public class SpellModuleBehavior : MonoBehaviour
         }
 
         if (distanceMoved >= distanceToMove && module.DestroyOnScalingCompleted)
+        {
+            Debug.Log($"Fully moved, destroying {name}. Distance moved: {distanceMoved}. Distance to move: {distanceToMove}");
             Destroy(gameObject);
+        }
+           
     }
     private float Scaling(float totalMove, float totalMoveScalingStartPercent, float currentlyMoved, float scaleTargetPercentage)
     {

@@ -1,11 +1,10 @@
+using System.Runtime.CompilerServices;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class SpellSelectionManager : MonoBehaviour
 {
-    // Game Settings
-    [SerializeField] private GameSettings gameSettings;
-
     [Space] // Character currently equipping
     [SerializeField] private int currentCharacterIndex;
 
@@ -15,8 +14,8 @@ public class SpellSelectionManager : MonoBehaviour
     [SerializeField] private Vector2 distanceBetweenIcons;
     [SerializeField] private int columnsOfIcons;
 
-    [Space] // Spellbooks
-    [SerializeField] private int currentBookIndex;
+    [Space] // EquippedBooks
+    [SerializeField] private byte currentBookIndex;
     [SerializeField] private GameObject spellbookIndexText;
     private Text _bookIndexText;
     private Text BookIndexText
@@ -40,35 +39,40 @@ public class SpellSelectionManager : MonoBehaviour
     private void Start()
     {
         CreateBooks();
-        gameSettings.Characters[currentCharacterIndex].CreateBooks();
+        GameSettings.Used.Characters[currentCharacterIndex].CreateBooks();
 
         CalculateSlotLocations();
         SetBook(0);
     }
     private void CreateBooks()
     {
-        for(int i = 0; i < gameSettings.Characters.Length; i++)
+        foreach (CharacterInfo info in GameSettings.Used.Characters)
         {
-            CharacterInfo characterInfo = gameSettings.Characters[i];
+            CharacterInfo characterInfo = info;
 
-            characterInfo.EquippedSpellBooks = new SpellData[gameSettings.TotalBooks][];
+            characterInfo.EquippedBooks = new CharacterInfo.Spellbook[GameSettings.Used.TotalBooks];
 
-            for(int j = 0; j < characterInfo.EquippedSpellBooks.Length; j++)
+            for(int j = 0; j < GameSettings.Used.TotalBooks; j++)
             {
-                characterInfo.EquippedSpellBooks[j] = new SpellData[gameSettings.TotalSpellSlots];
+                CharacterInfo.Spellbook emptyBook = new()
+                {
+                    SetIndexes = new byte[GameSettings.Used.TotalSpellSlots],
+                    SpellIndexes = new byte[GameSettings.Used.TotalSpellSlots]
+                };
+                characterInfo.EquippedBooks[j] = emptyBook;
             }
         }
     }
     private void CalculateSlotLocations()
     {
-        slotLocations = new Vector2[gameSettings.OffensiveSpellSlots + gameSettings.DefensiveSpellSlots];
+        slotLocations = new Vector2[GameSettings.Used.OffensiveSpellSlots + GameSettings.Used.DefensiveSpellSlots];
         for (var i = 0; i < slotLocations.Length; i++)
         {
             slotLocations[i] = spellSlotStart + (i * spellSlotSpread * Vector2.right);
         }
     }
 
-    private void SetBook(int target)
+    private void SetBook(byte target)
     {
         currentBookIndex = target;
         BookIndexText.text = (target + 1).ToString();
@@ -76,24 +80,26 @@ public class SpellSelectionManager : MonoBehaviour
     }
     public void NextBook()
     {
-        SetBook((currentBookIndex + 1) % gameSettings.TotalBooks);
+        SetBook((byte)((currentBookIndex + 1) % GameSettings.Used.TotalBooks));
     }
 
     public void PlaceInSlot(EquippableSpell spell)
     {
-        // Debug.Log($"Placing {spell} in slot, looping {gameSettings.Characters[currentCharacterIndex].EquippedSpellBooks.Length} times.");
-        for (int i = 0; i < gameSettings.Characters[currentCharacterIndex].EquippedSpellBooks[currentBookIndex].Length; i++)
+        // Debug.Log($"Placing {spell} in slot, looping {usedSettings.Characters[currentCharacterIndex].EquippedSpellBooks.Length} times.");
+        for (int i = 0; i < GameSettings.Used.TotalSpellSlots; i++)
         {
             if(Vector2.Distance(spell.transform.position, slotLocations[i]) <= slotSnapDistance)
             {
-                gameSettings.Characters[currentCharacterIndex].EquippedSpellBooks[currentBookIndex][i] = spell.spellData;
+                CharacterInfo.Spellbook book = GameSettings.Used.Characters[currentCharacterIndex].CurrentBook;
+                book.SetIndexes[i] = spell.setIndex;
+                book.SpellIndexes[i] = spell.spellIndex;
                 UpdateBookDisplays();
                 return;
             }
         }
     }
 
-    public void CreateSpellObjects(SpellSetInfo selectedSet)
+    public void CreateSpellObjects(byte selectedSet)
     {
         // Destroy all of the old child objects
         for (int i = 0; i < gameObject.transform.childCount; i++)
@@ -101,7 +107,8 @@ public class SpellSelectionManager : MonoBehaviour
             Destroy(transform.GetChild(i).gameObject);
         }
 
-        for (int i = 0; i < selectedSet.spellsInSet.Length; i++)
+        var set = GameSettings.Used.SpellSets[selectedSet];
+        for (int i = 0; i < set.spellsInSet.Length; i++)
         {
             // Instaniates the prefab
             GameObject instantiatedDisplay = Instantiate(inSetPrefab, transform);
@@ -113,7 +120,9 @@ public class SpellSelectionManager : MonoBehaviour
             instantiatedDisplay.transform.position = transform.position + displacement;
 
             //Set the object's spell
-            instantiatedDisplay.GetComponent<EquippableSpell>().spellData = selectedSet.spellsInSet[i];
+            //instantiatedDisplay.GetComponent<EquippableSpell>().spellData = selectedSet.spellsInSet[i];
+            instantiatedDisplay.GetComponent<EquippableSpell>().setIndex = selectedSet;
+            instantiatedDisplay.GetComponent<EquippableSpell>().spellIndex = (byte)i;
         }
     }
     private void UpdateBookDisplays()
@@ -124,14 +133,14 @@ public class SpellSelectionManager : MonoBehaviour
             Destroy(equippedSpellArea.transform.GetChild(i).gameObject);
         }
 
-        for (int i = 0; i < gameSettings.TotalSpellSlots; i++)
+        for (int i = 0; i < GameSettings.Used.TotalSpellSlots; i++)
         {
-            if (gameSettings.Characters[currentCharacterIndex].EquippedSpellBooks[currentBookIndex][i] == null)
-            {
-                continue;
-            }
             GameObject instantiatedDisplay = Instantiate(equippedPrefab, equippedSpellArea.transform);
-            instantiatedDisplay.GetComponent<SpriteRenderer>().sprite = gameSettings.Characters[currentCharacterIndex].EquippedSpellBooks[currentBookIndex][i].Icon;
+
+            CharacterInfo.Spellbook book = GameSettings.Used.Characters[currentCharacterIndex].EquippedBooks[currentBookIndex];
+            Sprite icon = SpellManager.GetSpellData(book, (byte)i).Icon;
+
+            instantiatedDisplay.GetComponent<SpriteRenderer>().sprite = icon;
             instantiatedDisplay.transform.position = slotLocations[i];
         }
     }

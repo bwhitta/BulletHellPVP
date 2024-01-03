@@ -4,7 +4,7 @@ using UnityEngine.InputSystem;
 
 public class EquippableSpell : MonoBehaviour
 {
-    [HideInInspector] public SpellData spellData;
+    [HideInInspector] public byte setIndex, spellIndex;
     private bool dragging = false;
     [HideInInspector] public bool sucessfullyPlaced = false;
 
@@ -33,7 +33,7 @@ public class EquippableSpell : MonoBehaviour
         }
         
         spriteRenderer = GetComponent<SpriteRenderer>();
-        spriteRenderer.sprite = spellData.Icon;
+        spriteRenderer.sprite = GameSettings.Used.SpellSets[setIndex].spellsInSet[spellIndex].Icon;
     }
     private void Update()
     {

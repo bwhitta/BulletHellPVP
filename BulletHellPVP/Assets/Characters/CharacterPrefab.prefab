@@ -283,6 +283,7 @@ MonoBehaviour:
     m_Flags: 0
   tempPush: {x: 0, y: 0}
   tempMovementMod: 0
+  spellcastingObjectPrefab: {fileID: 3066057991869530844, guid: 5d6ea00f1883c2848b44d422e6c1dabf, type: 3}
 --- !u!114 &2971767381870167662
 MonoBehaviour:
   m_ObjectHideFlags: 0
