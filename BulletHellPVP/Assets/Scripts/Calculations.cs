@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public static class Calculations
@@ -14,5 +12,9 @@ public static class Calculations
         float x = RelativeTo(startPoint.x, endPoint.x, percentageAcross);
         float y = RelativeTo(startPoint.y, endPoint.y, percentageAcross);
         return new Vector2(x, y);
+    }
+    public static float Modulo(float numberToModify, float modifyingNumber)
+    {
+        return numberToModify - modifyingNumber * (Mathf.Floor(numberToModify / modifyingNumber));
     }
 }

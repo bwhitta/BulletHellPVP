@@ -89,7 +89,7 @@ public class CharacterControls : NetworkBehaviour
     }
     private void FixedUpdate()
     {
-        FixedMovementTick();
+        MovementTick();
 
         if (IsServer)
         {
@@ -98,10 +98,10 @@ public class CharacterControls : NetworkBehaviour
     }
     #endregion
     #region Methods
-    private void FixedMovementTick()
+    private void MovementTick()
     {
         Vector2 movementInput = movementAction.ReadValue<Vector2>();
-
+        
         if (MultiplayerManager.IsOnline)
         {
             if (IsOwner)
@@ -160,7 +160,7 @@ public class CharacterControls : NetworkBehaviour
         characterAnimator.SetFloat(characterInfo.AnimatorTreeParameterY, movementInput.y);
     }
     #endregion
-    #region Server and Client RPCs
+    #region Server and Client Rpcs
     [ServerRpc]
     private void MoveCharacterServerRpc(Vector2 inputVector, Vector2 clientPosition)
     {
@@ -169,13 +169,12 @@ public class CharacterControls : NetworkBehaviour
         Vector2 discrepancy = clientPosition - (Vector2)transform.position;
         if (discrepancy.magnitude >= GameSettings.Used.ServerClientDiscrepancyLimit)
         {
-            Debug.Log($"{name} has a discrepancy");
-            UpdateLocationClientRpc(discrepancy);
+            Debug.Log($"{name} has a discrepancy of {discrepancy}");
+            FixDiscrepancyClientRpc(discrepancy);
         }
     }
-
     [ClientRpc]
-    private void UpdateLocationClientRpc(Vector2 discrepancy)
+    private void FixDiscrepancyClientRpc(Vector2 discrepancy)
     {
         Debug.Log($"Client location wrong (discrepancy {discrepancy}).");
         if (IsOwner)

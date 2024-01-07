@@ -38,7 +38,9 @@ public class GameSettings : ScriptableObject
 
     [Space]
     [Header("Online")]
-    public int ServerLocationTickFrequency;
+    [Range(10, 30)] public int ServerLocationHz; // reasonable rate is between 30 and 10Hz (I'll probably want something in between, and to add the option to choose in the settings)
+    public int ServerLocationTickFrequency => Mathf.CeilToInt(1 / (ServerLocationHz * Time.fixedDeltaTime)); // Converts from Hz to number of ticks
+
     public float ServerClientDiscrepancyLimit;
 
     [Space]
