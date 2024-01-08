@@ -281,7 +281,7 @@ public class SpellModuleBehavior : NetworkBehaviour
     private void ServerPositionTick()
     {
         ticksSincePositionUpdate++;
-        if (ticksSincePositionUpdate >= GameSettings.Used.ServerLocationTickFrequency)
+        if (ticksSincePositionUpdate >= GameSettings.Used.NetworkDiscrepancyCheckFrequency)
         {
             serverSidePosition.Value = transform.position;
             ticksSincePositionUpdate = 0;

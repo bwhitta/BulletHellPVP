@@ -1,7 +1,6 @@
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using static ControlsManager;
 
 public class CharacterControls : NetworkBehaviour
 {
@@ -26,7 +25,7 @@ public class CharacterControls : NetworkBehaviour
     {
         SetObjectReferences();
         EnableMovement();
-        transform.position = characterInfo.CharacterStartLocation;
+        transform.position = characterInfo.CharacterStartLocation; // Sets starting position
         SetPositionOnline();
         NetworkVariableListeners();
         InstantiateSpellManager();
@@ -39,7 +38,7 @@ public class CharacterControls : NetworkBehaviour
         }
         void EnableMovement()
         {
-            InputActionMap controllingMap = GetActionMap(characterInfo.InputMapName);
+            InputActionMap controllingMap = ControlsManager.GetActionMap(characterInfo.InputMapName);
             movementAction = controllingMap.FindAction(characterInfo.MovementActionName, true);
             movementAction.Enable();
             tempMovementMod = 1;
@@ -61,7 +60,6 @@ public class CharacterControls : NetworkBehaviour
             {
                 serverSidePosition.OnValueChanged += ServerSideLocationUpdate;
             }
-            
         }
         void ServerSideLocationUpdate(Vector2 prevLocation, Vector2 newLocation)
         {
@@ -91,10 +89,7 @@ public class CharacterControls : NetworkBehaviour
     {
         MovementTick();
 
-        if (IsServer)
-        {
-            ServerPositionTick();
-        }
+        if (IsServer) ServerPositionTick();
     }
     #endregion
     #region Methods
@@ -136,15 +131,15 @@ public class CharacterControls : NetworkBehaviour
         void OpponentTick()
         {
             ticksSincePositionUpdate++;
-            float cappedTicks = Mathf.Min(ticksSincePositionUpdate, GameSettings.Used.ServerLocationTickFrequency);
-            float interpolatePercent = cappedTicks / GameSettings.Used.ServerLocationTickFrequency;
+            float cappedTicks = Mathf.Min(ticksSincePositionUpdate, GameSettings.Used.NetworkDiscrepancyCheckFrequency);
+            float interpolatePercent = cappedTicks / GameSettings.Used.NetworkDiscrepancyCheckFrequency;
             transform.position = Calculations.RelativeTo(previousServerSidePosition, serverSidePosition.Value, interpolatePercent);
         }
     }
     private void ServerPositionTick()
     {
         ticksSincePositionUpdate++;
-        if (ticksSincePositionUpdate >= GameSettings.Used.ServerLocationTickFrequency)
+        if (ticksSincePositionUpdate >= GameSettings.Used.NetworkDiscrepancyCheckFrequency)
         {
             serverSidePosition.Value = transform.position;
 
@@ -167,7 +162,7 @@ public class CharacterControls : NetworkBehaviour
         MoveCharacter(inputVector);
 
         Vector2 discrepancy = clientPosition - (Vector2)transform.position;
-        if (discrepancy.magnitude >= GameSettings.Used.ServerClientDiscrepancyLimit)
+        if (discrepancy.magnitude >= GameSettings.Used.NetworkLocationDiscrepancyLimit)
         {
             Debug.Log($"{name} has a discrepancy of {discrepancy}");
             FixDiscrepancyClientRpc(discrepancy);

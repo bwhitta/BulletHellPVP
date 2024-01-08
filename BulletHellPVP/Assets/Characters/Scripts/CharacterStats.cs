@@ -1,11 +1,9 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net;
+using Unity.Mathematics;
+using Unity.Netcode;
 using UnityEngine;
-using static BarLogic;
 
-public class CharacterStats : MonoBehaviour
+public class CharacterStats : NetworkBehaviour
 {
     [HideInInspector] public CharacterInfo characterInfo;
 
@@ -19,7 +17,7 @@ public class CharacterStats : MonoBehaviour
     private readonly List<float> effectManaRegenValues = new();
 
     // Health
-    private float? _currentHealthStat;
+    [SerializeField] private float? _currentHealthStat; // SERIALIZEFIELD TEMPORARY FOR TESTING HEALTH ON THE NETWORK - MAKE SURE TO GET RID OF AFTER
     public float CurrentHealthStat
     {
         get
@@ -54,7 +52,7 @@ public class CharacterStats : MonoBehaviour
                 _currentHealthStat = value;
             }
 
-            characterInfo.HealthBar.UpdateStatDisplays(UpdatableStats.Remaining);
+            characterInfo.HealthBar.UpdateStatDisplays(BarLogic.UpdatableStats.Remaining);
 
             if (value <= 0)
             {
@@ -64,6 +62,7 @@ public class CharacterStats : MonoBehaviour
             }
         }
     }
+    private readonly NetworkVariable<float> ServerSideHealth = new();
 
     // Mana
     private float? _currentManaStat;
@@ -82,28 +81,57 @@ public class CharacterStats : MonoBehaviour
             else
                 _currentManaStat = value;
 
-            characterInfo.ManaBar.UpdateStatDisplays(UpdatableStats.Remaining);
+            characterInfo.ManaBar.UpdateStatDisplays(BarLogic.UpdatableStats.Remaining);
+        }
+    }
+    private readonly NetworkVariable<float> ServerSideMana = new();
+
+    // Network
+    private byte ticksSinceUpdate;
+    
+    private void FixedUpdate()
+    {
+        // if (remainingInvincibilityTime > 0) InvincibilityTick(); DISABLED TEMPORARILY
+        ManaScalingTick();
+        ManaRegenTick();
+        if (IsServer) ServerTick();
+        
+        void ServerTick()
+        {
+            ticksSinceUpdate++;
+            if(ticksSinceUpdate >= GameSettings.Used.NetworkDiscrepancyCheckFrequency)
+            {
+                ServerSideHealth.Value = CurrentHealthStat;
+                ServerSideMana.Value = CurrentManaStat;
+                ticksSinceUpdate = 0;
+            }
         }
     }
 
-    #region Monobehavior Methods
+    // Actions upon enabling or disabling character
     private void OnEnable()
     {
         CharacterEnabled(true);
+        if (MultiplayerManager.IsOnline && !IsServer) NetworkVariableListeners();
+        
+        void NetworkVariableListeners()
+        {
+            ServerSideHealth.OnValueChanged += ServerHealthUpdate;
+            ServerSideMana.OnValueChanged += ServerManaUpdate;
+        }
+        void ServerHealthUpdate(float oldValue, float newValue)
+        {
+            CurrentHealthStat = Calculations.DiscrepancyCheck(CurrentHealthStat, newValue, GameSettings.Used.NetworkStatBarDiscrepancyLimit);
+        }
+        void ServerManaUpdate(float oldValue, float newValue)
+        {
+            CurrentManaStat = Calculations.DiscrepancyCheck(CurrentManaStat, newValue, GameSettings.Used.NetworkStatBarDiscrepancyLimit);
+        }
     }
     private void OnDisable()
     {
         CharacterEnabled(false);
     }
-    private void Update()
-    {
-        //InvincibilityTick();
-        ManaScalingTick();
-        ManaRegenTick();
-    }
-    #endregion
-
-    // Actions upon enabling or disabling character
     private void CharacterEnabled(bool enable)
     {
         if (enable)
@@ -116,9 +144,11 @@ public class CharacterStats : MonoBehaviour
                 Destroy(gameObject);
                 return;
             }
-            transform.position = characterInfo.CharacterStartLocation;
             name = characterInfo.name;
 
+            // Starting position
+            transform.position = characterInfo.CharacterStartLocation;
+            
             // Mana
             maxMana = GameSettings.Used.StartingMaxMana;
         }
@@ -143,16 +173,22 @@ public class CharacterStats : MonoBehaviour
         characterInfo.SpellbookLogicScript.SpellbookToggle(enable);
     }
 
-    
+    // Mana scaling over time
     private void ManaScalingTick()
-    {
-        if (manaScalingTime < GameSettings.Used.ManaScalingTime)
-        {
-            manaScalingTime += Time.deltaTime;
-            float percentageCompleted = manaScalingTime / GameSettings.Used.ManaScalingTime;
-            maxMana = Calculations.RelativeTo(GameSettings.Used.StartingMaxMana, GameSettings.Used.EndingMaxMana, percentageCompleted);
-        }
+    {        
+        // Skip scaling if opponent is not connected
+        if (characterInfo.OpponentCharacterInfo.CharacterObject == null) return;
+
+        // Mana scaling end
+        if (manaScalingTime > GameSettings.Used.ManaScalingTime) return;
+
+        manaScalingTime += Time.fixedDeltaTime;
+        float percentageCompleted = manaScalingTime / GameSettings.Used.ManaScalingTime;
+        maxMana = Calculations.RelativeTo(GameSettings.Used.StartingMaxMana, GameSettings.Used.EndingMaxMana, percentageCompleted);
+        
     }
+
+    // Mana regenerating over time
     private void ManaRegenTick()
     {
         float scalingPercent = manaScalingTime / GameSettings.Used.ManaScalingTime;
@@ -164,35 +200,23 @@ public class CharacterStats : MonoBehaviour
             deltaManaChange += effectManaRegenValues[i];
 
             // Update timer
-            effectManaRegenTimer[i] -= Time.deltaTime;
+            effectManaRegenTimer[i] -= Time.fixedDeltaTime;
             if (effectManaRegenTimer[i] <= 0)
             {
                 effectManaRegenTimer.RemoveAt(i);
                 effectManaRegenValues.RemoveAt(i);
             }
         }
-        CurrentManaStat += deltaManaChange * Time.deltaTime;
+        CurrentManaStat += deltaManaChange * Time.fixedDeltaTime;
     }
 
-    /*
-    private void InvincibilityTick()
-    {
-        if (remainingInvincibilityTime > 0)
-        {
-            remainingInvincibilityTime -= Time.deltaTime;
 
-            // Check if completed
-            if (remainingInvincibilityTime <= 0)
-            {
-                remainingInvincibilityTime = 0;
-                SetChildAlpha(1);
-            }
-        }
-    }
+    /* DAMAGE AND INVINCIBILITY TEMPORARILY DISABLED
     private void OnTriggerEnter2D(Collider2D collision)
     {
         CheckCollision(collision);
     }
+
     private void CheckCollision(Collider2D collision)
     {
         if (gameObject.activeSelf == false)
@@ -217,9 +241,23 @@ public class CharacterStats : MonoBehaviour
             gameObject.GetComponent<CharacterStats>().CurrentHealthStat -= collisionSpellBehavior.module.Damage;
             float percentageCompleted = manaScalingTime / characterInfo.DefaultStats.ScalingTime;
             float manaRegen = Calculations.RelativeTo(characterInfo.DefaultStats.StartingManaRegen, characterInfo.DefaultStats.EndingManaRegen, percentageCompleted);
-            CurrentManaStat += manaRegen * Time.deltaTime;
+            CurrentManaStat += manaRegen * Time.fixedDeltaTime;
         }
     }
+
+    private void InvincibilityTick()
+    {
+        remainingInvincibilityTime -= Time.fixedDeltaTime;
+
+        // Check if completed
+        if (remainingInvincibilityTime <= 0)
+        {
+            remainingInvincibilityTime = 0;
+            SetChildAlpha(1);
+        }
+        
+    }
+    
     private void SetChildAlpha(float alpha)
     {
         for (int i = 0; i < gameObject.transform.childCount; i++)
@@ -228,4 +266,5 @@ public class CharacterStats : MonoBehaviour
         }
     }
     */
+
 }

@@ -94,15 +94,15 @@ public class CursorLogic : NetworkBehaviour
         void OpponentTick()
         {
             ticksSincePositionUpdate++;
-            float cappedTicks = Mathf.Min(ticksSincePositionUpdate, GameSettings.Used.ServerLocationTickFrequency);
-            float interpolatePercent = cappedTicks / GameSettings.Used.ServerLocationTickFrequency;
+            float cappedTicks = Mathf.Min(ticksSincePositionUpdate, GameSettings.Used.NetworkDiscrepancyCheckFrequency);
+            float interpolatePercent = cappedTicks / GameSettings.Used.NetworkDiscrepancyCheckFrequency;
             location = Calculations.RelativeTo(previousServerSidePosition, serverSideLocation.Value, interpolatePercent);
         }
     }
     private void ServerPositionTick()
     {
         ticksSincePositionUpdate++;
-        if (ticksSincePositionUpdate >= GameSettings.Used.ServerLocationTickFrequency)
+        if (ticksSincePositionUpdate >= GameSettings.Used.NetworkDiscrepancyCheckFrequency)
         {
             serverSideLocation.Value = location;
 
@@ -113,10 +113,10 @@ public class CursorLogic : NetworkBehaviour
     /// <summary> Visually updates the cursor </summary>
     private void UpdateCursor()
     {
-        Debug.Log($"Location when updating the cursor: {location}");
         float locationAroundSquare = Calculations.Modulo(location, GameSettings.Used.BattleSquareWidth * 4);
 
         int sideNumber = GetCurrentWall();
+        
         float locationAroundSide = locationAroundSquare % GameSettings.Used.BattleSquareWidth;
 
         transform.rotation = Quaternion.Euler(0, 0, -90 * (sideNumber)); // Negative because it rotates counterclockwise
@@ -126,7 +126,6 @@ public class CursorLogic : NetworkBehaviour
         int[,] modifierDirection = { { 1, 0 }, { 0, -1 }, { -1, 0 }, { 0, 1 } }; // Starts in top left, continues clockwise
         Vector2 positionModifier = new(locationAroundSide * modifierDirection[sideNumber, 0], locationAroundSide * modifierDirection[sideNumber, 1]);
 
-        if (!IsOwner) Debug.Log($"Setting transform.position to {corners[sideNumber] + positionModifier}");
         transform.position = corners[sideNumber] + positionModifier;
     }
 
@@ -153,7 +152,7 @@ public class CursorLogic : NetworkBehaviour
     public int GetCurrentWall()
     {
         float squareSide = GameSettings.Used.BattleSquareWidth;
-        float locationAroundSquare = Calculations.Modulo(location, squareSide * 4);
+        float locationAroundSquare = Calculations.Modulo(location, squareSide * 4f);
 
         return (int)Mathf.Floor(locationAroundSquare / squareSide);
     }
@@ -164,7 +163,7 @@ public class CursorLogic : NetworkBehaviour
     {
         location += input;
         float discrepancy = clientLocation - location;
-        if (discrepancy >= GameSettings.Used.ServerClientDiscrepancyLimit)
+        if (discrepancy >= GameSettings.Used.NetworkLocationDiscrepancyLimit)
         {
             Debug.LogWarning($"{name} has a discrepancy of {discrepancy}");
             FixDiscrepancyClientRpc(discrepancy);

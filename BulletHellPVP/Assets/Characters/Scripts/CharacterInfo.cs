@@ -196,6 +196,5 @@ public class CharacterInfo : ScriptableObject
         }
         return null;
     }
-
     #endregion ObjectReferences
 }

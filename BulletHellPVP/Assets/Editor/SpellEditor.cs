@@ -1,12 +1,6 @@
-using NUnit.Framework.Internal;
-using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using Unity.VisualScripting.YamlDotNet.Core.Tokens;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.UIElements;
 
 [CustomEditor(typeof(SpellData))]
 public class SpellEditor : Editor

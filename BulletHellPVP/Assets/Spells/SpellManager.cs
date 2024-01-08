@@ -84,7 +84,7 @@ public class SpellManager : NetworkBehaviour
                 Debug.Log("Spell on cooldown.");
                 return false;
             }
-            else if (spellData.ManaCost >= characterInfo.CharacterStats.CurrentManaStat)
+            else if (spellData.ManaCost > characterInfo.CharacterStats.CurrentManaStat)
             {
                 Debug.Log("Not enough mana.");
                 return false;

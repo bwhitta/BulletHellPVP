@@ -31,8 +31,11 @@ MonoBehaviour:
     AttachmentTime: 0
     PushesPlayer: 0
     PlayerPushSpeed: 0
+    SpriteFacingPush: 0
+    AngleAfterStart: 0
+    AngleChangeSpeed: 0
     AffectsPlayerMovement: 0
-    PlayerMovementMultiplier: 0
+    PlayerMovementMod: 0
     InstantiationQuantity: 2
     InstantiationScale: 0.07
     UsesCollider: 1
@@ -50,6 +53,9 @@ MonoBehaviour:
     AnimatorController: {fileID: 0}
     MultipartAnimationPrefabs: []
     AnimationScaleMultiplier: 0
+    GeneratesParticles: 0
+    ParticleSystemPrefab: {fileID: 0}
+    ParticleSystemZ: 0
     ScalesOverTime: 1
     ScalingStartPercent: 0.75
     MaxScaleMultiplier: 1.5

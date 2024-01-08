@@ -32,8 +32,9 @@ MonoBehaviour:
   ManaScalingTime: 60
   InvincibilityTime: 1
   InvincibilityAlphaMod: 0.25
-  ServerLocationHz: 10
-  ServerClientDiscrepancyLimit: 0.25
+  NetworkDiscrepancyCheckHz: 10
+  NetworkLocationDiscrepancyLimit: 0.25
+  NetworkStatBarDiscrepancyLimit: 1
   StatLostVelocity: 1
   CursorMovementSpeed: 5
   CursorAcceleratedMovementMod: 3

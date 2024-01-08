@@ -38,11 +38,11 @@ public class GameSettings : ScriptableObject
 
     [Space]
     [Header("Online")]
-    [Range(10, 30)] public int ServerLocationHz; // reasonable rate is between 30 and 10Hz (I'll probably want something in between, and to add the option to choose in the settings)
-    public int ServerLocationTickFrequency => Mathf.CeilToInt(1 / (ServerLocationHz * Time.fixedDeltaTime)); // Converts from Hz to number of ticks
-
-    public float ServerClientDiscrepancyLimit;
-
+    [SerializeField][Range(10, 30)] private int NetworkDiscrepancyCheckHz; // reasonable rate is between 30 and 10Hz (I'll probably want something in between, and to add the option to choose in the settings)
+    public int NetworkDiscrepancyCheckFrequency => Mathf.CeilToInt(1 / (NetworkDiscrepancyCheckHz * Time.fixedDeltaTime)); // Converts from Hz to number of ticks
+    public float NetworkLocationDiscrepancyLimit;
+    public float NetworkStatBarDiscrepancyLimit;
+    
     [Space]
     [Header("GUI")]
     public float StatLostVelocity;

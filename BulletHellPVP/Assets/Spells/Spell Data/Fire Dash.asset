@@ -53,7 +53,7 @@ MonoBehaviour:
     ScalingStartPercent: 0
     MaxScaleMultiplier: 0
     DestroyOnScalingCompleted: 0
-  - FoldoutOpen: 1
+  - FoldoutOpen: 0
     Prefab: {fileID: 1062348163457161292, guid: a12a2eac476853e4184718ce4ef910dc, type: 3}
     ModuleType: 1
     ProjectileSpawningArea: 0
