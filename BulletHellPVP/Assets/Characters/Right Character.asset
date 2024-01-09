@@ -18,7 +18,7 @@ MonoBehaviour:
   MovementActionName: Movement
   NextBookActionName: NextBook
   CastingActionName: SpellcastingSelection
-  CharacterStartLocation: {x: 4, y: 0}
+  CharacterStartLocation: {x: 2, y: 2}
   AnimatorTreeParameterX: FacingX
   AnimatorTreeParameterY: FacingY
   CurrentBookIndex: 0

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Unity.Mathematics;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -7,7 +6,7 @@ public class CharacterStats : NetworkBehaviour
 {
     [HideInInspector] public CharacterInfo characterInfo;
 
-    //private float remainingInvincibilityTime = 0;
+    private float remainingInvincibilityTime = 0;
 
     // Mana scaling
     private float manaScalingTime;
@@ -17,7 +16,7 @@ public class CharacterStats : NetworkBehaviour
     private readonly List<float> effectManaRegenValues = new();
 
     // Health
-    [SerializeField] private float? _currentHealthStat; // SERIALIZEFIELD TEMPORARY FOR TESTING HEALTH ON THE NETWORK - MAKE SURE TO GET RID OF AFTER
+    private float? _currentHealthStat;
     public float CurrentHealthStat
     {
         get
@@ -91,7 +90,7 @@ public class CharacterStats : NetworkBehaviour
     
     private void FixedUpdate()
     {
-        // if (remainingInvincibilityTime > 0) InvincibilityTick(); DISABLED TEMPORARILY
+        if (remainingInvincibilityTime > 0) InvincibilityTick();
         ManaScalingTick();
         ManaRegenTick();
         if (IsServer) ServerTick();
@@ -210,10 +209,9 @@ public class CharacterStats : NetworkBehaviour
         CurrentManaStat += deltaManaChange * Time.fixedDeltaTime;
     }
 
-
-    /* DAMAGE AND INVINCIBILITY TEMPORARILY DISABLED
     private void OnTriggerEnter2D(Collider2D collision)
-    {
+    {   
+        Debug.Log($"Trigger entered! Collision2D: {collision}"); // temp log
         CheckCollision(collision);
     }
 
@@ -221,27 +219,28 @@ public class CharacterStats : NetworkBehaviour
     {
         if (gameObject.activeSelf == false)
         {
+            Debug.Log($"Self is not active"); // temp log
             return;
         }
 
         if (collision.GetComponent<SpellModuleBehavior>() != null)
         {
             SpellModuleBehavior collisionSpellBehavior = collision.GetComponent<SpellModuleBehavior>();
-
-            Debug.Log($"Some collision code is currently disabled.");
-            if(remainingInvincibilityTime <= 0 && collisionSpellBehavior.module.AbilityDealsDamage)
+            Debug.Log($"Spell module is not null: {collision.GetComponent<SpellModuleBehavior>()}");
+            if (remainingInvincibilityTime <= 0 && collisionSpellBehavior.Module.AbilityDealsDamage)
+            {
                 DamageDealt(collisionSpellBehavior);
+            }
         }
+        
         
         void DamageDealt(SpellModuleBehavior collisionSpellBehavior)
         {
-            remainingInvincibilityTime = characterInfo.DefaultStats.InvincibilityTime;
-            SetChildAlpha(characterInfo.DefaultStats.InvincibilityAlphaMod);
+            remainingInvincibilityTime = GameSettings.Used.InvincibilityTime;
+            SetChildAlpha(GameSettings.Used.InvincibilityAlphaMod);
 
-            gameObject.GetComponent<CharacterStats>().CurrentHealthStat -= collisionSpellBehavior.module.Damage;
-            float percentageCompleted = manaScalingTime / characterInfo.DefaultStats.ScalingTime;
-            float manaRegen = Calculations.RelativeTo(characterInfo.DefaultStats.StartingManaRegen, characterInfo.DefaultStats.EndingManaRegen, percentageCompleted);
-            CurrentManaStat += manaRegen * Time.fixedDeltaTime;
+            gameObject.GetComponent<CharacterStats>().CurrentHealthStat -= collisionSpellBehavior.Module.Damage;
+            Debug.Log($"Damage dealt - total of {collisionSpellBehavior.Module.Damage} health lost.");
         }
     }
 
@@ -265,6 +264,4 @@ public class CharacterStats : NetworkBehaviour
             gameObject.transform.GetChild(i).GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, alpha);
         }
     }
-    */
-
 }

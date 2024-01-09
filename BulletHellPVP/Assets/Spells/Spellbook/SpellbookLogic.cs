@@ -151,7 +151,7 @@ public class SpellbookLogic : MonoBehaviour
         }
         if (MultiplayerManager.IsOnline)
         {
-            Debug.Log($"Casting imput performed. Server will now attempt spell");
+            Debug.Log($"Casting input performed. Server will now attempt spell");
             characterInfo.CharacterSpellManager.AttemptSpellServerRpc(spellbookSlotIndex);
         }
         else

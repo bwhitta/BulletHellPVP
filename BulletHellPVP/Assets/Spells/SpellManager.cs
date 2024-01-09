@@ -30,8 +30,6 @@ public class SpellManager : NetworkBehaviour
 
     public void AttemptSpell(byte slot)
     {
-        Debug.Log($"Spell in index {slot} attempted");
-
         // Check slot validity
         if (GetSpellData(characterInfo.CurrentBook, slot) == null)
         {
@@ -46,7 +44,7 @@ public class SpellManager : NetworkBehaviour
         if (CooldownAndManaAvailable() == false)
             return;
 
-        Debug.Log($"Starting instantation");
+        Debug.Log($"Starting instantation of spell in {slot}");
         for (byte i = 0; i < spellData.UsedModules.Length; i++)
         {
             SpellData.Module module = spellData.UsedModules[i];
@@ -101,7 +99,7 @@ public class SpellManager : NetworkBehaviour
     [ServerRpc]
     public void AttemptSpellServerRpc(byte slotIndex)
     {
-        Debug.Log($"AttemptSpellServerRpc (index of spell slot is {slotIndex})");
+        Debug.Log($"ServerRpc recieved, attempting spell server-side");
         AttemptSpell(slotIndex);
     }
 

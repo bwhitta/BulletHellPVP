@@ -4,7 +4,15 @@ using UnityEngine;
 public class SpellModuleBehavior : NetworkBehaviour
 {
     #region Fields
-    private SpellData.Module module;
+    public SpellData.Module Module
+    {
+        get
+        {
+            SpellSetInfo set = GameSettings.Used.SpellSets[spellIndex];
+            SpellData spell = set.spellsInSet[spellIndex];
+            return spell.UsedModules[moduleIndex];
+        }
+    }
     public byte setIndex, spellIndex, moduleIndex, behaviorID, ownerID;
 
     // Projectile
@@ -31,53 +39,45 @@ public class SpellModuleBehavior : NetworkBehaviour
 
     void Start()
     {
-        Debug.Log($"Module would be started here. ownerID: {ownerID}, owner character: {GameSettings.Used.Characters[ownerID]}");
         StartModule();
     }
     private void StartModule()
     {
-        Debug.Log($"Starting module! OwnerID: {ownerID}, Owner character: {GameSettings.Used.Characters[ownerID]}");
-
         if (IsServer)
         {
-            Debug.Log($"Sending module data to clients (calling ModuleDataClientRpc)");
+            Debug.Log($"Sending module data to clients");
             ModuleDataClientRpc(setIndex, spellIndex, moduleIndex, behaviorID, ownerID);
         }
 
         // Set variables
-        module = GetModule();
         SetStartingPosition();
         SetScale();
 
         //Enables sprite, animator, particles, and collider as needed
-        Debug.Log($"Uses Sprite: {module.UsesSprite}, Animated: {module.Animated}, Generates Particles: {module.GeneratesParticles}");
-        if (module.UsesSprite)
+        if (Module.UsesSprite)
         {
-            Debug.Log($"Sprite would be enabled here");
             EnableSprite();
         }
-        if (module.Animated)
+        if (Module.Animated)
         {
-            Debug.Log($"Animator would be enabled here");
             EnableAnimator();
         }
-        if (module.GeneratesParticles)
+        if (Module.GeneratesParticles)
         {
-            Debug.Log($"Particle System would be enabled here");
             EnableParticleSystem();
         }
-        if (module.UsesCollider)
+        if (Module.UsesCollider)
         {
             gameObject.GetComponent<PolygonCollider2D>().enabled = true;
             SetCollider();
         }
 
-        switch (module.ModuleType)
+        switch (Module.ModuleType)
         {
             case SpellData.ModuleTypes.PlayerAttached:
-                attachmentTime = module.AttachmentTime;
+                attachmentTime = Module.AttachmentTime;
                 characterControls = transform.parent.GetComponent<CharacterControls>();
-                if (module.PushesPlayer)
+                if (Module.PushesPlayer)
                 {
                     movementDirection = characterControls.movementAction.ReadValue<Vector2>().normalized;
                     // If the player is stationary, send down
@@ -91,14 +91,12 @@ public class SpellModuleBehavior : NetworkBehaviour
 
         void SetStartingPosition()
         {
-            Debug.Log($"Setting starting position!");
-            switch (module.ProjectileSpawningArea)
+            switch (Module.ProjectileSpawningArea)
             {
                 case SpellData.SpawningAreas.Point:
                     transform.position = GameSettings.Used.Characters[ownerID].CharacterSpellManager.transform.position;
                     break;
                 case SpellData.SpawningAreas.AdjacentCorners:
-
                     SpellManager spellManager = GameSettings.Used.Characters[ownerID].CharacterSpellManager;
                     Quaternion alignment = spellManager.transform.rotation * Quaternion.Euler(0, 0, -90);
                     // Sets the position and rotation
@@ -126,29 +124,27 @@ public class SpellModuleBehavior : NetworkBehaviour
         }
         void SetScale()
         {
-            transform.localScale = new Vector3(module.InstantiationScale, module.InstantiationScale, 1);
+            transform.localScale = new Vector3(Module.InstantiationScale, Module.InstantiationScale, 1);
         }
         void EnableSprite()
         {
-            Debug.Log($"Enabling sprite.");
             spriteRenderer = GetComponent<SpriteRenderer>();
-            spriteRenderer.enabled = module.UsesSprite;
-            spriteRenderer.sprite = module.Sprite;
+            spriteRenderer.enabled = Module.UsesSprite;
+            spriteRenderer.sprite = Module.Sprite;
 
             // Set the mask layer
             string spellMaskLayer = GameSettings.Used.Characters[ownerID].OpponentCharacterInfo.CharacterAndSortingTag;
-            Debug.Log($"SpellMaskLayer: {spellMaskLayer}");
             spriteRenderer.sortingLayerName = spellMaskLayer;
         }
         void EnableAnimator()
         {
             animator = gameObject.GetComponent<Animator>();
-            foreach (GameObject animationPrefab in module.MultipartAnimationPrefabs)
+            foreach (GameObject animationPrefab in Module.MultipartAnimationPrefabs)
             {
                 GameObject currentAnimationPrefab = Instantiate(animationPrefab, transform);
 
                 currentAnimationPrefab.transform.SetPositionAndRotation(transform.position, transform.rotation);
-                currentAnimationPrefab.transform.localScale = new Vector2(module.AnimationScaleMultiplier, module.AnimationScaleMultiplier);
+                currentAnimationPrefab.transform.localScale = new Vector2(Module.AnimationScaleMultiplier, Module.AnimationScaleMultiplier);
                 // Animator does not work with changed name, so this line resets the name.
                 currentAnimationPrefab.name = animationPrefab.name;
 
@@ -158,28 +154,21 @@ public class SpellModuleBehavior : NetworkBehaviour
             }
 
             // Enables the animator if Animated is set to true
-            animator.enabled = module.Animated;
+            animator.enabled = Module.Animated;
 
             // Sets the animation
-            animator.runtimeAnimatorController = module.AnimatorController;
+            animator.runtimeAnimatorController = Module.AnimatorController;
         }
         void EnableParticleSystem()
         {
             Debug.Log($"Enabling module particle system");
-            GameObject particleObject = Instantiate(module.ParticleSystemPrefab, transform);
-            particleObject.transform.localPosition = new Vector3(0, 0, module.ParticleSystemZ);
+            GameObject particleObject = Instantiate(Module.ParticleSystemPrefab, transform);
+            particleObject.transform.localPosition = new Vector3(0, 0, Module.ParticleSystemZ);
         }
         void SetCollider()
         {
-            gameObject.GetComponent<PolygonCollider2D>().points = module.ColliderPath;
+            gameObject.GetComponent<PolygonCollider2D>().points = Module.ColliderPath;
         }
-    }
-
-    private SpellData.Module GetModule()
-    {
-        SpellSetInfo set = GameSettings.Used.SpellSets[spellIndex];
-        SpellData spell = set.spellsInSet[spellIndex];
-        return spell.UsedModules[moduleIndex];
     }
 
     [ClientRpc]
@@ -187,7 +176,6 @@ public class SpellModuleBehavior : NetworkBehaviour
     {
         if (IsHost)
         {
-            Debug.Log($"Skipping recieving module data from server since this client is a host.");
             return;
         }
         setIndex = serverSetIndex;
@@ -202,7 +190,7 @@ public class SpellModuleBehavior : NetworkBehaviour
     {
         if (IsServer) ServerPositionTick();
 
-        switch (module.ModuleType)
+        switch (Module.ModuleType)
         {
             case SpellData.ModuleTypes.Projectile:
                 MoveSpell();
@@ -238,12 +226,12 @@ public class SpellModuleBehavior : NetworkBehaviour
         #region PlayerAttachedLocalMethods
         void TryPushPlayer()
         {
-            if (module.PushesPlayer)
+            if (Module.PushesPlayer)
             {
-                characterControls.tempPush += module.PlayerPushSpeed * movementDirection;
+                characterControls.tempPush += Module.PlayerPushSpeed * movementDirection;
                 TryAnglingPush();
             }
-            if (module.SpriteFacingPush)
+            if (Module.SpriteFacingPush)
             {
                 transform.rotation = Quaternion.Euler(0, 0, 180 + GetAngle(movementDirection));
             }
@@ -251,21 +239,21 @@ public class SpellModuleBehavior : NetworkBehaviour
         }
         void TryAffectPlayerMovement()
         {
-            if (module.AffectsPlayerMovement)
+            if (Module.AffectsPlayerMovement)
             {
-                characterControls.tempMovementMod = module.PlayerMovementMod;
+                characterControls.tempMovementMod = Module.PlayerMovementMod;
             }
         }
         void TryAnglingPush()
         {
-            if (module.AngleAfterStart)
+            if (Module.AngleAfterStart)
             {
                 Vector2 inputVector = characterControls.movementAction.ReadValue<Vector2>();
                 float movingDirection = GetAngle(movementDirection);
                 float inputDirection = GetAngle(inputVector);
                 if (inputVector == Vector2.zero)
                     return;
-                float movementCap = module.AngleChangeSpeed * Time.fixedDeltaTime;
+                float movementCap = Module.AngleChangeSpeed * Time.fixedDeltaTime;
                 float rotationAngle = Mathf.MoveTowardsAngle(movingDirection, inputDirection, movementCap);
                 movementDirection = Quaternion.Euler(0, 0, rotationAngle) * Vector2.up;
             }
@@ -291,7 +279,7 @@ public class SpellModuleBehavior : NetworkBehaviour
     private void PointTowardsTarget()
     {
         // If TargetingType is CharacterStats, point towards the character
-        if (module.TargetingType == SpellData.TargetTypes.Character)
+        if (Module.TargetingType == SpellData.TargetTypes.Character)
         {
             if (targetedCharacter == null)
             {
@@ -302,7 +290,7 @@ public class SpellModuleBehavior : NetworkBehaviour
                 transform.right = targetedCharacter.transform.position - transform.position; // Point towards character
             }
         }
-        else if (module.TargetingType == SpellData.TargetTypes.NotApplicable)
+        else if (Module.TargetingType == SpellData.TargetTypes.NotApplicable)
         {
             //Do nothing
             return;
@@ -315,44 +303,44 @@ public class SpellModuleBehavior : NetworkBehaviour
     private void MoveSpell()
     {
         // Move the spell
-        if (module.MovementType == SpellData.MovementTypes.Linear)
+        if (Module.MovementType == SpellData.MovementTypes.Linear)
         {
-            transform.position += module.MovementSpeed * Time.fixedDeltaTime * transform.right;
-            distanceMoved += module.MovementSpeed * Time.fixedDeltaTime;
+            transform.position += Module.MovementSpeed * Time.fixedDeltaTime * transform.right;
+            distanceMoved += Module.MovementSpeed * Time.fixedDeltaTime;
         }
-        else if (module.MovementType == SpellData.MovementTypes.Wall)
+        else if (Module.MovementType == SpellData.MovementTypes.Wall)
         {
             switch (behaviorID)
             {
                 case 0:
-                    transform.position += transform.rotation * Vector3.up * Time.fixedDeltaTime * module.MovementSpeed;
+                    transform.position += transform.rotation * Vector3.up * Time.fixedDeltaTime * Module.MovementSpeed;
                     break;
                 case 1:
-                    transform.position += transform.rotation * Vector3.down * Time.fixedDeltaTime * module.MovementSpeed;
+                    transform.position += transform.rotation * Vector3.down * Time.fixedDeltaTime * Module.MovementSpeed;
                     break;
                 default:
                     Debug.LogWarning($"BehaviorID {behaviorID} should not be possible in this situation.");
                     break;
             }
-            distanceMoved += Time.fixedDeltaTime * module.MovementSpeed;
+            distanceMoved += Time.fixedDeltaTime * Module.MovementSpeed;
         }
 
         // Scaling
-        if (module.ScalesOverTime)
+        if (Module.ScalesOverTime)
             UpdateScaling();
     }
     private void UpdateScaling()
     {
         float distanceToMove = GameSettings.Used.BattleSquareWidth / 2;
-        float distanceForScaling = distanceToMove * module.ScalingStartPercent;
+        float distanceForScaling = distanceToMove * Module.ScalingStartPercent;
 
         if (distanceMoved >= distanceForScaling)
         {
-            float currentScale = Scaling(distanceToMove, module.ScalingStartPercent, distanceMoved, module.MaxScaleMultiplier - 1);
-            transform.localScale = new Vector3(module.InstantiationScale * currentScale, module.InstantiationScale * currentScale, 1);
+            float currentScale = Scaling(distanceToMove, Module.ScalingStartPercent, distanceMoved, Module.MaxScaleMultiplier - 1);
+            transform.localScale = new Vector3(Module.InstantiationScale * currentScale, Module.InstantiationScale * currentScale, 1);
         }
 
-        if (distanceMoved >= distanceToMove && module.DestroyOnScalingCompleted)
+        if (distanceMoved >= distanceToMove && Module.DestroyOnScalingCompleted)
         {
             Debug.Log($"Fully moved, destroying {name}. Distance moved: {distanceMoved}. Distance to move: {distanceToMove}");
             DestroySelfNetworkSafe();
@@ -379,7 +367,6 @@ public class SpellModuleBehavior : NetworkBehaviour
         }
         else if (IsServer)
         {
-            Debug.Log($"Despawning projectile.");
             NetworkObject.Despawn(gameObject);
         }
     }
