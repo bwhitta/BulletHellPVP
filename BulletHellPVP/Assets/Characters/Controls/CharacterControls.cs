@@ -1,3 +1,4 @@
+using System;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -73,8 +74,15 @@ public class CharacterControls : NetworkBehaviour
             {
                 GameObject spellManagerObject = null;
                 spellManagerObject = Instantiate(spellcastingObjectPrefab);
-                spellManagerObject.GetComponent<SpellManager>().characterInfo = characterInfo;
+                SpellManager spellManagerScript = spellManagerObject.GetComponent<SpellManager>();
+                spellManagerScript.characterInfo = characterInfo;
+                Debug.Log($"Spawned spellcasting object for character {characterInfo}");
                 spellManagerObject.GetComponent<NetworkObject>().SpawnWithOwnership(OwnerClientId);
+
+                // Sets the characterId online
+                byte characterId = (byte)Array.IndexOf(GameSettings.Used.Characters, characterInfo);
+                spellManagerScript.networkCharacterId.Value = characterId;
+                Debug.Log($"character Id sent: {characterId}");
             }
             // Local
             else if (!MultiplayerManager.IsOnline)

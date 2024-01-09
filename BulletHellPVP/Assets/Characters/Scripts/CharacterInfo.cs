@@ -129,13 +129,14 @@ public class CharacterInfo : ScriptableObject
             if (_characterSpellManagerObject == null)
             {
                 GameObject spellManagerObject = TaggedObjectWithType<SpellManager>();
+                Debug.Log($"SpellManagerObject: {spellManagerObject}. If null, nothing was tagged with the type");
                 if (spellManagerObject != null)
                 {
                     _characterSpellManagerObject = spellManagerObject.GetComponent<SpellManager>();
                 }
                 else
                 {
-                    Debug.Log($"No spell manager found.");
+                    Debug.Log($"No spell manager found!");
                     _characterSpellManagerObject = null;
                 }
             }

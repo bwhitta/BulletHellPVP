@@ -1,18 +1,37 @@
 using System;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class SpellManager : NetworkBehaviour
 {
-    #region Fields
     [HideInInspector] public CharacterInfo characterInfo;
-    #endregion
-    #region Monobehavior Methods
+    public readonly NetworkVariable<Byte> networkCharacterId = new();
+
     private void Start()
     {
-        tag = characterInfo.CharacterObject.tag;
+        if (!MultiplayerManager.IsOnline || IsServer)
+        {
+            tag = characterInfo.CharacterObject.tag;
+        }
+        else
+        {
+            Debug.Log($"START: CharacterId is {networkCharacterId.Value}");
+            
+            // Set characterInfo and tag
+            characterInfo = GameSettings.Used.Characters[networkCharacterId.Value];
+            tag = characterInfo.CharacterObject.tag;
+
+            // If the character ID changes, update the characterInfo and tag.
+            networkCharacterId.OnValueChanged += NetworkCharacterIdChanged;
+        }
+        void NetworkCharacterIdChanged(byte prev, byte changedTo)
+        {
+            Debug.Log($"ID CHANGED: CharacterId is {networkCharacterId.Value}");
+            characterInfo = GameSettings.Used.Characters[changedTo];
+            tag = characterInfo.CharacterObject.tag;
+        }
     }
-    #endregion
 
     public static SpellData GetSpellData(byte setIndex, byte spellIndex)
     {
