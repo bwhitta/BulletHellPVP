@@ -4,34 +4,27 @@ using UnityEngine.InputSystem;
 
 public class CursorLogic : NetworkBehaviour
 {
-    [HideInInspector] public CharacterInfo characterInfo;
-    // Movement
+    // Location
     private float location = 0;
+
     // Controls
     private InputAction cursorMovementInput, cursorAccelerationInput;
+
     // Networking
     private readonly NetworkVariable<float> serverSideLocation = new();
     private float previousServerSidePosition;
     private int ticksSincePositionUpdate;
 
-    #region Monobehavior Methods
-    private void Awake()
-    {
-        gameObject.tag = characterInfo.CharacterAndSortingTag;
-    }
+    // References
+    [SerializeField] private SpellManager spellManager; // Assigned in the inspector on the prefab, so it is instantiated with the reference.
+    
+    // Startup
     private void Start()
     {
-        //Get the InputActionMap
-        InputActionMap controlsMap = ControlsManager.GetActionMap(characterInfo.InputMapName);
+        // Check to make sure reference is in place!
+        if (spellManager == null) Debug.LogWarning("No reference given for Spell Manager on the SpellcastingObject prefab.");
 
-        // Set and enable 
-        cursorMovementInput = controlsMap.FindAction(GameSettings.Used.CursorMovementInputName, true);
-        cursorMovementInput.Enable();
-
-        cursorAccelerationInput = controlsMap.FindAction(GameSettings.Used.AccelerateCursorInputName, true);
-        cursorAccelerationInput.Enable();
-        
-        NetworkVariableListeners();
+        NetworkVariableListeners(); // Look out for when network variables change
 
         void NetworkVariableListeners()
         {
@@ -39,7 +32,6 @@ public class CursorLogic : NetworkBehaviour
             {
                 serverSideLocation.OnValueChanged += ServerSideLocationUpdate;
             }
-
         }
         void ServerSideLocationUpdate(float prevLocation, float newLocation)
         {
@@ -47,6 +39,24 @@ public class CursorLogic : NetworkBehaviour
             ticksSincePositionUpdate = 0;
         }
     }
+    public void CharacterInfoSet()
+    {
+        // Set tag
+        gameObject.tag = spellManager.characterInfo.CharacterAndSortingTag;
+
+        //Get the InputActionMap
+        InputActionMap controlsMap = ControlsManager.GetActionMap(spellManager.characterInfo.InputMapName);
+
+        // Find input actions
+        cursorMovementInput = controlsMap.FindAction(GameSettings.Used.CursorMovementInputName, true);
+        cursorAccelerationInput = controlsMap.FindAction(GameSettings.Used.AccelerateCursorInputName, true);
+        
+        // Enable input
+        cursorMovementInput.Enable();
+        cursorAccelerationInput.Enable();
+    }
+
+    // Methods called each frame
     private void FixedUpdate()
     {
         float cursorMovement = cursorMovementInput.ReadValue<float>() * Time.fixedDeltaTime;
@@ -63,8 +73,6 @@ public class CursorLogic : NetworkBehaviour
         
         MovementTick(cursorMovement);
     }
-    #endregion
-    #region Methods
     private void MovementTick(float movement)
     {
         // Online movement tick
@@ -111,7 +119,7 @@ public class CursorLogic : NetworkBehaviour
     }
     
     /// <summary> Visually updates the cursor </summary>
-    private void UpdateCursor()
+    public void UpdateCursor()
     {
         float locationAroundSquare = Calculations.Modulo(location, GameSettings.Used.BattleSquareWidth * 4);
 
@@ -133,19 +141,23 @@ public class CursorLogic : NetworkBehaviour
     /// <returns> A list of the coordinates of the square. Starts in top left, continues clockwise </returns>
     public Vector2[] GetCurrentSquareCorners()
     {
-        return GetSquareCorners(GameSettings.Used.BattleSquareWidth, characterInfo.OpponentAreaCenterX, characterInfo.OpponentAreaCenterY);
+        Vector2 pos = new()
+        {
+            x = spellManager.characterInfo.OpponentAreaCenterX,
+            y = spellManager.characterInfo.OpponentAreaCenterY
+        };
+        return GetSquareCorners(GameSettings.Used.BattleSquareWidth, pos);
     }
-    private Vector2[] GetSquareCorners(float sideLength, float posX, float posY)
+    private Vector2[] GetSquareCorners(float sideLength, Vector2 centerPoint)
     {
-
         Vector2[] corners = new Vector2[4];
 
         int[,] cornerDirection = { { -1, 1 }, { 1, 1 }, { 1, -1 }, { -1, -1 } }; // Starts in top left, continues clockwise
 
         for (int i = 0; i < 4; i++)
         {
-            corners[i].x = posX + (sideLength * cornerDirection[i, 0] * 0.5f);
-            corners[i].y = posY + (sideLength * cornerDirection[i, 1] * 0.5f);
+            corners[i].x = centerPoint.x + (sideLength * cornerDirection[i, 0] * 0.5f);
+            corners[i].y = centerPoint.y + (sideLength * cornerDirection[i, 1] * 0.5f);
         }
         return corners;
     }
@@ -156,8 +168,8 @@ public class CursorLogic : NetworkBehaviour
 
         return (int)Mathf.Floor(locationAroundSquare / squareSide);
     }
-    #endregion
-    #region Server and Client Rpcs
+
+    // Server and Client Rpcs
     [ServerRpc]
     private void MoveCursorServerRpc(float input, float clientLocation)
     {
@@ -178,5 +190,4 @@ public class CursorLogic : NetworkBehaviour
             location -= discrepancy;
         }
     }
-    #endregion
 }

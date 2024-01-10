@@ -24,12 +24,13 @@ public class CharacterControls : NetworkBehaviour
     #region Monobehavior Methods
     private void Start()
     {
-        SetObjectReferences();
+        SetObjectReferences(); // Replace with properties? Maybe.
         EnableMovement();
         transform.position = characterInfo.CharacterStartLocation; // Sets starting position
         SetPositionOnline();
         NetworkVariableListeners();
         InstantiateSpellManager();
+
 
         // Local Methods
         void SetObjectReferences()
@@ -72,12 +73,17 @@ public class CharacterControls : NetworkBehaviour
             // Online
             if (MultiplayerManager.IsOnline && IsServer)
             {
-                GameObject spellManagerObject = null;
-                spellManagerObject = Instantiate(spellcastingObjectPrefab);
+                // Create object locally
+                GameObject spellManagerObject = Instantiate(spellcastingObjectPrefab);
+                
                 SpellManager spellManagerScript = spellManagerObject.GetComponent<SpellManager>();
+                
+                // Set character info locally
                 spellManagerScript.characterInfo = characterInfo;
-                Debug.Log($"Spawned spellcasting object for character {characterInfo}");
+
+                // Spawn on network
                 spellManagerObject.GetComponent<NetworkObject>().SpawnWithOwnership(OwnerClientId);
+                Debug.Log($"Spawned spellcasting object for character {characterInfo}");
 
                 // Sets the characterId online
                 byte characterId = (byte)Array.IndexOf(GameSettings.Used.Characters, characterInfo);
@@ -87,8 +93,10 @@ public class CharacterControls : NetworkBehaviour
             // Local
             else if (!MultiplayerManager.IsOnline)
             {
-                GameObject spellManagerObject = null;
-                spellManagerObject = Instantiate(spellcastingObjectPrefab);
+                // Spawn object
+                GameObject spellManagerObject = Instantiate(spellcastingObjectPrefab);
+                
+                // Give it the character info
                 spellManagerObject.GetComponent<SpellManager>().characterInfo = characterInfo;
             }
         }

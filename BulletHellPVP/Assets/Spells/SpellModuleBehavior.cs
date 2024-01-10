@@ -361,13 +361,20 @@ public class SpellModuleBehavior : NetworkBehaviour
 
     private void DestroySelfNetworkSafe()
     {
-        if (MultiplayerManager.IsOnline == false || (IsClient && !IsHost))
+        if (MultiplayerManager.IsOnline == false)
         {
+            Debug.Log($"Destroying {gameObject.name} as local player.");
             Destroy(gameObject);
         }
         else if (IsServer)
         {
+            Debug.Log($"Destroying {gameObject.name} as online server");
             NetworkObject.Despawn(gameObject);
+        }
+        else if (IsClient)
+        {
+            Debug.Log($"Disabling {gameObject.name} until it is destroyed by server.");
+            gameObject.SetActive(false);
         }
     }
 }

@@ -10,10 +10,12 @@ public class SpellManager : NetworkBehaviour
 
     private void Start()
     {
+        // Set the tag on local or server instances
         if (!MultiplayerManager.IsOnline || IsServer)
         {
             tag = characterInfo.CharacterObject.tag;
         }
+        // Set the tag for non-host client instances
         else
         {
             Debug.Log($"START: CharacterId is {networkCharacterId.Value}");
@@ -25,11 +27,18 @@ public class SpellManager : NetworkBehaviour
             // If the character ID changes, update the characterInfo and tag.
             networkCharacterId.OnValueChanged += NetworkCharacterIdChanged;
         }
+        GetComponent<CursorLogic>().CharacterInfoSet();
+
         void NetworkCharacterIdChanged(byte prev, byte changedTo)
         {
             Debug.Log($"ID CHANGED: CharacterId is {networkCharacterId.Value}");
             characterInfo = GameSettings.Used.Characters[changedTo];
             tag = characterInfo.CharacterObject.tag;
+            
+            // Update cursorLogic to make sure it uses the new info
+            CursorLogic cursorLogic = GetComponent<CursorLogic>();
+            cursorLogic.CharacterInfoSet();
+            cursorLogic.UpdateCursor();
         }
     }
 
