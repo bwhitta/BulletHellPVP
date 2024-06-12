@@ -44,18 +44,26 @@ public class CharacterInfo : ScriptableObject
         {
             return;
         }
-            
+        
         EquippedBooks = new Spellbook[GameSettings.Used.TotalBooks];
-
-        for (int i = 0; i < EquippedBooks.Length; i++)
-        {
-            EquippedBooks[i].SetIndexes = new byte[GameSettings.Used.TotalSpellSlots];
-            EquippedBooks[i].SpellIndexes = new byte[GameSettings.Used.TotalSpellSlots];
-        }
 
         if (DeveloperBookOverride)
         {
             EquippedBooks[0] = OverrideBook;
+        }
+        for (int i = 0; i < EquippedBooks.Length; i++)
+        {
+            if (EquippedBooks[i] == null)
+            {
+                EquippedBooks[i] = new()
+                {
+                    SetIndexes = new byte[GameSettings.Used.TotalSpellSlots],
+                    SpellIndexes = new byte[GameSettings.Used.TotalSpellSlots]
+                };
+            }
+            Debug.Log($"EquippedBooks[i].SetIndexes: {EquippedBooks[i].SetIndexes}");
+            EquippedBooks[i].SetIndexes = new byte[GameSettings.Used.TotalSpellSlots];
+            EquippedBooks[i].SpellIndexes = new byte[GameSettings.Used.TotalSpellSlots];
         }
     }
 

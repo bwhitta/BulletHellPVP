@@ -46,21 +46,9 @@ public class SpellSelectionManager : MonoBehaviour
     }
     private void CreateBooks()
     {
-        foreach (CharacterInfo info in GameSettings.Used.Characters)
+        foreach (CharacterInfo characterInfo in GameSettings.Used.Characters)
         {
-            CharacterInfo characterInfo = info;
-
-            characterInfo.EquippedBooks = new CharacterInfo.Spellbook[GameSettings.Used.TotalBooks];
-
-            for(int j = 0; j < GameSettings.Used.TotalBooks; j++)
-            {
-                CharacterInfo.Spellbook emptyBook = new()
-                {
-                    SetIndexes = new byte[GameSettings.Used.TotalSpellSlots],
-                    SpellIndexes = new byte[GameSettings.Used.TotalSpellSlots]
-                };
-                characterInfo.EquippedBooks[j] = emptyBook;
-            }
+            characterInfo.CreateBooks();
         }
     }
     private void CalculateSlotLocations()
