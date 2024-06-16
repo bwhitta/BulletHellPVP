@@ -13,6 +13,15 @@ public class SpellModuleBehavior : NetworkBehaviour
             return spell.UsedModules[moduleIndex];
         }
     }
+    public SpellData ModuleSpellData
+    {
+        get
+        {
+            SpellSetInfo set = GameSettings.Used.SpellSets[spellIndex];
+            SpellData spell = set.spellsInSet[spellIndex];
+            return spell;
+        }
+    }
     public byte setIndex, spellIndex, moduleIndex, behaviorID, ownerID;
 
     // Projectile
@@ -32,6 +41,14 @@ public class SpellModuleBehavior : NetworkBehaviour
     private readonly NetworkVariable<Vector2> serverSidePosition = new();
     private int ticksSincePositionUpdate;
 
+    // Character Information
+    private CharacterInfo OwnerCharacterInfo
+    {
+        get
+        {
+            return GameSettings.Used.Characters[ownerID];
+        }
+    }
 
     // Readonlys
     private readonly float outOfBoundsDistance = 15f;
@@ -94,10 +111,10 @@ public class SpellModuleBehavior : NetworkBehaviour
             switch (Module.ProjectileSpawningArea)
             {
                 case SpellData.SpawningAreas.Point:
-                    transform.position = GameSettings.Used.Characters[ownerID].CharacterSpellManager.transform.position;
+                    transform.position = GameSettings.Used.Characters[ownerID].SpellManagerObject.transform.position;
                     break;
                 case SpellData.SpawningAreas.AdjacentCorners:
-                    SpellManager spellManager = GameSettings.Used.Characters[ownerID].CharacterSpellManager;
+                    SpellManager spellManager = GameSettings.Used.Characters[ownerID].SpellManagerObject;
                     Quaternion alignment = spellManager.transform.rotation * Quaternion.Euler(0, 0, -90);
                     // Sets the position and rotation
                     transform.SetPositionAndRotation(AdjacentCornersPos(spellManager), alignment);
@@ -183,6 +200,11 @@ public class SpellModuleBehavior : NetworkBehaviour
         moduleIndex = serverModuleIndex;
         behaviorID = serverBehaviorID;
         ownerID = serverOwnerID;
+        // Only deduct Mana Awaiting if this is the first SpellModuleBehavior
+        if (behaviorID == 0)
+        {
+            OwnerCharacterInfo.Stats.ManaAwaiting -= ModuleSpellData.ManaCost;
+        }
         Debug.Log($"This client recieved data from the server!\n(data was - setIndex: {setIndex}, spellIndex: {spellIndex}, moduleIndex: {moduleIndex}, behaviorID: {behaviorID}, ownerID: {ownerID})");
     }
 

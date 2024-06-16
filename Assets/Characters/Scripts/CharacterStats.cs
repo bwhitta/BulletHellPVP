@@ -16,17 +16,17 @@ public class CharacterStats : NetworkBehaviour
     private readonly List<float> effectManaRegenValues = new();
 
     // Health
-    private float? _currentHealthStat;
-    public float CurrentHealthStat
+    private float? _currentHealth;
+    public float CurrentHealth
     {
         get
         {
-            _currentHealthStat ??= GameSettings.Used.MaxHealth;
-            return (float)_currentHealthStat;
+            _currentHealth ??= GameSettings.Used.MaxHealth;
+            return (float)_currentHealth;
         }
         set
         {
-            _currentHealthStat ??= GameSettings.Used.MaxHealth;
+            _currentHealth ??= GameSettings.Used.MaxHealth;
 
             /*// Mana Damage Ratio (UNUSED)
             if (value < _currentHealthStat)
@@ -44,18 +44,18 @@ public class CharacterStats : NetworkBehaviour
 
             if (value > GameSettings.Used.MaxHealth)
             {
-                _currentHealthStat = GameSettings.Used.MaxHealth;
+                _currentHealth = GameSettings.Used.MaxHealth;
             }
             else
             {
-                _currentHealthStat = value;
+                _currentHealth = value;
             }
 
             characterInfo.HealthBar.UpdateStatDisplays(BarLogic.UpdatableStats.Remaining);
 
             if (value <= 0)
             {
-                _currentHealthStat = 0;
+                _currentHealth = 0;
                 Debug.Log("dead");
                 Destroy(gameObject);
             }
@@ -64,26 +64,29 @@ public class CharacterStats : NetworkBehaviour
     private readonly NetworkVariable<float> ServerSideHealth = new();
 
     // Mana
-    private float? _currentManaStat;
-    public float CurrentManaStat
+    private float? _currentMana;
+    public float CurrentMana
     {
         get
         {
-            _currentManaStat ??= maxMana;
-            return (float)_currentManaStat;
+            _currentMana ??= maxMana;
+            return (float)_currentMana;
         }
         set
         {
-            _currentManaStat ??= maxMana;
+            _currentMana ??= maxMana;
             if (value > maxMana)
-                _currentManaStat = maxMana;
+                _currentMana = maxMana;
             else
-                _currentManaStat = value;
+                _currentMana = value;
 
             characterInfo.ManaBar.UpdateStatDisplays(BarLogic.UpdatableStats.Remaining);
         }
     }
     private readonly NetworkVariable<float> ServerSideMana = new();
+    
+    public int ManaAwaitingCountdown = 0;
+    public float ManaAwaiting;
 
     // Network
     private byte ticksSinceUpdate;
@@ -93,6 +96,7 @@ public class CharacterStats : NetworkBehaviour
         if (remainingInvincibilityTime > 0) InvincibilityTick();
         ManaScalingTick();
         ManaRegenTick();
+        ManaAwaitingTick();
         if (IsServer) ServerTick();
         
         void ServerTick()
@@ -100,9 +104,27 @@ public class CharacterStats : NetworkBehaviour
             ticksSinceUpdate++;
             if(ticksSinceUpdate >= GameSettings.Used.NetworkDiscrepancyCheckFrequency)
             {
-                ServerSideHealth.Value = CurrentHealthStat;
-                ServerSideMana.Value = CurrentManaStat;
+                Debug.Log("Server Tick!");
+                ServerSideHealth.Value = CurrentHealth;
+                ServerSideMana.Value = CurrentMana;
                 ticksSinceUpdate = 0;
+            }
+        }
+        void ManaAwaitingTick()
+        {
+            if (ManaAwaiting <= 0)
+            {
+                ManaAwaiting = 0;
+                ManaAwaitingCountdown = 0;
+            }
+            if (ManaAwaitingCountdown > 0)
+            {
+                ManaAwaitingCountdown--;
+                if (ManaAwaitingCountdown <= 0)
+                {
+                    ManaAwaiting = 0;
+                    Debug.LogWarning("Countdown complete!");
+                }
             }
         }
     }
@@ -120,11 +142,19 @@ public class CharacterStats : NetworkBehaviour
         }
         void ServerHealthUpdate(float oldValue, float newValue)
         {
-            CurrentHealthStat = Calculations.DiscrepancyCheck(CurrentHealthStat, newValue, GameSettings.Used.NetworkStatBarDiscrepancyLimit);
+            CurrentHealth = Calculations.DiscrepancyCheck(CurrentHealth, newValue, GameSettings.Used.NetworkStatBarDiscrepancyLimit);
         }
         void ServerManaUpdate(float oldValue, float newValue)
         {
-            CurrentManaStat = Calculations.DiscrepancyCheck(CurrentManaStat, newValue, GameSettings.Used.NetworkStatBarDiscrepancyLimit);
+            // If a spell has mana deducted on client-side but has yet to reach the server, the client-side mana should treat the server-side mana as though it were that much lower.
+            // Otherwise, the mana will rubber band up on one server mana tick then rubber band back down the next.
+            float adjustedServerMana = newValue - ManaAwaiting;
+
+            if (Mathf.Abs(CurrentMana - adjustedServerMana) > GameSettings.Used.NetworkStatBarDiscrepancyLimit)
+            {
+                Debug.LogWarning($"Discepancy: setting CurrentMana to {newValue}, CurrentMana: {CurrentMana}, ManaAwaiting: {ManaAwaiting}");
+                CurrentMana = adjustedServerMana;
+            }
         }
     }
     private void OnDisable()
@@ -206,7 +236,7 @@ public class CharacterStats : NetworkBehaviour
                 effectManaRegenValues.RemoveAt(i);
             }
         }
-        CurrentManaStat += deltaManaChange * Time.fixedDeltaTime;
+        CurrentMana += deltaManaChange * Time.fixedDeltaTime;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -239,7 +269,7 @@ public class CharacterStats : NetworkBehaviour
             remainingInvincibilityTime = GameSettings.Used.InvincibilityTime;
             SetChildAlpha(GameSettings.Used.InvincibilityAlphaMod);
 
-            gameObject.GetComponent<CharacterStats>().CurrentHealthStat -= collisionSpellBehavior.Module.Damage;
+            gameObject.GetComponent<CharacterStats>().CurrentHealth -= collisionSpellBehavior.Module.Damage;
             Debug.Log($"Damage dealt - total of {collisionSpellBehavior.Module.Damage} health lost.");
         }
     }

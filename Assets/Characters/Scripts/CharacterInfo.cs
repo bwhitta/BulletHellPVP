@@ -38,6 +38,7 @@ public class CharacterInfo : ScriptableObject
     [Space(25)] // Cursor
     public float OpponentAreaCenterX;
     public float OpponentAreaCenterY;
+
     public void CreateBooks()
     {
         if (EquippedBooks != null)
@@ -111,44 +112,44 @@ public class CharacterInfo : ScriptableObject
         }
     }
     // Character stats script
-    private CharacterStats _characterStats;
-    public CharacterStats CharacterStats
+    private CharacterStats _stats;
+    public CharacterStats Stats
     {
         get
         {
             if (CharacterObject == null)
             {
                 Debug.LogWarning("CharacterObject null, setting CharacterStats to null");
-                _characterStats = null;
+                _stats = null;
             }
-            else if (_characterStats == null)
+            else if (_stats == null)
             {
-                _characterStats = CharacterObject.GetComponent<CharacterStats>();
+                _stats = CharacterObject.GetComponent<CharacterStats>();
             }
-            return _characterStats;
+            return _stats;
         }
     }
     // Spell manager object
-    private SpellManager _characterSpellManagerObject;
-    public SpellManager CharacterSpellManager
+    private SpellManager _spellManagerObject;
+    public SpellManager SpellManagerObject
     {
         get
         {
-            if (_characterSpellManagerObject == null)
+            if (_spellManagerObject == null)
             {
                 GameObject spellManagerObject = TaggedObjectWithType<SpellManager>();
                 Debug.Log($"SpellManagerObject: {spellManagerObject}. If null, nothing was tagged with the type");
                 if (spellManagerObject != null)
                 {
-                    _characterSpellManagerObject = spellManagerObject.GetComponent<SpellManager>();
+                    _spellManagerObject = spellManagerObject.GetComponent<SpellManager>();
                 }
                 else
                 {
                     Debug.Log($"No spell manager found!");
-                    _characterSpellManagerObject = null;
+                    _spellManagerObject = null;
                 }
             }
-            return _characterSpellManagerObject;
+            return _spellManagerObject;
         }
     }
     // Spellbook script

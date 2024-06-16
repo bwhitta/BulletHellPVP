@@ -69,7 +69,8 @@ public class SpellManager : NetworkBehaviour
         SpellData spellData = GetSpellData(characterInfo.CurrentBook, slot);
 
         // Check cooldown and mana
-        if (CooldownAndManaAvailable() == false)
+        bool canCastSpell = CooldownAndManaAvailable(spellData, slot, false);
+        if (canCastSpell == false)
             return;
 
         Debug.Log($"Starting instantation of spell in {slot}");
@@ -102,25 +103,35 @@ public class SpellManager : NetworkBehaviour
             }
         }
 
-        // Local Methods
-        bool CooldownAndManaAvailable()
+        
+    }
+    public bool CooldownAndManaAvailable(SpellData spellData, byte slot, bool modifyOnlyAsClient)
+    {
+        if (characterInfo.SpellbookLogicScript.spellCooldowns[slot] > 0)
         {
-            if (characterInfo.SpellbookLogicScript.spellCooldowns[slot] > 0)
+            Debug.Log("Spell on cooldown.");
+            return false;
+        }
+        else if (spellData.ManaCost > characterInfo.Stats.CurrentMana)
+        {
+            Debug.Log("Not enough mana.");
+            return false;
+        }
+        else
+        {
+            if ((modifyOnlyAsClient && IsServer) == false)
             {
-                Debug.Log("Spell on cooldown.");
-                return false;
-            }
-            else if (spellData.ManaCost > characterInfo.CharacterStats.CurrentManaStat)
-            {
-                Debug.Log("Not enough mana.");
-                return false;
-            }
-            else
-            {
+                Debug.Log("Deducting mana!");
                 characterInfo.SpellbookLogicScript.spellCooldowns[slot] = spellData.SpellCooldown;
-                characterInfo.CharacterStats.CurrentManaStat -= spellData.ManaCost;
-                return true;
+                characterInfo.Stats.CurrentMana -= spellData.ManaCost;
+                if (!IsServer)
+                {
+                    characterInfo.Stats.ManaAwaiting += spellData.ManaCost;
+                    characterInfo.Stats.ManaAwaitingCountdown = GameSettings.Used.ManaAwaitingCountdownLimit;
+                }
             }
+            
+            return true;
         }
     }
 
@@ -141,4 +152,4 @@ public class SpellManager : NetworkBehaviour
         }
         return spellBehaviors;
     }
-}   
+}

@@ -31,11 +31,11 @@ public class BarLogic : MonoBehaviour
             }
             else if (statToModify == Stats.health)
             {
-                return characterInfo.CharacterStats.CurrentHealthStat;
+                return characterInfo.Stats.CurrentHealth;
             }
             else if (statToModify == Stats.mana)
             {
-                return characterInfo.CharacterStats.CurrentManaStat;
+                return characterInfo.Stats.CurrentMana;
             }
             else
             {
@@ -54,7 +54,7 @@ public class BarLogic : MonoBehaviour
             }
             else if (statToModify == Stats.mana)
             {
-                return characterInfo.CharacterStats.maxMana;
+                return characterInfo.Stats.maxMana;
             }
             else
             {

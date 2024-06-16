@@ -42,6 +42,7 @@ public class GameSettings : ScriptableObject
     public int NetworkDiscrepancyCheckFrequency => Mathf.CeilToInt(1 / (NetworkDiscrepancyCheckHz * Time.fixedDeltaTime)); // Converts from Hz to number of ticks
     public float NetworkLocationDiscrepancyLimit;
     public float NetworkStatBarDiscrepancyLimit;
+    public int ManaAwaitingCountdownLimit;
     
     [Space]
     [Header("GUI")]

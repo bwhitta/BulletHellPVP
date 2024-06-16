@@ -151,12 +151,24 @@ public class SpellbookLogic : MonoBehaviour
         }
         if (MultiplayerManager.IsOnline)
         {
-            Debug.Log($"Casting input performed. Server will now attempt spell. characterInfo: {characterInfo}. CharacterSpellManager: {characterInfo.CharacterSpellManager}.");
-            characterInfo.CharacterSpellManager.AttemptSpellServerRpc(spellbookSlotIndex);
+            Debug.Log($"Casting input performed. Server will now attempt spell. characterInfo: {characterInfo}. CharacterSpellManager: {characterInfo.SpellManagerObject}.");
+
+            // potentially first check max mana here, and then deduct mana from here for the client-side if the player isn't the host
+            SpellData spellData = SpellManager.GetSpellData(characterInfo.CurrentBook, spellbookSlotIndex);
+            bool canCastSpell = characterInfo.SpellManagerObject.CooldownAndManaAvailable(spellData, spellbookSlotIndex, true);
+
+            if (canCastSpell)
+            {
+                characterInfo.SpellManagerObject.AttemptSpellServerRpc(spellbookSlotIndex);
+            }
+            else
+            {
+                Debug.Log("Skipped casting spell - not enough mana");
+            }
         }
         else
         {
-            characterInfo.CharacterSpellManager.AttemptSpell(spellbookSlotIndex);
+            characterInfo.SpellManagerObject.AttemptSpell(spellbookSlotIndex);
         }
     }
 

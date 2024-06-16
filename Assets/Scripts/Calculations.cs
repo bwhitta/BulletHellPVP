@@ -41,7 +41,7 @@ public static class Calculations
     {
         if (Mathf.Abs(existingValue - valueToCompare) > discrepancyLimit)
         {
-            Debug.LogWarning($"Discrepancy of {Mathf.Abs(existingValue - valueToCompare)} detected, over limit of {discrepancyLimit}.");
+            Debug.LogWarning($"Discrepancy of {Mathf.Abs(existingValue - valueToCompare)} (existingValue: {existingValue}, valueToCompare: {valueToCompare}) detected, over limit of {discrepancyLimit}.");
             return valueToCompare;
         }
         else
@@ -49,5 +49,4 @@ public static class Calculations
             return existingValue;
         }
     }
-
 }
