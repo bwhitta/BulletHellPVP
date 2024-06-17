@@ -38,6 +38,9 @@ public class LobbyManager : MonoBehaviour
     private GameObject[] lobbyPlayerObjects;
 
 
+    private LobbyEventCallbacks callbacks; //potentially remove or change later? idk how this works
+
+
     private void Start()
     {
         SignIn();
@@ -78,8 +81,7 @@ public class LobbyManager : MonoBehaviour
 
             UpdateLobbyVisuals(joinedLobby);
 
-            Debug.Log($"Joined lobby: {joinedLobby}");
-            Debug.Log($"Joined lobby data: {joinedLobby}");
+            //Debug.Log($"Joined lobby: {joinedLobby}");
             if (joinedLobby.Data[KEY_START_GAME].Value != "0")
             {
                 Debug.Log($"If this is a client, starting game!");
@@ -94,6 +96,18 @@ public class LobbyManager : MonoBehaviour
         else
         {
             lobbyUpdatePollTimer += Time.deltaTime;
+        }
+    }
+    
+    // Used to detect when players leave
+    private void OnLobbyChanged(ILobbyChanges changes)
+    {
+        Debug.LogWarning($"Lobby changed! (Marked as warning only for visibility while debugging since I don't know how these lobby events work super well.)");
+        changes.ApplyToLobby(joinedLobby);
+
+        if (changes.PlayerData.Changed)
+        {
+            Debug.Log($"Player has left, yet nothing will be done about it.");
         }
     }
 
@@ -141,6 +155,9 @@ public class LobbyManager : MonoBehaviour
             hostLobby = createdLobby;
             joinedLobby = createdLobby;
 
+            // Subscribe to lobby events
+            LobbyEventSubscription(createdLobby);
+
             // Show play button
             lobbyPlayButton.SetActive(true);
 
@@ -167,6 +184,9 @@ public class LobbyManager : MonoBehaviour
             Lobby createdLobby = await LobbyService.Instance.CreateLobbyAsync(lobbyName, maxPlayers, lobbyOptions);
             hostLobby = createdLobby;
             joinedLobby = createdLobby;
+
+            // Subscribe to lobby events
+            LobbyEventSubscription(createdLobby);
 
             // Show play button
             lobbyPlayButton.SetActive(true);
@@ -215,6 +235,9 @@ public class LobbyManager : MonoBehaviour
             Lobby lobby = await LobbyService.Instance.QuickJoinLobbyAsync(options);
             joinedLobby = lobby;
 
+            // Subscribe to lobby events
+            LobbyEventSubscription(lobby);
+
             Debug.Log($"Joined lobby {lobby.Name}");
             UpdateLobbyVisuals(lobby);
         }
@@ -239,12 +262,39 @@ public class LobbyManager : MonoBehaviour
             Lobby lobby = await Lobbies.Instance.JoinLobbyByCodeAsync(lobbyCodeField.text, options);
             joinedLobby = lobby;
 
+            // Subscribe to lobby events
+            LobbyEventSubscription(lobby);
+
             Debug.Log($"Joined lobby ({lobby.Name}) with code {lobby.LobbyCode}.");
             UpdateLobbyVisuals(lobby);
         }
         catch (LobbyServiceException e)
         {
             Debug.LogWarning(e);
+        }
+    }
+
+    private async void LobbyEventSubscription(Lobby lobby)
+    {
+        // Subscribe to lobby events
+        callbacks = new LobbyEventCallbacks();
+        callbacks.LobbyChanged += OnLobbyChanged;
+        // callbacks.KickedFromLobby += OnKickedFromLobby; // potentially implement later?
+        // callbacks.LobbyEventConnectionStateChanged += OnLobbyEventConnectionStateChanged; // probably will want to use this some more later
+        try
+        {
+            Debug.Log("subscribing to lobby events I think");
+            var lobbyEvents = await Lobbies.Instance.SubscribeToLobbyEventsAsync(lobby.Id, callbacks); // is var right here? should I declare lobbyEvents elsewhere?
+        }
+        catch (LobbyServiceException ex)
+        {
+            switch (ex.Reason)
+            {
+                case LobbyExceptionReason.AlreadySubscribedToLobby: Debug.LogWarning($"Already subscribed to lobby[{lobby.Id}]. We did not need to try and subscribe again. Exception Message: {ex.Message}"); break;
+                case LobbyExceptionReason.SubscriptionToLobbyLostWhileBusy: Debug.LogError($"Subscription to lobby events was lost while it was busy trying to subscribe. Exception Message: {ex.Message}"); throw;
+                case LobbyExceptionReason.LobbyEventServiceConnectionError: Debug.LogError($"Failed to connect to lobby events. Exception Message: {ex.Message}"); throw;
+                default: throw;
+            }
         }
     }
 
@@ -300,17 +350,26 @@ public class LobbyManager : MonoBehaviour
     // Update what the lobby looks like (e.g. who is in it and their names)
     private void UpdateLobbyVisuals(Lobby lobby)
     {
+        Debug.Log($"Updating lobby visuals!");
+        Debug.Log($"lobby.Players.Count: {lobby.Players.Count}, lobby.Players: {lobby.Players}");
+        foreach(Player playerInLobby in lobby.Players)
+        {
+            Debug.Log($"Player: {playerInLobby}");
+        }
         // Skip if no lobby is joined
         if (joinedLobby == null) return;
+
         // Set info text
         lobbyInfo.text = $"Lobby Code: {lobby.LobbyCode}";
 
         if (lobbyPlayerObjects == null)
         {
+            Debug.Log($"lobby player objects are null (I should delete this debug.log later)");
             SetLobbyPlayerObjects();
         }
         else if (lobby.Players.Count != lobbyPlayerObjects.Length)
         {
+            Debug.Log($"lobby player count discrepancy, {lobby.Players.Count} is not equal to {lobbyPlayerObjects.Length}");
             // Remove previous objects
             if (lobbyPlayerObjects != null)
             {
@@ -324,9 +383,7 @@ public class LobbyManager : MonoBehaviour
         
         void SetLobbyPlayerObjects()
         {
-            // Set up the array to store the objects
             lobbyPlayerObjects = new GameObject[lobby.Players.Count];
-            
             
             Debug.Log($"Creating {lobby.Players.Count} lobby player objects.");
             for (int i = 0; i < lobby.Players.Count; i++)
