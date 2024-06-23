@@ -1,7 +1,6 @@
 using System;
 using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.AI;
 
 public class SpellManager : NetworkBehaviour
 {
@@ -27,18 +26,17 @@ public class SpellManager : NetworkBehaviour
             // If the character ID changes, update the characterInfo and tag.
             networkCharacterId.OnValueChanged += NetworkCharacterIdChanged;
         }
-        GetComponent<CursorLogic>().CharacterInfoSet();
+        characterInfo.CursorLogicScript.CharacterInfoSet();
 
         void NetworkCharacterIdChanged(byte prev, byte changedTo)
         {
             Debug.Log($"ID CHANGED: CharacterId is {networkCharacterId.Value}");
             characterInfo = GameSettings.Used.Characters[changedTo];
             tag = characterInfo.CharacterObject.tag;
-            
+
             // Update cursorLogic to make sure it uses the new info
-            CursorLogic cursorLogic = GetComponent<CursorLogic>();
-            cursorLogic.CharacterInfoSet();
-            cursorLogic.UpdateCursor();
+            characterInfo.CursorLogicScript.CharacterInfoSet();
+            characterInfo.CursorLogicScript.UpdateCursor();
         }
     }
 

@@ -50,20 +50,31 @@ public class SpellModuleBehavior : NetworkBehaviour
         }
     }
 
+    // Information for online sync
+    public float cursorPositionOnCast;
+
     // Readonlys
     private readonly float outOfBoundsDistance = 15f;
     #endregion
 
     void Start()
     {
+        if (Module == null)
+        {
+            Debug.LogWarning($"Module null");
+        }
         StartModule();
     }
     private void StartModule()
     {
+        if (!MultiplayerManager.IsOnline || IsServer)
+        {
+            cursorPositionOnCast = OwnerCharacterInfo.CursorLogicScript.location;
+        }
         if (IsServer)
         {
             Debug.Log($"Sending module data to clients");
-            ModuleDataClientRpc(setIndex, spellIndex, moduleIndex, behaviorID, ownerID);
+            ModuleDataClientRpc(setIndex, spellIndex, moduleIndex, behaviorID, ownerID, cursorPositionOnCast);
         }
 
         // Set variables
@@ -106,35 +117,49 @@ public class SpellModuleBehavior : NetworkBehaviour
                 break;
         }
 
+        if (MultiplayerManager.IsOnline && !IsServer) NetworkVariableListeners();
+
+        void NetworkVariableListeners()
+        {
+            // ServerSideHealth.OnValueChanged += ServerHealthUpdate;
+            // ServerSideMana.OnValueChanged += ServerManaUpdate
+            serverSidePosition.OnValueChanged += ServerPositionUpdate;
+        }
+        void ServerPositionUpdate(Vector2 oldValue, Vector2 newValue)
+        {
+            transform.position = Calculations.DiscrepancyCheck(transform.position, newValue, GameSettings.Used.NetworkLocationDiscrepancyLimit);
+        }
         void SetStartingPosition()
         {
             switch (Module.ProjectileSpawningArea)
             {
                 case SpellData.SpawningAreas.Point:
-                    transform.position = GameSettings.Used.Characters[ownerID].SpellManagerObject.transform.position;
+                    transform.position = CursorLogic.GetCursorTransform(cursorPositionOnCast, OwnerCharacterInfo.OpponentAreaCenter);
                     break;
                 case SpellData.SpawningAreas.AdjacentCorners:
-                    SpellManager spellManager = GameSettings.Used.Characters[ownerID].SpellManagerObject;
-                    Quaternion alignment = spellManager.transform.rotation * Quaternion.Euler(0, 0, -90);
+                    // Turns the float position of the cursor into a rotation.
+                    int side = CursorLogic.GetSideAtPosition(cursorPositionOnCast);
+                    Quaternion cursorAngleOnCast = Quaternion.Euler(0, 0, (-90 * side) - 90); // no clue why I use -90 and not 90 here, but that's what I did for other parts of the code so I won't question it.
+                    Debug.Log($"cursorAngleOnCast euler z: {-90 * side}"); // delete later
+                    
                     // Sets the position and rotation
-                    transform.SetPositionAndRotation(AdjacentCornersPos(spellManager), alignment);
+                    transform.SetPositionAndRotation(AdjacentCornersPos(), cursorAngleOnCast);
                     break;
                 default:
                     Debug.LogWarning("Not yet implemented spawning area!");
                     break;
             }
-
-            Vector2 AdjacentCornersPos(SpellManager spellManager)
+            
+            Vector2 AdjacentCornersPos(/*potentially add some sort of float as input here?*/)
             {
-                CursorLogic cursorLogic = spellManager.GetComponent<CursorLogic>();
-                int cursorWall = cursorLogic.GetCurrentWall();
-                Vector2[] corners = cursorLogic.GetCurrentSquareCorners();
+                int side = CursorLogic.GetSideAtPosition(cursorPositionOnCast);
+                Vector2[] corners = Calculations.GetSquareCorners(GameSettings.Used.BattleSquareWidth, OwnerCharacterInfo.OpponentAreaCenter);
 
                 // Points to instantiate at
                 Vector2[] spawnPoints = new Vector2[]
                 {
-                        corners[cursorWall],
-                        corners[(cursorWall + 1) % 4]
+                        corners[side],
+                        corners[(side + 1) % 4]
                 };
                 return spawnPoints[behaviorID];
             }
@@ -142,7 +167,7 @@ public class SpellModuleBehavior : NetworkBehaviour
         void SetScale()
         {
             transform.localScale = new Vector3(Module.InstantiationScale, Module.InstantiationScale, 1);
-        }
+        } 
         void EnableSprite()
         {
             spriteRenderer = GetComponent<SpriteRenderer>();
@@ -189,7 +214,7 @@ public class SpellModuleBehavior : NetworkBehaviour
     }
 
     [ClientRpc]
-    private void ModuleDataClientRpc(byte serverSetIndex, byte serverSpellIndex, byte serverModuleIndex, byte serverBehaviorID, byte serverOwnerID)
+    private void ModuleDataClientRpc(byte serverSetIndex, byte serverSpellIndex, byte serverModuleIndex, byte serverBehaviorID, byte serverOwnerID, float serverCursorPositionOnCast)
     {
         if (IsHost)
         {
@@ -200,12 +225,13 @@ public class SpellModuleBehavior : NetworkBehaviour
         moduleIndex = serverModuleIndex;
         behaviorID = serverBehaviorID;
         ownerID = serverOwnerID;
+        cursorPositionOnCast = serverCursorPositionOnCast;
         // Only deduct Mana Awaiting if this is the first SpellModuleBehavior
         if (behaviorID == 0)
         {
             OwnerCharacterInfo.Stats.ManaAwaiting -= ModuleSpellData.ManaCost;
         }
-        Debug.Log($"This client recieved data from the server!\n(data was - setIndex: {setIndex}, spellIndex: {spellIndex}, moduleIndex: {moduleIndex}, behaviorID: {behaviorID}, ownerID: {ownerID})");
+        Debug.Log($"This client recieved data from the server!\n(data was - setIndex: {setIndex}, spellIndex: {spellIndex}, moduleIndex: {moduleIndex}, behaviorID: {behaviorID}, ownerID: {ownerID}, serverCursorPositionOnCast: {serverCursorPositionOnCast})");
     }
 
     private void FixedUpdate()
@@ -390,7 +416,7 @@ public class SpellModuleBehavior : NetworkBehaviour
         }
         else if (IsServer)
         {
-            Debug.Log($"Destroying {gameObject.name} as online server");
+            Debug.Log($"Destroying {gameObject.name} as online server.");
             NetworkObject.Despawn(gameObject);
         }
         else if (IsClient)

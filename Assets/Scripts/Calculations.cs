@@ -35,7 +35,7 @@ public static class Calculations
     }
 
     /// <summary>
-    /// Checks for a discrepancy between an existing and compared value. If the discrepancy is within the limit, it is unmodified, otherwise it becomes the compared value.
+    /// Checks for a discrepancy between an existing and a compared float. If the discrepancy is within the limit, it is unmodified, otherwise it becomes the compared value.
     /// </summary>
     public static float DiscrepancyCheck(float existingValue, float valueToCompare, float discrepancyLimit)
     {
@@ -48,5 +48,42 @@ public static class Calculations
         {
             return existingValue;
         }
+    }
+    /// <summary>
+    /// Checks for a discrepancy between an existing and a compared Vector2. If the discrepancy is within the limit, it is unmodified, otherwise it becomes the compared value.
+    /// </summary>
+    public static Vector2 DiscrepancyCheck(Vector2 existingValue, Vector2 valueToCompare, float discrepancyLimit)
+    {
+        Vector2 discrepancyVector = existingValue - valueToCompare;
+        if (discrepancyVector.magnitude > discrepancyLimit)
+        {
+            Debug.LogWarning($"Discrepancy of {discrepancyVector.magnitude} (existingValue: {existingValue}, valueToCompare: {valueToCompare}) detected, over limit of {discrepancyLimit}.");
+            return valueToCompare;
+        }
+        else
+        {
+            return existingValue;
+        }
+    }
+
+    /// <summary>
+    /// Gets the positions of the corners of a square.
+    /// </summary>
+    /// <param name="sideLength"></param>
+    /// <param name="centerPoint"></param>
+    /// <returns>The positions of the corners, starting from the top left and continuing clockwise</returns>
+    public static Vector2[] GetSquareCorners(float sideLength, Vector2 centerPoint)
+    {
+        // The way this method works is pretty janky, and so I might go through and rework it at some point.
+        Vector2[] corners = new Vector2[4];
+
+        int[,] cornerDirection = { { -1, 1 }, { 1, 1 }, { 1, -1 }, { -1, -1 } }; // Starts in top left, continues clockwise
+
+        for (int i = 0; i < 4; i++)
+        {
+            corners[i].x = centerPoint.x + (sideLength * cornerDirection[i, 0] * 0.5f);
+            corners[i].y = centerPoint.y + (sideLength * cornerDirection[i, 1] * 0.5f);
+        }
+        return corners;
     }
 }

@@ -19,7 +19,7 @@ public class LobbyManager : MonoBehaviour
     [SerializeField] private float lobbyUpdatePollFrequency;
     [SerializeField] private string gameplayScene;
     public const string KEY_START_GAME = "Start";
-    private Lobby hostLobby;
+    private Lobby hostLobby; // I'll be honest I have no clue why I have two variables that both just say what lobby you're in, but I think that's what the tutorial had told me to do and I have no reason to change it yet.
     private Lobby joinedLobby;
     public bool IsLobbyHost => joinedLobby != null && joinedLobby.HostId == AuthenticationService.Instance.PlayerId;
 
@@ -37,9 +37,7 @@ public class LobbyManager : MonoBehaviour
     [SerializeField] private float lobbyPlayerOffsetY;
     private GameObject[] lobbyPlayerObjects;
 
-
     private LobbyEventCallbacks callbacks; //potentially remove or change later? idk how this works
-
 
     private void Start()
     {
@@ -98,19 +96,32 @@ public class LobbyManager : MonoBehaviour
             lobbyUpdatePollTimer += Time.deltaTime;
         }
     }
-    
+
     // Used to detect when players leave
     private void OnLobbyChanged(ILobbyChanges changes)
     {
-        Debug.LogWarning($"Lobby changed! (Marked as warning only for visibility while debugging since I don't know how these lobby events work super well.)");
+        Debug.Log($"Lobby changed.");
         changes.ApplyToLobby(joinedLobby);
 
         if (changes.PlayerData.Changed)
         {
-            Debug.Log($"Player has left, yet nothing will be done about it.");
+            Debug.Log($"Player data changed");
+            UpdateLobbyVisuals(joinedLobby);
         }
-    }
 
+        if (changes.PlayerLeft.Changed)
+        {
+            Debug.Log($"Player left");
+            UpdateLobbyVisuals(joinedLobby);
+        }
+
+        if (changes.PlayerJoined.Changed)
+        {
+            Debug.Log("Player joined");
+            UpdateLobbyVisuals(joinedLobby);
+        }
+
+    }
 
     // Sign in to unity services
     private async void SignIn()
@@ -351,11 +362,6 @@ public class LobbyManager : MonoBehaviour
     private void UpdateLobbyVisuals(Lobby lobby)
     {
         Debug.Log($"Updating lobby visuals!");
-        Debug.Log($"lobby.Players.Count: {lobby.Players.Count}, lobby.Players: {lobby.Players}");
-        foreach(Player playerInLobby in lobby.Players)
-        {
-            Debug.Log($"Player: {playerInLobby}");
-        }
         // Skip if no lobby is joined
         if (joinedLobby == null) return;
 
@@ -364,7 +370,6 @@ public class LobbyManager : MonoBehaviour
 
         if (lobbyPlayerObjects == null)
         {
-            Debug.Log($"lobby player objects are null (I should delete this debug.log later)");
             SetLobbyPlayerObjects();
         }
         else if (lobby.Players.Count != lobbyPlayerObjects.Length)

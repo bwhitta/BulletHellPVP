@@ -104,7 +104,6 @@ public class CharacterStats : NetworkBehaviour
             ticksSinceUpdate++;
             if(ticksSinceUpdate >= GameSettings.Used.NetworkDiscrepancyCheckFrequency)
             {
-                Debug.Log("Server Tick!");
                 ServerSideHealth.Value = CurrentHealth;
                 ServerSideMana.Value = CurrentMana;
                 ticksSinceUpdate = 0;

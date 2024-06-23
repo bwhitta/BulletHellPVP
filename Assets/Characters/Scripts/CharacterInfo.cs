@@ -36,8 +36,7 @@ public class CharacterInfo : ScriptableObject
     [SerializeField] private Spellbook OverrideBook;
 
     [Space(25)] // Cursor
-    public float OpponentAreaCenterX;
-    public float OpponentAreaCenterY;
+    public Vector2 OpponentAreaCenter;
 
     public void CreateBooks()
     {
@@ -129,29 +128,54 @@ public class CharacterInfo : ScriptableObject
             return _stats;
         }
     }
-    // Spell manager object
-    private SpellManager _spellManagerObject;
-    public SpellManager SpellManagerObject
+    
+    // Spell manager
+    private SpellManager _spellManagerScript;
+    public SpellManager SpellManagerScript
     {
         get
         {
-            if (_spellManagerObject == null)
+            if (_spellManagerScript == null)
             {
                 GameObject spellManagerObject = TaggedObjectWithType<SpellManager>();
-                Debug.Log($"SpellManagerObject: {spellManagerObject}. If null, nothing was tagged with the type");
                 if (spellManagerObject != null)
                 {
-                    _spellManagerObject = spellManagerObject.GetComponent<SpellManager>();
+                    _spellManagerScript = spellManagerObject.GetComponent<SpellManager>();
                 }
                 else
                 {
                     Debug.Log($"No spell manager found!");
-                    _spellManagerObject = null;
+                    _spellManagerScript = null;
                 }
             }
-            return _spellManagerObject;
+            return _spellManagerScript;
         }
     }
+
+    // Cursor logic
+    private CursorLogic _cursorLogicScript;
+    public CursorLogic CursorLogicScript
+    {
+        get
+        {
+            if (_cursorLogicScript == null)
+            {
+                GameObject spellManagerObject = TaggedObjectWithType<SpellManager>();
+                if (spellManagerObject != null)
+                {
+                    _cursorLogicScript = spellManagerObject.GetComponent<CursorLogic>();
+                }
+                else
+                {
+                    Debug.Log($"No spell manager found!");
+                    _cursorLogicScript = null;
+                }
+            }
+            return _cursorLogicScript;
+        }
+    }
+    
+
     // Spellbook script
     private SpellbookLogic _spellbookLogicScript;
     public SpellbookLogic SpellbookLogicScript

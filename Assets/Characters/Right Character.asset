@@ -25,3 +25,4 @@ MonoBehaviour:
   DeveloperBookOverride: 0
   OpponentAreaCenterX: -4
   OpponentAreaCenterY: 0.25
+  OpponentAreaCenter: {x: -4, y: 0.25}

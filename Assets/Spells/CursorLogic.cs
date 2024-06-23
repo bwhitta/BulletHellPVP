@@ -5,7 +5,7 @@ using UnityEngine.InputSystem;
 public class CursorLogic : NetworkBehaviour
 {
     // Location
-    private float location = 0;
+    [HideInInspector] public float location = 0;
 
     // Controls
     private InputAction cursorMovementInput, cursorAccelerationInput;
@@ -121,52 +121,47 @@ public class CursorLogic : NetworkBehaviour
     /// <summary> Visually updates the cursor </summary>
     public void UpdateCursor()
     {
-        float locationAroundSquare = Calculations.Modulo(location, GameSettings.Used.BattleSquareWidth * 4);
+        // Turn the side into a rotation
+        int sideNumber = GetSideAtPosition(location);
+        transform.SetPositionAndRotation(GetCursorTransform(location, spellManager.characterInfo.OpponentAreaCenter), Quaternion.Euler(0, 0, -90 * (sideNumber)));
+    }
+    public static Vector2 GetCursorTransform(float position, Vector2 opponentAreaCenter)
+    {
+        int sideNumber = GetSideAtPosition(position);
 
-        int sideNumber = GetCurrentWall();
-        
+        float locationAroundSquare = Calculations.Modulo(position, GameSettings.Used.BattleSquareWidth * 4);
         float locationAroundSide = locationAroundSquare % GameSettings.Used.BattleSquareWidth;
 
-        transform.rotation = Quaternion.Euler(0, 0, -90 * (sideNumber)); // Negative because it rotates counterclockwise
+        Vector2[] corners = GetSquareCorners(GameSettings.Used.BattleSquareWidth, opponentAreaCenter);
 
-        Vector2[] corners = GetCurrentSquareCorners();
-
+        // Probably can rewrite 
         int[,] modifierDirection = { { 1, 0 }, { 0, -1 }, { -1, 0 }, { 0, 1 } }; // Starts in top left, continues clockwise
         Vector2 positionModifier = new(locationAroundSide * modifierDirection[sideNumber, 0], locationAroundSide * modifierDirection[sideNumber, 1]);
+        
+        return corners[sideNumber] + positionModifier;
 
-        transform.position = corners[sideNumber] + positionModifier;
-    }
-
-    /// <summary> Gets the current corners of the square the CursorLogic this method is called for is attached to</summary>
-    /// <returns> A list of the coordinates of the square. Starts in top left, continues clockwise </returns>
-    public Vector2[] GetCurrentSquareCorners()
-    {
-        Vector2 pos = new()
+        static Vector2[] GetSquareCorners(float sideLength, Vector2 centerPoint)
         {
-            x = spellManager.characterInfo.OpponentAreaCenterX,
-            y = spellManager.characterInfo.OpponentAreaCenterY
-        };
-        return GetSquareCorners(GameSettings.Used.BattleSquareWidth, pos);
-    }
-    private Vector2[] GetSquareCorners(float sideLength, Vector2 centerPoint)
-    {
-        Vector2[] corners = new Vector2[4];
+            Vector2[] corners = new Vector2[4];
 
-        int[,] cornerDirection = { { -1, 1 }, { 1, 1 }, { 1, -1 }, { -1, -1 } }; // Starts in top left, continues clockwise
+            int[,] cornerDirection = { { -1, 1 }, { 1, 1 }, { 1, -1 }, { -1, -1 } }; // Starts in top left, continues clockwise
 
-        for (int i = 0; i < 4; i++)
-        {
-            corners[i].x = centerPoint.x + (sideLength * cornerDirection[i, 0] * 0.5f);
-            corners[i].y = centerPoint.y + (sideLength * cornerDirection[i, 1] * 0.5f);
+            for (int i = 0; i < 4; i++)
+            {
+                corners[i].x = centerPoint.x + (sideLength * cornerDirection[i, 0] * 0.5f);
+                corners[i].y = centerPoint.y + (sideLength * cornerDirection[i, 1] * 0.5f);
+            }
+            return corners;
         }
-        return corners;
     }
-    public int GetCurrentWall()
-    {
-        float squareSide = GameSettings.Used.BattleSquareWidth;
-        float locationAroundSquare = Calculations.Modulo(location, squareSide * 4f);
 
-        return (int)Mathf.Floor(locationAroundSquare / squareSide);
+    public static int GetSideAtPosition(float cursorPosition)
+    {
+        // Makes it so that regardless of how many loops around the game area the cursor has done in either direction, it just tells distance clockwise from the top left corner.
+        var distanceAlongSide = Calculations.Modulo(cursorPosition, GameSettings.Used.BattleSquareWidth * 4f);
+        
+        // Returns how many sides worth of distance the cursor is from the top left corner, going clockwise.
+        return (int)Mathf.Floor(distanceAlongSide / GameSettings.Used.BattleSquareWidth);
     }
 
     // Server and Client Rpcs
