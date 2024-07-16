@@ -22,7 +22,7 @@ public class SpellModuleBehavior : NetworkBehaviour
             return spell;
         }
     }
-    public byte setIndex, spellIndex, moduleIndex, behaviorID, ownerID;
+    public byte setIndex, spellIndex, moduleIndex, behaviorId, ownerId;
 
     // Projectile
     public GameObject targetedCharacter;
@@ -46,7 +46,7 @@ public class SpellModuleBehavior : NetworkBehaviour
     {
         get
         {
-            return GameSettings.Used.Characters[ownerID];
+            return GameSettings.Used.Characters[ownerId];
         }
     }
 
@@ -74,7 +74,7 @@ public class SpellModuleBehavior : NetworkBehaviour
         if (IsServer)
         {
             Debug.Log($"Sending module data to clients");
-            ModuleDataClientRpc(setIndex, spellIndex, moduleIndex, behaviorID, ownerID, cursorPositionOnCast);
+            ModuleDataClientRpc(setIndex, spellIndex, moduleIndex, behaviorId, ownerId, cursorPositionOnCast);
         }
 
         // Set variables
@@ -161,7 +161,7 @@ public class SpellModuleBehavior : NetworkBehaviour
                         corners[side],
                         corners[(side + 1) % 4]
                 };
-                return spawnPoints[behaviorID];
+                return spawnPoints[behaviorId];
             }
         }
         void SetScale()
@@ -175,7 +175,7 @@ public class SpellModuleBehavior : NetworkBehaviour
             spriteRenderer.sprite = Module.Sprite;
 
             // Set the mask layer
-            string spellMaskLayer = GameSettings.Used.Characters[ownerID].OpponentCharacterInfo.CharacterAndSortingTag;
+            string spellMaskLayer = GameSettings.Used.Characters[ownerId].OpponentCharacterInfo.CharacterAndSortingTag;
             spriteRenderer.sortingLayerName = spellMaskLayer;
         }
         void EnableAnimator()
@@ -191,7 +191,7 @@ public class SpellModuleBehavior : NetworkBehaviour
                 currentAnimationPrefab.name = animationPrefab.name;
 
                 // Set the mask layer
-                string spellMaskLayer = GameSettings.Used.Characters[ownerID].OpponentCharacterInfo.CharacterAndSortingTag;
+                string spellMaskLayer = GameSettings.Used.Characters[ownerId].OpponentCharacterInfo.CharacterAndSortingTag;
                 currentAnimationPrefab.GetComponent<SpriteRenderer>().sortingLayerName = spellMaskLayer;
             }
 
@@ -214,7 +214,7 @@ public class SpellModuleBehavior : NetworkBehaviour
     }
 
     [ClientRpc]
-    private void ModuleDataClientRpc(byte serverSetIndex, byte serverSpellIndex, byte serverModuleIndex, byte serverBehaviorID, byte serverOwnerID, float serverCursorPositionOnCast)
+    private void ModuleDataClientRpc(byte serverSetIndex, byte serverSpellIndex, byte serverModuleIndex, byte serverBehaviorId, byte serverOwnerId, float serverCursorPositionOnCast)
     {
         if (IsHost)
         {
@@ -223,15 +223,15 @@ public class SpellModuleBehavior : NetworkBehaviour
         setIndex = serverSetIndex;
         spellIndex = serverSpellIndex;
         moduleIndex = serverModuleIndex;
-        behaviorID = serverBehaviorID;
-        ownerID = serverOwnerID;
+        behaviorId = serverBehaviorId;
+        ownerId = serverOwnerId;
         cursorPositionOnCast = serverCursorPositionOnCast;
         // Only deduct Mana Awaiting if this is the first SpellModuleBehavior
-        if (behaviorID == 0)
+        if (behaviorId == 0)
         {
             OwnerCharacterInfo.Stats.ManaAwaiting -= ModuleSpellData.ManaCost;
         }
-        Debug.Log($"This client recieved data from the server!\n(data was - setIndex: {setIndex}, spellIndex: {spellIndex}, moduleIndex: {moduleIndex}, behaviorID: {behaviorID}, ownerID: {ownerID}, serverCursorPositionOnCast: {serverCursorPositionOnCast})");
+        Debug.Log($"This client recieved data from the server!\n(data was - setIndex: {setIndex}, spellIndex: {spellIndex}, moduleIndex: {moduleIndex}, behaviorId: {behaviorId}, ownerId: {ownerId}, serverCursorPositionOnCast: {serverCursorPositionOnCast})");
     }
 
     private void FixedUpdate()
@@ -358,7 +358,7 @@ public class SpellModuleBehavior : NetworkBehaviour
         }
         else if (Module.MovementType == SpellData.MovementTypes.Wall)
         {
-            switch (behaviorID)
+            switch (behaviorId)
             {
                 case 0:
                     transform.position += transform.rotation * Vector3.up * Time.fixedDeltaTime * Module.MovementSpeed;
@@ -367,7 +367,7 @@ public class SpellModuleBehavior : NetworkBehaviour
                     transform.position += transform.rotation * Vector3.down * Time.fixedDeltaTime * Module.MovementSpeed;
                     break;
                 default:
-                    Debug.LogWarning($"BehaviorID {behaviorID} should not be possible in this situation.");
+                    Debug.LogWarning($"behaviorId {behaviorId} should not be possible in this situation.");
                     break;
             }
             distanceMoved += Time.fixedDeltaTime * Module.MovementSpeed;

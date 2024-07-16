@@ -198,7 +198,6 @@ public class CharacterStats : NetworkBehaviour
         // Enable other objects
         characterInfo.HealthBar.BarEnabled(enable);
         characterInfo.ManaBar.BarEnabled(enable);
-        characterInfo.SpellbookLogicScript.SpellbookToggle(enable);
     }
 
     // Mana scaling over time

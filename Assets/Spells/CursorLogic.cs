@@ -16,13 +16,19 @@ public class CursorLogic : NetworkBehaviour
     private int ticksSincePositionUpdate;
 
     // References
-    [SerializeField] private SpellManager spellManager; // Assigned in the inspector on the prefab, so it is instantiated with the reference.
+    private SpellManager _thisSpellManager;
+    private SpellManager ThisSpellManager
+    {
+        get
+        {
+            if (_thisSpellManager == null) _thisSpellManager = GetComponent<SpellManager>();
+            return _thisSpellManager;
+        }
+    }
     
     // Startup
     private void Start()
     {
-        // Check to make sure reference is in place!
-        if (spellManager == null) Debug.LogWarning("No reference given for Spell Manager on the SpellcastingObject prefab.");
 
         NetworkVariableListeners(); // Look out for when network variables change
 
@@ -42,10 +48,10 @@ public class CursorLogic : NetworkBehaviour
     public void CharacterInfoSet()
     {
         // Set tag
-        gameObject.tag = spellManager.characterInfo.CharacterAndSortingTag;
+        gameObject.tag = ThisSpellManager.characterInfo.CharacterAndSortingTag;
 
         //Get the InputActionMap
-        InputActionMap controlsMap = ControlsManager.GetActionMap(spellManager.characterInfo.InputMapName);
+        InputActionMap controlsMap = ControlsManager.GetActionMap(ThisSpellManager.characterInfo.InputMapName);
 
         // Find input actions
         cursorMovementInput = controlsMap.FindAction(GameSettings.Used.CursorMovementInputName, true);
@@ -123,7 +129,7 @@ public class CursorLogic : NetworkBehaviour
     {
         // Turn the side into a rotation
         int sideNumber = GetSideAtPosition(location);
-        transform.SetPositionAndRotation(GetCursorTransform(location, spellManager.characterInfo.OpponentAreaCenter), Quaternion.Euler(0, 0, -90 * (sideNumber)));
+        transform.SetPositionAndRotation(GetCursorTransform(location, ThisSpellManager.characterInfo.OpponentAreaCenter), Quaternion.Euler(0, 0, -90 * (sideNumber)));
     }
     public static Vector2 GetCursorTransform(float position, Vector2 opponentAreaCenter)
     {
@@ -176,6 +182,7 @@ public class CursorLogic : NetworkBehaviour
             FixDiscrepancyClientRpc(discrepancy);
         }
     }
+
     [ClientRpc]
     private void FixDiscrepancyClientRpc(float discrepancy)
     {
@@ -185,4 +192,5 @@ public class CursorLogic : NetworkBehaviour
             location -= discrepancy;
         }
     }
+
 }

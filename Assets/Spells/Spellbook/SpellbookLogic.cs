@@ -1,9 +1,9 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.Rendering;
+using Unity.Netcode;
 using UnityEngine.UI;
 
-public class SpellbookLogic : MonoBehaviour
+public class SpellbookLogic : NetworkBehaviour
 {
     [SerializeField] private SpriteRenderer[] spellDisplays;
     [SerializeField] private GameObject bookNumberTextObject;
@@ -16,24 +16,90 @@ public class SpellbookLogic : MonoBehaviour
             return _bookNumberText;
         }
     }
-    [SerializeField] private CharacterInfo characterInfo;
+    [HideInInspector] public CharacterInfo characterInfo;
     [HideInInspector] public float[] spellCooldowns;
 
-    private void Awake()
-    {
-        gameObject.tag = characterInfo.CharacterAndSortingTag;
-    }
+    // Online sync
+    private int ticksSinceDiscrepancyCheck;
+    private readonly NetworkVariable<byte> ServerBookIndex = new();
+    public readonly NetworkVariable<byte> networkCharacterId = new();
+
     private void Start()
     {
-        // Turn off spellbook if character doesn't exist
-        if (characterInfo.CharacterObject == null)
+        Debug.Log($"SpellbookLogic Start: CharacterId is {networkCharacterId.Value}", this);
+        UpdateInfo(networkCharacterId.Value);
+        
+        // If the character ID changes, update the characterInfo and tag.
+        if (!IsServer)
+        {    
+            networkCharacterId.OnValueChanged += CharacterIdUpdated;
+        }
+        
+        EnableControls();
+        
+        // If the book changes server-side, update it client-side
+        if (!IsServer && MultiplayerManager.IsOnline)
         {
-            SpellbookToggle(false);
+            ServerBookIndex.OnValueChanged += BookIndexUpdated;
         }
 
+        // Set up all cooldown UIs
         AllCooldownUIs();
+        
+        // Local Methods
+        void CharacterIdUpdated(byte prev, byte changedTo) => UpdateInfo(changedTo);
+        void UpdateInfo(byte changedTo)
+        {
+            Debug.Log($"ID CHANGED: CharacterId is {networkCharacterId.Value}", this);
+            // Set tag
+            characterInfo = GameSettings.Used.Characters[changedTo];
+            tag = characterInfo.CharacterObject.tag;
+
+            // Set parent
+            if (IsServer)
+            {
+                Debug.Log($"setting parent");
+                GameObject mainCanvas = GameObject.FindGameObjectWithTag(characterInfo.MainCanvasTag);
+                base.transform.SetParent(mainCanvas.transform);
+            }
+            else Debug.Log("not setting parent");
+
+            // Set position
+            RectTransform rectTransform = GetComponent<RectTransform>();
+            rectTransform.localPosition = characterInfo.SpellbookPosition;
+            rectTransform.localScale = characterInfo.SpellbookScale;
+
+
+            // Update UI
+            UpdateSpellbookUI();
+        }
+        void BookIndexUpdated(byte oldValue, byte newValue)
+        {
+            Debug.Log($"Book index updated to {newValue}");
+            characterInfo.CurrentBookIndex = newValue;
+            UpdateSpellbookUI();
+        }
     }
-    public void SpellbookToggle(bool enable)
+    private void FixedUpdate()
+    {
+        if (IsServer)
+        {
+            ServerDiscrepancyTick();
+        }
+
+        void ServerDiscrepancyTick()
+        {
+            ticksSinceDiscrepancyCheck++;
+            if (ticksSinceDiscrepancyCheck >= GameSettings.Used.NetworkDiscrepancyCheckFrequency)
+            {
+                ServerBookIndex.Value = characterInfo.CurrentBookIndex;
+
+                ticksSinceDiscrepancyCheck = 0;
+            }
+        }
+    }
+
+    /*public void SpellbookToggle(bool enable)
     {
         gameObject.SetActive(enable);
         EnableSpellControls(enable);
@@ -46,62 +112,30 @@ public class SpellbookLogic : MonoBehaviour
         {
             characterInfo.SpellbookLogicScript = this;
         }
-    }
+    }*/
 
     // Enabling spell controls
     private InputActionMap controlsMap;
     private InputAction castingAction;
     private InputAction nextBookAction;
-    private void EnableSpellControls(bool enable)
+    private void EnableControls()
     {
-        if (enable)
-        {
-            FindControls();
-            // Enable controls
-            castingAction.Enable();
-            castingAction.performed += context => CastingInputPerformed((byte)(castingAction.ReadValue<float>() - 1f));
-        }
-        else
-        {
-            FindControls();
-            // Disable controls
-            castingAction.Disable();
-        }
+        // Find the controls
+        controlsMap ??= ControlsManager.GetActionMap(characterInfo.InputMapName);
+        castingAction ??= controlsMap.FindAction(characterInfo.CastingActionName, true);
+        nextBookAction ??= controlsMap.FindAction(characterInfo.NextBookActionName, true);
 
-        // Local Methods
-        void FindControls()
-        {
-            controlsMap ??= ControlsManager.GetActionMap(characterInfo.InputMapName);
-            castingAction ??= controlsMap.FindAction(characterInfo.CastingActionName, true);
-        }
+        // Enable controls
+        castingAction.Enable();
+        castingAction.performed += context => CastingInputPerformed((byte)(castingAction.ReadValue<float>() - 1f));
+        nextBookAction.Enable();
+        nextBookAction.performed += context => NextBookInputPerformed();
     }
-    private void EnableBookControl(bool enable)
-    {
-        if (enable)
-        {
-            FindControls();
-            // Enable controls
-            nextBookAction.Enable();
-            nextBookAction.performed += context => NextBookInputPerformed();
-        }
-        else
-        {
-            FindControls();
-            // Disable controls
-            nextBookAction.Disable();
-        }
 
-        // Local Methods
-        void FindControls()
-        {
-            controlsMap ??= ControlsManager.GetActionMap(characterInfo.InputMapName);
-            nextBookAction ??= controlsMap.FindAction(characterInfo.NextBookActionName, true);
-        }
-    }
     private void UpdateSpellbookUI()
     {
         // Update text
-        BookNumberText.text = characterInfo.CurrentBookIndex + 1.ToString();
+        BookNumberText.text = (characterInfo.CurrentBookIndex + 1).ToString();
 
         characterInfo.CreateBooks();
 
@@ -130,18 +164,37 @@ public class SpellbookLogic : MonoBehaviour
 
     private void NextBookInputPerformed()
     {
-        if (GameSettings.Used.CanLoopBooks)
+        if (!MultiplayerManager.IsOnline || IsServer)
         {
-            characterInfo.CurrentBookIndex = (byte)((characterInfo.CurrentBookIndex + 1) % GameSettings.Used.TotalBooks);
-            
+            NextBook();
         }
         else
         {
-            characterInfo.CurrentBookIndex = (byte)Mathf.Min(characterInfo.CurrentBookIndex + 1, GameSettings.Used.TotalBooks);
+            NextBookInputServerRpc();
         }
-
         UpdateSpellbookUI();
     }
+
+    [ServerRpc]
+    private void NextBookInputServerRpc()
+    {
+        Debug.Log($"serverrpc resolution");
+        NextBook();
+        UpdateSpellbookUI();
+    }
+    
+    private void NextBook()
+    {
+        if (GameSettings.Used.CanLoopBooks)
+        {
+            characterInfo.CurrentBookIndex = (byte)((characterInfo.CurrentBookIndex + 1) % GameSettings.Used.TotalBooks);
+        }
+        else
+        {
+            characterInfo.CurrentBookIndex = (byte) Mathf.Min(characterInfo.CurrentBookIndex + 1, GameSettings.Used.TotalBooks-1);
+        }
+    }
+    
     private void CastingInputPerformed(byte spellbookSlotIndex)
     {
         if (gameObject.activeSelf == false)
@@ -163,7 +216,7 @@ public class SpellbookLogic : MonoBehaviour
             }
             else
             {
-                Debug.Log("Skipped casting spell - not enough mana or spell is on cooldown.");
+                Debug.Log("Skipped casting spell - there is not enough mana or the spell is on cooldown.");
             }
         }
         else

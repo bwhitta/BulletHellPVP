@@ -5,7 +5,7 @@ using UnityEngine;
 public class SpellManager : NetworkBehaviour
 {
     [HideInInspector] public CharacterInfo characterInfo;
-    public readonly NetworkVariable<Byte> networkCharacterId = new();
+    public readonly NetworkVariable<byte> networkCharacterId = new();
 
     private void Start()
     {
@@ -30,7 +30,7 @@ public class SpellManager : NetworkBehaviour
 
         void NetworkCharacterIdChanged(byte prev, byte changedTo)
         {
-            Debug.Log($"ID CHANGED: CharacterId is {networkCharacterId.Value}");
+            Debug.Log($"ID changed: CharacterId is {networkCharacterId.Value}");
             characterInfo = GameSettings.Used.Characters[changedTo];
             tag = characterInfo.CharacterObject.tag;
 
@@ -85,8 +85,8 @@ public class SpellManager : NetworkBehaviour
                 behavior.setIndex = characterInfo.CurrentBook.SetIndexes[slot];
                 behavior.spellIndex = characterInfo.CurrentBook.SpellIndexes[slot];
                 behavior.moduleIndex = i;
-                behavior.behaviorID = j;
-                behavior.ownerID = (byte)Array.IndexOf(GameSettings.Used.Characters, characterInfo);
+                behavior.behaviorId = j;
+                behavior.ownerId = (byte)Array.IndexOf(GameSettings.Used.Characters, characterInfo);
 
                 if (IsServer)
                 {

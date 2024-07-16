@@ -1,4 +1,3 @@
-using System;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -18,8 +17,6 @@ public class CharacterControls : NetworkBehaviour
     private readonly NetworkVariable<Vector2> serverSidePosition = new();
     private Vector2 previousServerSidePosition;
     private int ticksSincePositionUpdate;
-
-    [SerializeField] private GameObject spellcastingObjectPrefab;
     #endregion Fields
     #region Monobehavior Methods
     private void Start()
@@ -29,8 +26,6 @@ public class CharacterControls : NetworkBehaviour
         transform.position = characterInfo.CharacterStartLocation; // Sets starting position
         SetPositionOnline();
         NetworkVariableListeners();
-        InstantiateSpellManager();
-
 
         // Local Methods
         void SetObjectReferences()
@@ -68,38 +63,7 @@ public class CharacterControls : NetworkBehaviour
             previousServerSidePosition = prevLocation;
             ticksSincePositionUpdate = 0;
         }
-        void InstantiateSpellManager()
-        {
-            // Online
-            if (MultiplayerManager.IsOnline && IsServer)
-            {
-                // Create object locally
-                GameObject spellManagerObject = Instantiate(spellcastingObjectPrefab);
-                
-                SpellManager spellManagerScript = spellManagerObject.GetComponent<SpellManager>();
-                
-                // Set character info locally
-                spellManagerScript.characterInfo = characterInfo;
-
-                // Spawn on network
-                spellManagerObject.GetComponent<NetworkObject>().SpawnWithOwnership(OwnerClientId);
-                Debug.Log($"Spawned spellcasting object for character {characterInfo}");
-
-                // Sets the characterId online
-                byte characterId = (byte)Array.IndexOf(GameSettings.Used.Characters, characterInfo);
-                spellManagerScript.networkCharacterId.Value = characterId;
-                Debug.Log($"character Id sent: {characterId}");
-            }
-            // Local
-            else if (!MultiplayerManager.IsOnline)
-            {
-                // Spawn object
-                GameObject spellManagerObject = Instantiate(spellcastingObjectPrefab);
-                
-                // Give it the character info
-                spellManagerObject.GetComponent<SpellManager>().characterInfo = characterInfo;
-            }
-        }
+        
     }
     private void FixedUpdate()
     {

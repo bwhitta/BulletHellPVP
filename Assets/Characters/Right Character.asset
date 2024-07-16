@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   OpponentCharacterInfo: {fileID: 11400000, guid: 78760bb3a3bdc6f40a42de23b6e09442, type: 2}
   CharacterAndSortingTag: Right Character
+  MainCanvasTag: MainCanvas
   InputMapName: Right Character
   MovementActionName: Movement
   NextBookActionName: NextBook
@@ -23,6 +24,7 @@ MonoBehaviour:
   AnimatorTreeParameterY: FacingY
   CurrentBookIndex: 0
   DeveloperBookOverride: 0
-  OpponentAreaCenterX: -4
-  OpponentAreaCenterY: 0.25
   OpponentAreaCenter: {x: -4, y: 0.25}
+  SpellbookPosition: {x: 470, y: -460}
+  SpellbookScale: {x: 7.5, y: 7.5}
+  _spellbookLogicScript: {fileID: 0}

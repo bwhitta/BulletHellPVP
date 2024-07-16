@@ -6,8 +6,9 @@ public class CharacterInfo : ScriptableObject
     [Space(25)] // Opponent info
     public CharacterInfo OpponentCharacterInfo;
 
-    [Space(25)] // The tag used for all objects relating to this character
+    [Space(25)] // Tags
     public string CharacterAndSortingTag;
+    public string MainCanvasTag;
 
     [Space(25)] // Controls
     public string InputMapName;
@@ -32,11 +33,11 @@ public class CharacterInfo : ScriptableObject
         public byte[] SetIndexes;
         public byte[] SpellIndexes;
     }
-    [SerializeField] private bool DeveloperBookOverride;
-    [SerializeField] private Spellbook OverrideBook;
 
-    [Space(25)] // Cursor
+    [Space(25)] // Positioning
     public Vector2 OpponentAreaCenter;
+    public Vector2 SpellbookPosition;
+    public Vector2 SpellbookScale;
 
     public void CreateBooks()
     {
@@ -46,11 +47,7 @@ public class CharacterInfo : ScriptableObject
         }
         
         EquippedBooks = new Spellbook[GameSettings.Used.TotalBooks];
-
-        if (DeveloperBookOverride)
-        {
-            EquippedBooks[0] = OverrideBook;
-        }
+        
         for (int i = 0; i < EquippedBooks.Length; i++)
         {
             if (EquippedBooks[i] == null)
@@ -137,10 +134,10 @@ public class CharacterInfo : ScriptableObject
         {
             if (_spellManagerScript == null)
             {
-                GameObject spellManagerObject = TaggedObjectWithType<SpellManager>();
-                if (spellManagerObject != null)
+                GameObject cursorObject = TaggedObjectWithType<SpellManager>();
+                if (cursorObject != null)
                 {
-                    _spellManagerScript = spellManagerObject.GetComponent<SpellManager>();
+                    _spellManagerScript = cursorObject.GetComponent<SpellManager>();
                 }
                 else
                 {
@@ -177,7 +174,7 @@ public class CharacterInfo : ScriptableObject
     
 
     // Spellbook script
-    private SpellbookLogic _spellbookLogicScript;
+    [HideInInspector] public SpellbookLogic _spellbookLogicScript;
     public SpellbookLogic SpellbookLogicScript
     {
         get
@@ -188,6 +185,10 @@ public class CharacterInfo : ScriptableObject
                 if(spellbookObject != null)
                 {
                     _spellbookLogicScript = spellbookObject.GetComponent<SpellbookLogic>();
+                }
+                else
+                {
+                    Debug.LogWarning($"spellbookLogicScript is null");
                 }
             }
             return _spellbookLogicScript;

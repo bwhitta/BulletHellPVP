@@ -172,7 +172,7 @@ public class LobbyManager : MonoBehaviour
             // Show play button
             lobbyPlayButton.SetActive(true);
 
-            Debug.Log($"Created lobby {createdLobby} (Lobby ID: {createdLobby.Id}, Lobby code: {createdLobby.LobbyCode}).");
+            Debug.Log($"Created lobby {createdLobby} (Lobby Id: {createdLobby.Id}, Lobby code: {createdLobby.LobbyCode}).");
             UpdateLobbyVisuals(hostLobby);
         }
         catch (LobbyServiceException e)

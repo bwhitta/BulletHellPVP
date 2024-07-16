@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Left Character
   - Right Character
+  - MainCanvas
   layers:
   - Default
   - TransparentFX
