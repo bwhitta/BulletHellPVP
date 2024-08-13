@@ -23,7 +23,7 @@ MonoBehaviour:
   Characters:
   - {fileID: 11400000, guid: 78760bb3a3bdc6f40a42de23b6e09442, type: 2}
   - {fileID: 11400000, guid: 54331a60389e0df4a9a8faa6f1473c05, type: 2}
-  CharacterMovementSpeed: 5
+  CharacterMovementSpeed: 3.5
   MaxHealth: 100
   StartingMaxMana: 50
   EndingMaxMana: 200

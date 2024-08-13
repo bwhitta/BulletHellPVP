@@ -25,11 +25,12 @@ public class CharacterInfo : ScriptableObject
 
     [Space(25)] // Equipped Spells
     public byte CurrentBookIndex;
-    public Spellbook[] EquippedBooks;
+    [SerializeField] private bool overrideFirstBook;
+    [SerializeField] private byte[] overrideSetIndexes, overrideSpellIndexes;
+    private Spellbook[] EquippedBooks;
     public Spellbook CurrentBook => EquippedBooks[CurrentBookIndex];
     public class Spellbook
     {
-        // Each spellbook class is one full book of equipped spells.
         public byte[] SetIndexes;
         public byte[] SpellIndexes;
     }
@@ -45,22 +46,26 @@ public class CharacterInfo : ScriptableObject
         {
             return;
         }
-        
+
+        Debug.Log($"Equipped books found null, creating new spellbooks");
         EquippedBooks = new Spellbook[GameSettings.Used.TotalBooks];
         
         for (int i = 0; i < EquippedBooks.Length; i++)
         {
-            if (EquippedBooks[i] == null)
+            if(i == 0 && overrideFirstBook)
             {
                 EquippedBooks[i] = new()
                 {
-                    SetIndexes = new byte[GameSettings.Used.TotalSpellSlots],
-                    SpellIndexes = new byte[GameSettings.Used.TotalSpellSlots]
+                    SetIndexes = overrideSetIndexes,
+                    SpellIndexes = overrideSpellIndexes
                 };
+                continue;
             }
-            Debug.Log($"EquippedBooks[i].SetIndexes: {EquippedBooks[i].SetIndexes}");
-            EquippedBooks[i].SetIndexes = new byte[GameSettings.Used.TotalSpellSlots];
-            EquippedBooks[i].SpellIndexes = new byte[GameSettings.Used.TotalSpellSlots];
+            EquippedBooks[i] = new()
+            {
+                SetIndexes = new byte[GameSettings.Used.TotalSpellSlots],
+                SpellIndexes = new byte[GameSettings.Used.TotalSpellSlots]
+            };
         }
     }
 

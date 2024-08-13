@@ -48,7 +48,7 @@ MonoBehaviour:
     - {x: 10, y: -6}
     - {x: 0, y: -3}
     UsesSprite: 1
-    Sprite: {fileID: 21300000, guid: 44a5aa0d5434a1b44ac0256937e6dfce, type: 3}
+    UsedSprite: {fileID: 21300000, guid: 44a5aa0d5434a1b44ac0256937e6dfce, type: 3}
     Animated: 0
     AnimatorController: {fileID: 0}
     MultipartAnimationPrefabs: []

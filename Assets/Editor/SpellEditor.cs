@@ -54,7 +54,7 @@ public class SpellEditor : Editor
     };
     private readonly string[] UsesSpriteGroup = new[]
     {
-        "Sprite"
+        "UsedSprite"
     };
     private readonly string[] AnimatedGroup = new[]
     {
@@ -114,7 +114,6 @@ public class SpellEditor : Editor
                 {
                     DisplayGroupFromModule(module, AffectsPlayerMovementGroup, 2);
                 }
-
                 break;
         }
 

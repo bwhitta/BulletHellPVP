@@ -23,6 +23,9 @@ MonoBehaviour:
   AnimatorTreeParameterX: FacingX
   AnimatorTreeParameterY: FacingY
   CurrentBookIndex: 0
+  overrideFirstBook: 1
+  overrideSetIndexes: 00000100000000
+  overrideSpellIndexes: 00010000000000
   OpponentAreaCenter: {x: 4, y: 0.25}
   SpellbookPosition: {x: -470, y: -460}
   SpellbookScale: {x: 7.5, y: 7.5}

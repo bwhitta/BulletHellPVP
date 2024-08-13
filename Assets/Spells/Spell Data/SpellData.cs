@@ -5,7 +5,7 @@ using UnityEngine;
 public class SpellData : ScriptableObject
 {
     public enum SpawningAreas { Point, AdjacentCorners }
-    public enum TargetTypes { Character, Center, Opposing, InvertedOpposing, NotApplicable }
+    public enum TargetTypes { Opponent, Center, Opposing, InvertedOpposing, NotApplicable }
     public enum MovementTypes { Linear, Wall }
     public enum ModuleTypes { Projectile, PlayerAttached }
 
@@ -53,7 +53,7 @@ public class SpellData : ScriptableObject
         public Vector2[] ColliderPath;
 
         public bool UsesSprite;
-        public Sprite Sprite;
+        public Sprite UsedSprite;
 
         public bool Animated;
         public RuntimeAnimatorController AnimatorController;

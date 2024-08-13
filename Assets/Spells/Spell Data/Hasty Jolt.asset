@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Hasty Jolt
   m_EditorClassIdentifier: 
   SpellName: Hasty Jolt
-  ManaCost: 0
+  ManaCost: 10
   SpellCooldown: 1
   Icon: {fileID: 21300000, guid: ab48d11a46de21c4691be3bdf99d7c05, type: 3}
   Description: jolt the bird
@@ -22,13 +22,20 @@ MonoBehaviour:
   - FoldoutOpen: 1
     Prefab: {fileID: 1062348163457161292, guid: a12a2eac476853e4184718ce4ef910dc, type: 3}
     ModuleType: 0
-    SpawningArea: 0
+    ProjectileSpawningArea: 0
     TargetingType: 0
     MovementType: 0
     MovementSpeed: 5
     AbilityDealsDamage: 1
     Damage: 25
     AttachmentTime: 0
+    PushesPlayer: 0
+    PlayerPushSpeed: 0
+    SpriteFacingPush: 0
+    AngleAfterStart: 0
+    AngleChangeSpeed: 0
+    AffectsPlayerMovement: 0
+    PlayerMovementMod: 0
     InstantiationQuantity: 1
     InstantiationScale: 0.07
     UsesCollider: 1
@@ -40,13 +47,16 @@ MonoBehaviour:
     - {x: -5, y: 0}
     - {x: -4, y: 1}
     UsesSprite: 0
-    Sprite: {fileID: 0}
+    UsedSprite: {fileID: 0}
     Animated: 1
     AnimatorController: {fileID: 9100000, guid: 8456e04db8d577746aab1099fc21ee10, type: 2}
     MultipartAnimationPrefabs:
     - {fileID: 6875562524064102678, guid: bd654d109af0f0f4cbb6bb3a3103c2ab, type: 3}
     - {fileID: 1315184325858685254, guid: 28fa8b636c1e7ff438e1664159b8b936, type: 3}
     AnimationScaleMultiplier: 1
+    GeneratesParticles: 0
+    ParticleSystemPrefab: {fileID: 0}
+    ParticleSystemZ: 0
     ScalesOverTime: 0
     ScalingStartPercent: 0
     MaxScaleMultiplier: 0

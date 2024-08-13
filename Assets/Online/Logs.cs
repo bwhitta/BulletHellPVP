@@ -5,7 +5,7 @@ public class Logs : MonoBehaviour
 {
     private string myLog = "*begin log";
     private bool doShow = false;
-    private int kChars = 700;
+    private readonly int kChars = 700;
     void OnEnable() { Application.logMessageReceived += Log; }
     void OnDisable() { Application.logMessageReceived -= Log; }
     void Update() { if (Input.GetKeyDown(KeyCode.Space)) { doShow = !doShow; } }
@@ -13,7 +13,7 @@ public class Logs : MonoBehaviour
     {
         // for onscreen...
         myLog = myLog + "\n" + logString;
-        if (myLog.Length > kChars) { myLog = myLog.Substring(myLog.Length - kChars); }
+        if (myLog.Length > kChars) { myLog = myLog[^kChars..]; }
     }
 
     void OnGUI()

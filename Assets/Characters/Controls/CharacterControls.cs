@@ -1,6 +1,7 @@
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using System.Collections.Generic;
 
 public class CharacterControls : NetworkBehaviour
 {
@@ -10,10 +11,18 @@ public class CharacterControls : NetworkBehaviour
     private Animator characterAnimator;
     #endregion
     #region Fields
-    // Temporary variables, cleared after movement (IMPLEMENTATION IS CURRENTLY REMOVED - MAKE SURE TO ADD BACK IN ONCE MULTIPLAYER IS FUNCTIONAL)
+    // Temporary variables, cleared after movement
     [HideInInspector] public Vector2 tempPush;
-    [HideInInspector] public float tempMovementMod;
+    public class TempMovementMod
+    {
+        public Vector2 tempPush = Vector2.zero;
+        public float tempMovementMod = 1f;
+        public bool removeEffect = false;
+        // public ushort lifetime; Not using for now, should instead change removeEffect from the SpellModuleBehavior
+    }
+    public List<TempMovementMod> tempMovementMods = new();
 
+    // Server position
     private readonly NetworkVariable<Vector2> serverSidePosition = new();
     private Vector2 previousServerSidePosition;
     private int ticksSincePositionUpdate;
@@ -38,7 +47,6 @@ public class CharacterControls : NetworkBehaviour
             InputActionMap controllingMap = ControlsManager.GetActionMap(characterInfo.InputMapName);
             movementAction = controllingMap.FindAction(characterInfo.MovementActionName, true);
             movementAction.Enable();
-            tempMovementMod = 1;
         }
         void SetPositionOnline()
         {
@@ -63,7 +71,6 @@ public class CharacterControls : NetworkBehaviour
             previousServerSidePosition = prevLocation;
             ticksSincePositionUpdate = 0;
         }
-        
     }
     private void FixedUpdate()
     {
@@ -77,6 +84,7 @@ public class CharacterControls : NetworkBehaviour
     {
         Vector2 movementInput = movementAction.ReadValue<Vector2>();
         
+        // Online Multiplayer
         if (MultiplayerManager.IsOnline)
         {
             if (IsOwner)
@@ -89,11 +97,14 @@ public class CharacterControls : NetworkBehaviour
             }
         }
         
-        // Local
+        // Local multiplayer
         if (MultiplayerManager.multiplayerType == MultiplayerManager.MultiplayerTypes.Local)
         {
             MoveCharacter(movementInput);
         }
+
+        // Counts down the remaining time on temporary movement effects
+        TempMovementTick();
 
         // Local Methods
         void OwnerMovementTick()
@@ -115,6 +126,16 @@ public class CharacterControls : NetworkBehaviour
             float interpolatePercent = cappedTicks / GameSettings.Used.NetworkDiscrepancyCheckFrequency;
             transform.position = Calculations.RelativeTo(previousServerSidePosition, serverSidePosition.Value, interpolatePercent);
         }
+        void TempMovementTick()
+        {
+            for (ushort i = 0; i < tempMovementMods.Count; i++)
+            {
+                if (tempMovementMods[i].removeEffect)
+                {
+                    tempMovementMods.RemoveAt(i);
+                }
+            }
+        }
     }
     private void ServerPositionTick()
     {
@@ -128,11 +149,31 @@ public class CharacterControls : NetworkBehaviour
     }
     private void MoveCharacter(Vector2 movementInput)
     {
-        Vector2 movement = 2.5f * movementInput.normalized;
-        transform.position += (Vector3)movement * Time.fixedDeltaTime;
+        Vector3 movement = GameSettings.Used.CharacterMovementSpeed * CalculateTempMovementMod() * movementInput.normalized;
+
+        transform.position += (movement + (Vector3)CalculateTempPush()) * Time.fixedDeltaTime;
 
         characterAnimator.SetFloat(characterInfo.AnimatorTreeParameterX, movementInput.x);
         characterAnimator.SetFloat(characterInfo.AnimatorTreeParameterY, movementInput.y);
+
+        // Local Methods
+        float CalculateTempMovementMod(){
+            float movementMod = 1f;
+            foreach (TempMovementMod tempMod in tempMovementMods)
+            {
+                movementMod *= tempMod.tempMovementMod;
+            }
+            return movementMod;
+        }
+        Vector2 CalculateTempPush()
+        {
+            Vector2 movementMod = Vector2.zero;
+            foreach (TempMovementMod tempMod in tempMovementMods)
+            {
+                movementMod += tempMod.tempPush;
+            }
+            return movementMod;
+        }
     }
     #endregion
     #region Server and Client Rpcs

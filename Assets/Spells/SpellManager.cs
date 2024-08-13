@@ -84,20 +84,19 @@ public class SpellManager : NetworkBehaviour
                 SpellModuleBehavior behavior = moduleBehaviors[j]; 
                 behavior.setIndex = characterInfo.CurrentBook.SetIndexes[slot];
                 behavior.spellIndex = characterInfo.CurrentBook.SpellIndexes[slot];
+                Debug.Log($"SetIndex: {characterInfo.CurrentBook.SetIndexes[slot]}, SpellIndex: {characterInfo.CurrentBook.SpellIndexes[slot]}");
                 behavior.moduleIndex = i;
                 behavior.behaviorId = j;
                 behavior.ownerId = (byte)Array.IndexOf(GameSettings.Used.Characters, characterInfo);
-
+                
                 if (IsServer)
                 {
                     NetworkObject moduleObject = behavior.gameObject.GetComponent<NetworkObject>();
                     moduleObject.Spawn(true);
-                    Debug.Log($"Spawned behavior {behavior}");
+                    Debug.Log($"Spawned behavior {behavior} online");
                 }
-                else
-                {
-                    Debug.LogWarning($"This client isn't a server.");
-                }
+
+                
             }
         }
 

@@ -60,7 +60,7 @@ public class SpellbookLogic : NetworkBehaviour
             {
                 Debug.Log($"setting parent");
                 GameObject mainCanvas = GameObject.FindGameObjectWithTag(characterInfo.MainCanvasTag);
-                base.transform.SetParent(mainCanvas.transform);
+                transform.SetParent(mainCanvas.transform);
             }
             else Debug.Log("not setting parent");
 

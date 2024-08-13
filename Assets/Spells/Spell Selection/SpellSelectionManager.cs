@@ -125,7 +125,7 @@ public class SpellSelectionManager : MonoBehaviour
         {
             GameObject instantiatedDisplay = Instantiate(equippedPrefab, equippedSpellArea.transform);
 
-            CharacterInfo.Spellbook book = GameSettings.Used.Characters[currentCharacterIndex].EquippedBooks[currentBookIndex];
+            CharacterInfo.Spellbook book = GameSettings.Used.Characters[currentCharacterIndex].CurrentBook;
             Sprite icon = SpellManager.GetSpellData(book, (byte)i).Icon;
 
             instantiatedDisplay.GetComponent<SpriteRenderer>().sprite = icon;

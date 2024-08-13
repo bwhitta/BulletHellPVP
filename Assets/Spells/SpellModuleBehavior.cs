@@ -8,7 +8,7 @@ public class SpellModuleBehavior : NetworkBehaviour
     {
         get
         {
-            SpellSetInfo set = GameSettings.Used.SpellSets[spellIndex];
+            SpellSetInfo set = GameSettings.Used.SpellSets[setIndex];
             SpellData spell = set.spellsInSet[spellIndex];
             return spell.UsedModules[moduleIndex];
         }
@@ -25,13 +25,14 @@ public class SpellModuleBehavior : NetworkBehaviour
     public byte setIndex, spellIndex, moduleIndex, behaviorId, ownerId;
 
     // Projectile
-    public GameObject targetedCharacter;
     private float distanceMoved;
 
     // Player Attached
     private float attachmentTime;
     private CharacterControls characterControls;
-    private Vector2 movementDirection;
+
+    // Temporary movement modification
+    CharacterControls.TempMovementMod tempPlayerMovementMod;
 
     // Display
     private SpriteRenderer spriteRenderer;
@@ -56,32 +57,57 @@ public class SpellModuleBehavior : NetworkBehaviour
     // Readonlys
     private readonly float outOfBoundsDistance = 15f;
     #endregion
-
-    void Start()
+    
+    private void Start()
     {
+        // Error logging
         if (Module == null)
         {
-            Debug.LogWarning($"Module null");
+            Debug.LogError($"Module null", this);
         }
-        StartModule();
-    }
-    private void StartModule()
-    {
+
+        // If local or server set cursor position on cast
         if (!MultiplayerManager.IsOnline || IsServer)
         {
             cursorPositionOnCast = OwnerCharacterInfo.CursorLogicScript.location;
         }
+        
+        // Send data to client
         if (IsServer)
         {
             Debug.Log($"Sending module data to clients");
             ModuleDataClientRpc(setIndex, spellIndex, moduleIndex, behaviorId, ownerId, cursorPositionOnCast);
         }
-
+        
         // Set variables
         SetStartingPosition();
+
+        // Sets up targeting
+        if (Module.ModuleType == SpellData.ModuleTypes.Projectile)
+        {
+            PointTowardsTarget();
+        }
         SetScale();
 
-        //Enables sprite, animator, particles, and collider as needed
+        // Attach module (if applicable)
+        if (Module.ModuleType == SpellData.ModuleTypes.PlayerAttached)
+        {
+            if (MultiplayerManager.IsOnline && IsServer)
+            {
+                // Set up parenting?
+                transform.parent = OwnerCharacterInfo.CharacterObject.transform;
+                transform.localPosition = Vector2.zero;
+            }
+
+            // Set how long the spell should last
+            attachmentTime = Module.AttachmentTime;
+
+            // Set up a reference to the character controls
+            characterControls = transform.parent.GetComponent<CharacterControls>();
+            
+        }
+
+        // Enable the optional parts of the module
         if (Module.UsesSprite)
         {
             EnableSprite();
@@ -99,32 +125,19 @@ public class SpellModuleBehavior : NetworkBehaviour
             gameObject.GetComponent<PolygonCollider2D>().enabled = true;
             SetCollider();
         }
-
-        switch (Module.ModuleType)
+        if (Module.AffectsPlayerMovement)
         {
-            case SpellData.ModuleTypes.PlayerAttached:
-                attachmentTime = Module.AttachmentTime;
-                characterControls = transform.parent.GetComponent<CharacterControls>();
-                if (Module.PushesPlayer)
-                {
-                    movementDirection = characterControls.movementAction.ReadValue<Vector2>().normalized;
-                    // If the player is stationary, send down
-                    if (movementDirection == Vector2.zero)
-                    {
-                        movementDirection = new Vector2(0, -1);
-                    }
-                }
-                break;
+            if (Module.ModuleType == SpellData.ModuleTypes.PlayerAttached)
+            {
+                ModifyPlayerMovement();
+            }
+            else Debug.LogWarning("Module is attempting to affect player movement on a non-attached spell");
         }
-
-        if (MultiplayerManager.IsOnline && !IsServer) NetworkVariableListeners();
-
-        void NetworkVariableListeners()
-        {
-            // ServerSideHealth.OnValueChanged += ServerHealthUpdate;
-            // ServerSideMana.OnValueChanged += ServerManaUpdate
-            serverSidePosition.OnValueChanged += ServerPositionUpdate;
-        }
+        
+        // Sync server position for clients
+        if (MultiplayerManager.IsOnline && !IsServer) serverSidePosition.OnValueChanged += ServerPositionUpdate;
+        
+        // Local Methods
         void ServerPositionUpdate(Vector2 oldValue, Vector2 newValue)
         {
             transform.position = Calculations.DiscrepancyCheck(transform.position, newValue, GameSettings.Used.NetworkLocationDiscrepancyLimit);
@@ -139,9 +152,7 @@ public class SpellModuleBehavior : NetworkBehaviour
                 case SpellData.SpawningAreas.AdjacentCorners:
                     // Turns the float position of the cursor into a rotation.
                     int side = CursorLogic.GetSideAtPosition(cursorPositionOnCast);
-                    Quaternion cursorAngleOnCast = Quaternion.Euler(0, 0, (-90 * side) - 90); // no clue why I use -90 and not 90 here, but that's what I did for other parts of the code so I won't question it.
-                    Debug.Log($"cursorAngleOnCast euler z: {-90 * side}"); // delete later
-                    
+                    Quaternion cursorAngleOnCast = Quaternion.Euler(0, 0, (-90 * side) - 90); // no clue why I use -90 and not 90 here, but that's what I did for other parts of the code so I won't question it.                    
                     // Sets the position and rotation
                     transform.SetPositionAndRotation(AdjacentCornersPos(), cursorAngleOnCast);
                     break;
@@ -172,10 +183,18 @@ public class SpellModuleBehavior : NetworkBehaviour
         {
             spriteRenderer = GetComponent<SpriteRenderer>();
             spriteRenderer.enabled = Module.UsesSprite;
-            spriteRenderer.sprite = Module.Sprite;
+            spriteRenderer.sprite = Module.UsedSprite;
 
             // Set the mask layer
-            string spellMaskLayer = GameSettings.Used.Characters[ownerId].OpponentCharacterInfo.CharacterAndSortingTag;
+            string spellMaskLayer;
+            if (Module.ModuleType == SpellData.ModuleTypes.PlayerAttached)
+            {
+                spellMaskLayer = OwnerCharacterInfo.CharacterAndSortingTag;
+            }
+            else
+            {
+                spellMaskLayer = OwnerCharacterInfo.OpponentCharacterInfo.CharacterAndSortingTag;
+            }
             spriteRenderer.sortingLayerName = spellMaskLayer;
         }
         void EnableAnimator()
@@ -190,8 +209,18 @@ public class SpellModuleBehavior : NetworkBehaviour
                 // Animator does not work with changed name, so this line resets the name.
                 currentAnimationPrefab.name = animationPrefab.name;
 
+                // Make sure the sprite shows up on your own side of the play area when it is attached to yourself 
+                string spellMaskLayer;
+                if (Module.ModuleType == SpellData.ModuleTypes.PlayerAttached)
+                {
+                    spellMaskLayer = OwnerCharacterInfo.CharacterAndSortingTag;
+                }
+                else
+                {
+                    spellMaskLayer = OwnerCharacterInfo.OpponentCharacterInfo.CharacterAndSortingTag;
+                }
+                
                 // Set the mask layer
-                string spellMaskLayer = GameSettings.Used.Characters[ownerId].OpponentCharacterInfo.CharacterAndSortingTag;
                 currentAnimationPrefab.GetComponent<SpriteRenderer>().sortingLayerName = spellMaskLayer;
             }
 
@@ -210,6 +239,34 @@ public class SpellModuleBehavior : NetworkBehaviour
         void SetCollider()
         {
             gameObject.GetComponent<PolygonCollider2D>().points = Module.ColliderPath;
+        }
+        void ModifyPlayerMovement()
+        {
+            // Creates the tempMovementMod in the character controls script
+            tempPlayerMovementMod = new CharacterControls.TempMovementMod();
+            
+            if (Module.PushesPlayer)
+            {
+                // Detect the inputs
+                Vector2 inputDirection;
+                inputDirection = characterControls.movementAction.ReadValue<Vector2>().normalized;
+                
+                // If the player is stationary, send down
+                if (inputDirection == Vector2.zero)
+                {
+                    inputDirection = new Vector2(0, -1);
+                }
+
+                // Send the push vector to character controls, with a magnitude equal to the speed of the 
+                Debug.LogWarning("might need to add something here later as a ServerRPC telling the server which direction was inputted, delete me later");
+                tempPlayerMovementMod.tempPush = inputDirection * Module.PlayerPushSpeed;
+            }
+            if (Module.AffectsPlayerMovement)
+            {
+                tempPlayerMovementMod.tempMovementMod = Module.PlayerMovementMod;
+            }
+            
+            characterControls.tempMovementMods.Add(tempPlayerMovementMod);
         }
     }
 
@@ -244,7 +301,7 @@ public class SpellModuleBehavior : NetworkBehaviour
                 MoveSpell();
                 break;
             case SpellData.ModuleTypes.PlayerAttached:
-                PlayerAttachedUpdate();
+                PlayerAttachedTick();
                 break;
         }
         // Delete if too far away
@@ -259,60 +316,51 @@ public class SpellModuleBehavior : NetworkBehaviour
             }
         }
     }
-    private void PlayerAttachedUpdate()
+    private void PlayerAttachedTick()
     {
-        TryPushPlayer();
-        TryAffectPlayerMovement();
-
         // Attatchment Time
-        attachmentTime -= Time.fixedDeltaTime;
+        attachmentTime--;
         if (attachmentTime <= 0)
         {
+            if (tempPlayerMovementMod != null)
+            {
+                // Remove the tempMovementMod at the end of the current frame
+                tempPlayerMovementMod.removeEffect = true;
+            }
             Destroy(gameObject);
         }
-
-        #region PlayerAttachedLocalMethods
-        void TryPushPlayer()
+        
+        // Make sprite face towards where the character is facing
+        if (Module.SpriteFacingPush)
         {
-            if (Module.PushesPlayer)
-            {
-                characterControls.tempPush += Module.PlayerPushSpeed * movementDirection;
-                TryAnglingPush();
-            }
-            if (Module.SpriteFacingPush)
-            {
-                transform.rotation = Quaternion.Euler(0, 0, 180 + GetAngle(movementDirection));
-            }
-            //transform.right = targetedCharacter.transform.position
+            var angle = Vector2.SignedAngle(Vector2.up, tempPlayerMovementMod.tempPush);
+            transform.rotation = Quaternion.Euler(0, 0, 180 + angle);
         }
-        void TryAffectPlayerMovement()
+        
+        /* Currently removed but might re-add later, though the inputs will need to be synced with the server somehow
+        // Local Methods
+        if (Module.AngleAfterStart)
         {
-            if (Module.AffectsPlayerMovement)
-            {
-                characterControls.tempMovementMod = Module.PlayerMovementMod;
-            }
+            TryAnglingPush();
         }
-        void TryAnglingPush()
+        void TryAnglingPush() 
         {
-            if (Module.AngleAfterStart)
-            {
-                Vector2 inputVector = characterControls.movementAction.ReadValue<Vector2>();
-                float movingDirection = GetAngle(movementDirection);
-                float inputDirection = GetAngle(inputVector);
-                if (inputVector == Vector2.zero)
-                    return;
-                float movementCap = Module.AngleChangeSpeed * Time.fixedDeltaTime;
-                float rotationAngle = Mathf.MoveTowardsAngle(movingDirection, inputDirection, movementCap);
-                movementDirection = Quaternion.Euler(0, 0, rotationAngle) * Vector2.up;
-            }
-
+            Vector2 inputVector = characterControls.movementAction.ReadValue<Vector2>();
+            float movingDirection = GetAngle(tempPlayerMovementMod.tempPush);
+            float inputDirection = GetAngle(inputVector);
+            if (inputVector == Vector2.zero)
+                return;
+            float movementCap = Module.AngleChangeSpeed * Time.fixedDeltaTime;
+            float rotationAngle = Mathf.MoveTowardsAngle(movingDirection, inputDirection, movementCap);
+            // Change the push direction to still move the player 
+            tempPlayerMovementMod.tempPush = Quaternion.Euler(0, 0, rotationAngle) * Vector2.up;
         }
         float GetAngle(Vector2 vector)
         {
             // Returns angle from top, counterclockwise
             return Vector2.SignedAngle(Vector2.up, vector);
         }
-        #endregion
+        */
     }
     private void ServerPositionTick()
     {
@@ -327,25 +375,18 @@ public class SpellModuleBehavior : NetworkBehaviour
     private void PointTowardsTarget()
     {
         // If TargetingType is CharacterStats, point towards the character
-        if (Module.TargetingType == SpellData.TargetTypes.Character)
+        switch (Module.TargetingType)
         {
-            if (targetedCharacter == null)
-            {
-                Debug.LogWarning("Targeted character assigned as null");
-            }
-            else
-            {
-                transform.right = targetedCharacter.transform.position - transform.position; // Point towards character
-            }
-        }
-        else if (Module.TargetingType == SpellData.TargetTypes.NotApplicable)
-        {
-            //Do nothing
-            return;
-        }
-        else
-        {
-            Debug.LogWarning("Targeting type is not yet implemented.");
+            case SpellData.TargetTypes.Opponent:
+                GameObject opponent = OwnerCharacterInfo.OpponentCharacterInfo.CharacterObject;
+                transform.right = opponent.transform.position - transform.position; // Point towards character
+                break;
+            case SpellData.TargetTypes.NotApplicable:
+                //Do nothing
+                return;
+            default:
+                Debug.LogWarning("Targeting type is not yet implemented.");
+                break;
         }
     }
     private void MoveSpell()
@@ -406,7 +447,7 @@ public class SpellModuleBehavior : NetworkBehaviour
 
         return (scaleTargetPercentage * scalingCompletionPercentage) + 1f;
     }
-
+    
     private void DestroySelfNetworkSafe()
     {
         if (MultiplayerManager.IsOnline == false)

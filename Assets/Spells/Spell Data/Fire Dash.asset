@@ -19,7 +19,7 @@ MonoBehaviour:
   Description: 
   ModuleQuantity: 2
   UsedModules:
-  - FoldoutOpen: 0
+  - FoldoutOpen: 1
     Prefab: {fileID: 1062348163457161292, guid: a12a2eac476853e4184718ce4ef910dc, type: 3}
     ModuleType: 1
     ProjectileSpawningArea: 0
@@ -28,20 +28,20 @@ MonoBehaviour:
     MovementSpeed: 0
     AbilityDealsDamage: 0
     Damage: 0
-    AttachmentTime: 0.35
+    AttachmentTime: 12
     PushesPlayer: 1
-    PlayerPushSpeed: 7.5
+    PlayerPushSpeed: 10
     SpriteFacingPush: 1
     AngleAfterStart: 1
     AngleChangeSpeed: 180
     AffectsPlayerMovement: 1
     PlayerMovementMod: 0
     InstantiationQuantity: 1
-    InstantiationScale: 2
+    InstantiationScale: 0.07
     UsesCollider: 0
     ColliderPath: []
     UsesSprite: 1
-    Sprite: {fileID: 21300000, guid: 2ff53b2763b0ef0439592ec321fc9a83, type: 3}
+    UsedSprite: {fileID: 21300000, guid: 2ff53b2763b0ef0439592ec321fc9a83, type: 3}
     Animated: 0
     AnimatorController: {fileID: 0}
     MultipartAnimationPrefabs: []
@@ -53,7 +53,7 @@ MonoBehaviour:
     ScalingStartPercent: 0
     MaxScaleMultiplier: 0
     DestroyOnScalingCompleted: 0
-  - FoldoutOpen: 0
+  - FoldoutOpen: 1
     Prefab: {fileID: 1062348163457161292, guid: a12a2eac476853e4184718ce4ef910dc, type: 3}
     ModuleType: 1
     ProjectileSpawningArea: 0
@@ -62,7 +62,7 @@ MonoBehaviour:
     MovementSpeed: 0
     AbilityDealsDamage: 0
     Damage: 0
-    AttachmentTime: 1
+    AttachmentTime: 50
     PushesPlayer: 0
     PlayerPushSpeed: 7.5
     SpriteFacingPush: 0
@@ -75,7 +75,7 @@ MonoBehaviour:
     UsesCollider: 0
     ColliderPath: []
     UsesSprite: 0
-    Sprite: {fileID: 21300000, guid: 2ff53b2763b0ef0439592ec321fc9a83, type: 3}
+    UsedSprite: {fileID: 0}
     Animated: 0
     AnimatorController: {fileID: 0}
     MultipartAnimationPrefabs: []
