@@ -105,7 +105,6 @@ MonoBehaviour:
   moduleIndex: 0
   behaviorId: 0
   ownerId: 0
-  targetedCharacter: {fileID: 0}
   cursorPositionOnCast: 0
 --- !u!95 &5693598059765770263
 Animator:
@@ -172,4 +171,4 @@ MonoBehaviour:
   GlobalObjectIdHash: 951099334
   AlwaysReplicateAsRoot: 0
   DontDestroyWithOwner: 0
-  AutoObjectParentSync: 1
+  AutoObjectParentSync: 0

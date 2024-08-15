@@ -40,7 +40,7 @@ public class CharacterInfo : ScriptableObject
     public Vector2 SpellbookPosition;
     public Vector2 SpellbookScale;
 
-    public void CreateBooks()
+    public void CreateBooks(bool allowOverride = true)
     {
         if (EquippedBooks != null)
         {

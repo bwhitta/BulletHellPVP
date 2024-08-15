@@ -33,6 +33,7 @@ MonoBehaviour:
   InvincibilityTime: 1
   InvincibilityAlphaMod: 0.25
   NetworkDiscrepancyCheckHz: 10
+  NetworkTickRateHz: 50
   NetworkLocationDiscrepancyLimit: 0.25
   NetworkStatBarDiscrepancyLimit: 1
   ManaAwaitingCountdownLimit: 0

@@ -97,10 +97,11 @@ public class CharacterStats : NetworkBehaviour
         ManaScalingTick();
         ManaRegenTick();
         ManaAwaitingTick();
-        if (IsServer) ServerTick();
+        if (IsServer) ServerDiscrepancyTick();
         
-        void ServerTick()
+        void ServerDiscrepancyTick()
         {
+            // Discrepancy check ticks
             ticksSinceUpdate++;
             if(ticksSinceUpdate >= GameSettings.Used.NetworkDiscrepancyCheckFrequency)
             {
@@ -190,9 +191,9 @@ public class CharacterStats : NetworkBehaviour
         }
 
         // Check tag
-        if (gameObject.CompareTag("Untagged"))
+        if (CompareTag("Untagged"))
         {
-            gameObject.tag = characterInfo.CharacterAndSortingTag;
+            tag = characterInfo.CharacterAndSortingTag;
         }
 
         // Enable other objects
@@ -267,7 +268,7 @@ public class CharacterStats : NetworkBehaviour
             remainingInvincibilityTime = GameSettings.Used.InvincibilityTime;
             SetChildAlpha(GameSettings.Used.InvincibilityAlphaMod);
 
-            gameObject.GetComponent<CharacterStats>().CurrentHealth -= collisionSpellBehavior.Module.Damage;
+            GetComponent<CharacterStats>().CurrentHealth -= collisionSpellBehavior.Module.Damage;
             Debug.Log($"Damage dealt - total of {collisionSpellBehavior.Module.Damage} health lost.");
         }
     }
@@ -287,9 +288,9 @@ public class CharacterStats : NetworkBehaviour
     
     private void SetChildAlpha(float alpha)
     {
-        for (int i = 0; i < gameObject.transform.childCount; i++)
+        for (int i = 0; i < transform.childCount; i++)
         {
-            gameObject.transform.GetChild(i).GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, alpha);
+            transform.GetChild(i).GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, alpha);
         }
     }
 }

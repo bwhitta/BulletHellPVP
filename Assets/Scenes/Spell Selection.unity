@@ -133,8 +133,10 @@ GameObject:
   m_Component:
   - component: {fileID: 101930380}
   - component: {fileID: 101930381}
+  - component: {fileID: 101930382}
+  - component: {fileID: 101930383}
   m_Layer: 0
-  m_Name: SpellDisplay
+  m_Name: Spell selection manager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -147,13 +149,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 101930379}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.8, y: 0.8, z: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.00000047683716, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1894641663}
-  m_RootOrder: 0
+  m_Father: {fileID: 0}
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &101930381
 MonoBehaviour:
@@ -168,17 +170,48 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentCharacterIndex: 0
+  spellListParent: {fileID: 1894641662}
   inSetPrefab: {fileID: 2130220151547680756, guid: 89a835d8bd36dfb4b88305c1e43db7ad, type: 3}
-  equippedPrefab: {fileID: 2130220151547680756, guid: 5fc17fea2aa728546ae7a9d109bc1877, type: 3}
-  distanceBetweenIcons: {x: 1.5, y: 1.5}
   columnsOfIcons: 5
+  distanceBetweenIcons: {x: 1.5, y: 1.5}
   currentBookIndex: 0
   spellbookIndexText: {fileID: 229582335}
   spellSlotStart: {x: -5, y: -4}
   spellSlotSpread: 1.5
   slotSnapDistance: 1.5
   slotLocations: []
-  equippedSpellArea: {fileID: 1924683071}
+  equippedSpellsParent: {fileID: 1924683071}
+  equippedSpellPrefab: {fileID: 2130220151547680756, guid: 5fc17fea2aa728546ae7a9d109bc1877, type: 3}
+--- !u!114 &101930382
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 101930379}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 49d7c7419df1c4146a76725a9d5487c7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  usedSettings: {fileID: 11400000, guid: 3f0be8a9d474c2a4aa8c3837ebe92267, type: 2}
+  setDisplayParent: {fileID: 938946468}
+  setDisplayPrefab: {fileID: 2130220151547680756, guid: 839a0f39ec5a9354fa29c1973d68b149, type: 3}
+  distanceBetweenIcons: 1.5
+  selectionDisplay: {fileID: 1204457584}
+  spellSelectionManager: {fileID: 101930381}
+--- !u!114 &101930383
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 101930379}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 680a2833d2032ba49ac835f5c5b24a0b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &102148597
 GameObject:
   m_ObjectHideFlags: 0
@@ -190,7 +223,7 @@ GameObject:
   - component: {fileID: 102148598}
   - component: {fileID: 102148599}
   m_Layer: 0
-  m_Name: Start button
+  m_Name: Start button area
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -208,8 +241,8 @@ Transform:
   m_LocalScale: {x: 2, y: 2, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_Father: {fileID: 661712951}
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &102148599
 SpriteRenderer:
@@ -448,8 +481,8 @@ Transform:
   m_LocalScale: {x: 7.5, y: 7.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_Father: {fileID: 661712951}
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &336961591
 SpriteRenderer:
@@ -660,6 +693,41 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 555364318}
   m_CullTransparentMesh: 1
+--- !u!1 &661712950
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 661712951}
+  m_Layer: 0
+  m_Name: Area backgrounds
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &661712951
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 661712950}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.00000047683716, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1570091710}
+  - {fileID: 102148598}
+  - {fileID: 336961590}
+  - {fileID: 1028397695}
+  m_Father: {fileID: 0}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &665672540
 GameObject:
   m_ObjectHideFlags: 0
@@ -744,6 +812,37 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &938946468
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 938946469}
+  m_Layer: 0
+  m_Name: Set display
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &938946469
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 938946468}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1297315476}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1028397694
 GameObject:
   m_ObjectHideFlags: 0
@@ -755,7 +854,7 @@ GameObject:
   - component: {fileID: 1028397695}
   - component: {fileID: 1028397696}
   m_Layer: 0
-  m_Name: Spellbook
+  m_Name: Equipped spells area
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -773,8 +872,8 @@ Transform:
   m_LocalScale: {x: 12.5, y: 2, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_Father: {fileID: 661712951}
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &1028397696
 SpriteRenderer:
@@ -926,7 +1025,7 @@ RectTransform:
   - {fileID: 1894641663}
   - {fileID: 1589784277}
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -979,7 +1078,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1140702426
 MonoBehaviour:
@@ -1041,7 +1140,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1297315476}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &1204457586
 SpriteRenderer:
@@ -1095,55 +1194,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!1 &1287964999
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1287965000}
-  - component: {fileID: 1287965001}
-  m_Layer: 0
-  m_Name: Set Manager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1287965000
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1287964999}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.0000001, y: 1.0000001, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1297315476}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1287965001
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1287964999}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 49d7c7419df1c4146a76725a9d5487c7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  usedSettings: {fileID: 11400000, guid: 3f0be8a9d474c2a4aa8c3837ebe92267, type: 2}
-  setDisplayPrefab: {fileID: 2130220151547680756, guid: 839a0f39ec5a9354fa29c1973d68b149, type: 3}
-  distanceBetweenIcons: 1.5
-  selectionDisplay: {fileID: 1204457584}
-  spellSelectionManager: {fileID: 101930381}
 --- !u!1 &1297315475
 GameObject:
   m_ObjectHideFlags: 0
@@ -1172,8 +1222,8 @@ Transform:
   m_LocalScale: {x: 0.14, y: 0.14, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1287965000}
   - {fileID: 1204457585}
+  - {fileID: 938946469}
   m_Father: {fileID: 1037929475}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1323,7 +1373,7 @@ GameObject:
   - component: {fileID: 1570091710}
   - component: {fileID: 1570091711}
   m_Layer: 0
-  m_Name: Description
+  m_Name: Description area
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1341,8 +1391,8 @@ Transform:
   m_LocalScale: {x: 7.5, y: 7.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_Father: {fileID: 661712951}
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &1570091711
 SpriteRenderer:
@@ -1409,7 +1459,7 @@ GameObject:
   - component: {fileID: 1589784279}
   - component: {fileID: 1589784278}
   m_Layer: 5
-  m_Name: Button
+  m_Name: Play button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1433,7 +1483,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -1.5, y: 1}
+  m_AnchoredPosition: {x: -1.3900146, y: 1}
   m_SizeDelta: {x: 1, y: 1}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1589784278
@@ -1480,9 +1530,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: SceneButtonLogic, Assembly-CSharp
-        m_MethodName: SetScene
+      - m_Target: {fileID: 101930383}
+        m_TargetAssemblyTypeName: SceneLoader, Assembly-CSharp
+        m_MethodName: LoadScene
         m_Mode: 5
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1540,7 +1590,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1894641663}
   m_Layer: 0
-  m_Name: Spell List
+  m_Name: Spell list
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1557,8 +1607,7 @@ Transform:
   m_LocalPosition: {x: -5.75, y: 3.75, z: 0}
   m_LocalScale: {x: 0.14, y: 0.14, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 101930380}
+  m_Children: []
   m_Father: {fileID: 1037929475}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1572,7 +1621,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1924683072}
   m_Layer: 0
-  m_Name: EquippedSpelDisplayStart
+  m_Name: Equipped spells
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -5,8 +5,15 @@ using UnityEngine.UI;
 
 public class SpellbookLogic : NetworkBehaviour
 {
+    // Fields
     [SerializeField] private SpriteRenderer[] spellDisplays;
     [SerializeField] private GameObject bookNumberTextObject;
+
+    private int ticksSinceDiscrepancyCheck;
+    private readonly NetworkVariable<byte> ServerBookIndex = new();
+    public readonly NetworkVariable<byte> networkCharacterId = new();
+    
+    // Properties
     private Text _bookNumberText;
     private Text BookNumberText
     {
@@ -19,65 +26,66 @@ public class SpellbookLogic : NetworkBehaviour
     [HideInInspector] public CharacterInfo characterInfo;
     [HideInInspector] public float[] spellCooldowns;
 
-    // Online sync
-    private int ticksSinceDiscrepancyCheck;
-    private readonly NetworkVariable<byte> ServerBookIndex = new();
-    public readonly NetworkVariable<byte> networkCharacterId = new();
-
     private void Start()
     {
-        Debug.Log($"SpellbookLogic Start: CharacterId is {networkCharacterId.Value}", this);
-        UpdateInfo(networkCharacterId.Value);
-        
-        // If the character ID changes, update the characterInfo and tag.
-        if (!IsServer)
-        {    
-            networkCharacterId.OnValueChanged += CharacterIdUpdated;
-        }
-        
-        EnableControls();
-        
-        // If the book changes server-side, update it client-side
-        if (!IsServer && MultiplayerManager.IsOnline)
+        if (MultiplayerManager.IsOnline)
         {
-            ServerBookIndex.OnValueChanged += BookIndexUpdated;
+            // Get the character info
+            characterInfo = GameSettings.Used.Characters[networkCharacterId.Value];
+
+            // If info is updated by the server, also update that client-side
+            if (!IsServer)
+            {
+                networkCharacterId.OnValueChanged += CharacterIdUpdated;
+                ServerBookIndex.OnValueChanged += BookIndexUpdated;
+            }
         }
 
-        // Set up all cooldown UIs
-        AllCooldownUIs();
+        SetupGameObject();
+        EnableControls();
+        SetupCooldownUi();
+        UpdateUi();
         
         // Local Methods
-        void CharacterIdUpdated(byte prev, byte changedTo) => UpdateInfo(changedTo);
-        void UpdateInfo(byte changedTo)
+        void CharacterIdUpdated(byte prev, byte changedTo)
         {
             Debug.Log($"ID CHANGED: CharacterId is {networkCharacterId.Value}", this);
-            // Set tag
             characterInfo = GameSettings.Used.Characters[changedTo];
-            tag = characterInfo.CharacterObject.tag;
 
-            // Set parent
-            if (IsServer)
-            {
-                Debug.Log($"setting parent");
-                GameObject mainCanvas = GameObject.FindGameObjectWithTag(characterInfo.MainCanvasTag);
-                transform.SetParent(mainCanvas.transform);
-            }
-            else Debug.Log("not setting parent");
-
-            // Set position
-            RectTransform rectTransform = GetComponent<RectTransform>();
-            rectTransform.localPosition = characterInfo.SpellbookPosition;
-            rectTransform.localScale = characterInfo.SpellbookScale;
-
-
-            // Update UI
-            UpdateSpellbookUI();
+            SetupGameObject();
+            UpdateUi();
         }
         void BookIndexUpdated(byte oldValue, byte newValue)
         {
             Debug.Log($"Book index updated to {newValue}");
             characterInfo.CurrentBookIndex = newValue;
-            UpdateSpellbookUI();
+
+            UpdateUi();
+        }
+        void SetupGameObject()
+        {
+            // Set tag
+            tag = characterInfo.CharacterObject.tag;
+
+            GameObject mainCanvas = GameObject.FindGameObjectWithTag(characterInfo.MainCanvasTag);
+            transform.SetParent(mainCanvas.transform);
+
+            // Set position
+            RectTransform rectTransform = GetComponent<RectTransform>();
+            rectTransform.localPosition = characterInfo.SpellbookPosition;
+            rectTransform.localScale = characterInfo.SpellbookScale;
+        }
+        void SetupCooldownUi()
+        {
+            if (GameSettings.Used == null)
+            {
+                Debug.LogError("Used Game Settings is null. Did you forget a reference in the Character Info?");
+                return;
+            }
+            for (int i = 0; i < GameSettings.Used.TotalSpellSlots; i++)
+            {
+                SetCooldownUI(i, 0);
+            }
         }
     }
     private void FixedUpdate()
@@ -99,21 +107,6 @@ public class SpellbookLogic : NetworkBehaviour
         }
     }
 
-    /*public void SpellbookToggle(bool enable)
-    {
-        gameObject.SetActive(enable);
-        EnableSpellControls(enable);
-        EnableBookControl(enable);
-        if (enable)
-        {
-            UpdateSpellbookUI();
-        }
-        else
-        {
-            characterInfo.SpellbookLogicScript = this;
-        }
-    }*/
-
     // Enabling spell controls
     private InputActionMap controlsMap;
     private InputAction castingAction;
@@ -132,7 +125,7 @@ public class SpellbookLogic : NetworkBehaviour
         nextBookAction.performed += context => NextBookInputPerformed();
     }
 
-    private void UpdateSpellbookUI()
+    private void UpdateUi()
     {
         // Update text
         BookNumberText.text = (characterInfo.CurrentBookIndex + 1).ToString();
@@ -172,7 +165,7 @@ public class SpellbookLogic : NetworkBehaviour
         {
             NextBookInputServerRpc();
         }
-        UpdateSpellbookUI();
+        UpdateUi();
     }
 
     [ServerRpc]
@@ -180,7 +173,7 @@ public class SpellbookLogic : NetworkBehaviour
     {
         Debug.Log($"serverrpc resolution");
         NextBook();
-        UpdateSpellbookUI();
+        UpdateUi();
     }
     
     private void NextBook()
@@ -263,16 +256,5 @@ public class SpellbookLogic : NetworkBehaviour
         GameObject topBar = bottomBar.transform.GetChild(0).gameObject;
 
         topBar.GetComponent<Image>().fillAmount = percentFilled;
-    }
-    private void AllCooldownUIs(float percentFilled = 0)
-    {
-        if(GameSettings.Used == null)
-        {
-            Debug.LogWarning("Used Game Settings is null. Did you forget a reference in the Character Info?");
-        }
-        for (int i = 0; i < GameSettings.Used.TotalSpellSlots; i++)
-        {
-            SetCooldownUI(i, percentFilled);
-        }
     }
 }

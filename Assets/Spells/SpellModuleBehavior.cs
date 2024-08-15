@@ -92,12 +92,16 @@ public class SpellModuleBehavior : NetworkBehaviour
         // Attach module (if applicable)
         if (Module.ModuleType == SpellData.ModuleTypes.PlayerAttached)
         {
-            if (MultiplayerManager.IsOnline && IsServer)
+            /*if ((MultiplayerManager.IsOnline && IsServer) || !MultiplayerManager.IsOnline)
             {
-                // Set up parenting?
+                // Set up parenting
                 transform.parent = OwnerCharacterInfo.CharacterObject.transform;
                 transform.localPosition = Vector2.zero;
-            }
+            }*/
+
+            // Set up parenting
+            transform.parent = OwnerCharacterInfo.CharacterObject.transform;
+            transform.localPosition = Vector2.zero;
 
             // Set how long the spell should last
             attachmentTime = Module.AttachmentTime;
@@ -122,7 +126,7 @@ public class SpellModuleBehavior : NetworkBehaviour
         }
         if (Module.UsesCollider)
         {
-            gameObject.GetComponent<PolygonCollider2D>().enabled = true;
+            GetComponent<PolygonCollider2D>().enabled = true;
             SetCollider();
         }
         if (Module.AffectsPlayerMovement)
@@ -199,13 +203,14 @@ public class SpellModuleBehavior : NetworkBehaviour
         }
         void EnableAnimator()
         {
-            animator = gameObject.GetComponent<Animator>();
+            animator = GetComponent<Animator>();
             foreach (GameObject animationPrefab in Module.MultipartAnimationPrefabs)
             {
+                // Spawn in the animator
                 GameObject currentAnimationPrefab = Instantiate(animationPrefab, transform);
-
                 currentAnimationPrefab.transform.SetPositionAndRotation(transform.position, transform.rotation);
                 currentAnimationPrefab.transform.localScale = new Vector2(Module.AnimationScaleMultiplier, Module.AnimationScaleMultiplier);
+                
                 // Animator does not work with changed name, so this line resets the name.
                 currentAnimationPrefab.name = animationPrefab.name;
 
@@ -232,13 +237,12 @@ public class SpellModuleBehavior : NetworkBehaviour
         }
         void EnableParticleSystem()
         {
-            Debug.Log($"Enabling module particle system");
             GameObject particleObject = Instantiate(Module.ParticleSystemPrefab, transform);
             particleObject.transform.localPosition = new Vector3(0, 0, Module.ParticleSystemZ);
         }
         void SetCollider()
         {
-            gameObject.GetComponent<PolygonCollider2D>().points = Module.ColliderPath;
+            GetComponent<PolygonCollider2D>().points = Module.ColliderPath;
         }
         void ModifyPlayerMovement()
         {
@@ -312,7 +316,7 @@ public class SpellModuleBehavior : NetworkBehaviour
             if (distanceFromCenter >= outOfBoundsDistance)
             {
                 Debug.Log($"Deleted - out of bounds");
-                Destroy(gameObject);
+                DestroySelfNetworkSafe();
             }
         }
     }
@@ -327,7 +331,7 @@ public class SpellModuleBehavior : NetworkBehaviour
                 // Remove the tempMovementMod at the end of the current frame
                 tempPlayerMovementMod.removeEffect = true;
             }
-            Destroy(gameObject);
+            DestroySelfNetworkSafe();
         }
         
         // Make sprite face towards where the character is facing
@@ -364,6 +368,7 @@ public class SpellModuleBehavior : NetworkBehaviour
     }
     private void ServerPositionTick()
     {
+        // Discrepancy checks
         ticksSincePositionUpdate++;
         if (ticksSincePositionUpdate >= GameSettings.Used.NetworkDiscrepancyCheckFrequency)
         {
@@ -452,7 +457,7 @@ public class SpellModuleBehavior : NetworkBehaviour
     {
         if (MultiplayerManager.IsOnline == false)
         {
-            Debug.Log($"Destroying {gameObject.name} as local player.");
+            Debug.Log($"Destroying {gameObject.name}.");
             Destroy(gameObject);
         }
         else if (IsServer)

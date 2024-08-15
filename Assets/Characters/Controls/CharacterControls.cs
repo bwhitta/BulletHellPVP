@@ -5,14 +5,10 @@ using System.Collections.Generic;
 
 public class CharacterControls : NetworkBehaviour
 {
-    #region References
-    public InputAction movementAction;
+    // Fields
+    [HideInInspector] public InputAction movementAction;
     private CharacterInfo characterInfo;
     private Animator characterAnimator;
-    #endregion
-    #region Fields
-    // Temporary variables, cleared after movement
-    [HideInInspector] public Vector2 tempPush;
     public class TempMovementMod
     {
         public Vector2 tempPush = Vector2.zero;
@@ -21,20 +17,16 @@ public class CharacterControls : NetworkBehaviour
         // public ushort lifetime; Not using for now, should instead change removeEffect from the SpellModuleBehavior
     }
     public List<TempMovementMod> tempMovementMods = new();
-
-    // Server position
-    private readonly NetworkVariable<Vector2> serverSidePosition = new();
-    private Vector2 previousServerSidePosition;
-    private int ticksSincePositionUpdate;
-    #endregion Fields
-    #region Monobehavior Methods
+    
+    // Monobehavior Methods
     private void Start()
     {
-        SetObjectReferences(); // Replace with properties? Maybe.
+        Debug.LogWarning($"interpolation is currently removed! probably should re-add, delete me later.");
+
+        SetObjectReferences();
         EnableMovement();
-        transform.position = characterInfo.CharacterStartLocation; // Sets starting position
+        transform.position = characterInfo.CharacterStartLocation;
         SetPositionOnline();
-        NetworkVariableListeners();
 
         // Local Methods
         void SetObjectReferences()
@@ -52,51 +44,30 @@ public class CharacterControls : NetworkBehaviour
         {
             if (IsServer)
             {
-                serverSidePosition.Value = transform.position;
+                LocationUpdateClientRpc(transform.position);
             }
-            if (IsClient && !IsOwner)
-            {
-                transform.position = serverSidePosition.Value;
-            }
-        }
-        void NetworkVariableListeners()
-        {
-            if (!IsOwner)
-            {
-                serverSidePosition.OnValueChanged += ServerSideLocationUpdate;
-            }
-        }
-        void ServerSideLocationUpdate(Vector2 prevLocation, Vector2 newLocation)
-        {
-            previousServerSidePosition = prevLocation;
-            ticksSincePositionUpdate = 0;
         }
     }
     private void FixedUpdate()
     {
         MovementTick();
-
-        if (IsServer) ServerPositionTick();
+        if (IsServer && IsOwner)
+        {
+            LocationUpdateClientRpc(transform.position);
+        }
     }
-    #endregion
-    #region Methods
+
+    // Methods
     private void MovementTick()
     {
         Vector2 movementInput = movementAction.ReadValue<Vector2>();
-        
+
         // Online Multiplayer
-        if (MultiplayerManager.IsOnline)
+        if (MultiplayerManager.IsOnline && IsOwner)
         {
-            if (IsOwner)
-            {
-                OwnerMovementTick();
-            }
-            else if (!IsServer)
-            {
-                OpponentTick();
-            }
+            OwnerMovementTick();
         }
-        
+
         // Local multiplayer
         if (MultiplayerManager.multiplayerType == MultiplayerManager.MultiplayerTypes.Local)
         {
@@ -119,13 +90,6 @@ public class CharacterControls : NetworkBehaviour
                 MoveCharacterServerRpc(movementInput, transform.position);
             }
         }
-        void OpponentTick()
-        {
-            ticksSincePositionUpdate++;
-            float cappedTicks = Mathf.Min(ticksSincePositionUpdate, GameSettings.Used.NetworkDiscrepancyCheckFrequency);
-            float interpolatePercent = cappedTicks / GameSettings.Used.NetworkDiscrepancyCheckFrequency;
-            transform.position = Calculations.RelativeTo(previousServerSidePosition, serverSidePosition.Value, interpolatePercent);
-        }
         void TempMovementTick()
         {
             for (ushort i = 0; i < tempMovementMods.Count; i++)
@@ -135,16 +99,6 @@ public class CharacterControls : NetworkBehaviour
                     tempMovementMods.RemoveAt(i);
                 }
             }
-        }
-    }
-    private void ServerPositionTick()
-    {
-        ticksSincePositionUpdate++;
-        if (ticksSincePositionUpdate >= GameSettings.Used.NetworkDiscrepancyCheckFrequency)
-        {
-            serverSidePosition.Value = transform.position;
-
-            ticksSincePositionUpdate = 0;
         }
     }
     private void MoveCharacter(Vector2 movementInput)
@@ -175,8 +129,14 @@ public class CharacterControls : NetworkBehaviour
             return movementMod;
         }
     }
-    #endregion
-    #region Server and Client Rpcs
+    
+    // Rpcs
+    [ClientRpc]
+    private void LocationUpdateClientRpc(Vector2 pos)
+    {
+        if (IsHost) return;
+        transform.position = pos;
+    }
     [ServerRpc]
     private void MoveCharacterServerRpc(Vector2 inputVector, Vector2 clientPosition)
     {
@@ -198,5 +158,4 @@ public class CharacterControls : NetworkBehaviour
             transform.position -= (Vector3)discrepancy;
         }
     }
-    #endregion
 }

@@ -75,8 +75,7 @@ public class GamePartSpawning : NetworkBehaviour
             else if (!MultiplayerManager.IsOnline)
             {
                 // Spawn object
-                GameObject mainCanvas = GameObject.FindGameObjectWithTag(characterInfo.MainCanvasTag);
-                GameObject spellbook = Instantiate(spellbookPrefab, mainCanvas.transform);
+                GameObject spellbook = Instantiate(spellbookPrefab);
 
                 // Give it the character info
                 spellbook.GetComponent<SpellbookLogic>().characterInfo = characterInfo;

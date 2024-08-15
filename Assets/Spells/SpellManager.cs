@@ -26,6 +26,7 @@ public class SpellManager : NetworkBehaviour
             // If the character ID changes, update the characterInfo and tag.
             networkCharacterId.OnValueChanged += NetworkCharacterIdChanged;
         }
+
         characterInfo.CursorLogicScript.CharacterInfoSet();
 
         void NetworkCharacterIdChanged(byte prev, byte changedTo)
@@ -71,7 +72,7 @@ public class SpellManager : NetworkBehaviour
         if (canCastSpell == false)
             return;
 
-        Debug.Log($"Starting instantation of spell in {slot}");
+        // Debug.Log($"Starting instantation of spell in slot {slot}");
         for (byte i = 0; i < spellData.UsedModules.Length; i++)
         {
             SpellData.Module module = spellData.UsedModules[i];
@@ -80,7 +81,6 @@ public class SpellManager : NetworkBehaviour
 
             for (byte j = 0; j < moduleBehaviors.Length; j++)
             {
-                Debug.Log($"Sending the data to the server's behaviors (will later be sent to clients)");
                 SpellModuleBehavior behavior = moduleBehaviors[j]; 
                 behavior.setIndex = characterInfo.CurrentBook.SetIndexes[slot];
                 behavior.spellIndex = characterInfo.CurrentBook.SpellIndexes[slot];
@@ -95,8 +95,6 @@ public class SpellManager : NetworkBehaviour
                     moduleObject.Spawn(true);
                     Debug.Log($"Spawned behavior {behavior} online");
                 }
-
-                
             }
         }
 

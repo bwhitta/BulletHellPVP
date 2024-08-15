@@ -10,11 +10,6 @@ public class CursorLogic : NetworkBehaviour
     // Controls
     private InputAction cursorMovementInput, cursorAccelerationInput;
 
-    // Networking
-    private readonly NetworkVariable<float> serverSideLocation = new();
-    private float previousServerSidePosition;
-    private int ticksSincePositionUpdate;
-
     // References
     private SpellManager _thisSpellManager;
     private SpellManager ThisSpellManager
@@ -26,29 +21,10 @@ public class CursorLogic : NetworkBehaviour
         }
     }
     
-    // Startup
-    private void Start()
-    {
-
-        NetworkVariableListeners(); // Look out for when network variables change
-
-        void NetworkVariableListeners()
-        {
-            if (!IsOwner)
-            {
-                serverSideLocation.OnValueChanged += ServerSideLocationUpdate;
-            }
-        }
-        void ServerSideLocationUpdate(float prevLocation, float newLocation)
-        {
-            previousServerSidePosition = prevLocation;
-            ticksSincePositionUpdate = 0;
-        }
-    }
     public void CharacterInfoSet()
     {
         // Set tag
-        gameObject.tag = ThisSpellManager.characterInfo.CharacterAndSortingTag;
+        tag = ThisSpellManager.characterInfo.CharacterAndSortingTag;
 
         //Get the InputActionMap
         InputActionMap controlsMap = ControlsManager.GetActionMap(ThisSpellManager.characterInfo.InputMapName);
@@ -74,7 +50,7 @@ public class CursorLogic : NetworkBehaviour
 
         if (IsServer)
         {
-            ServerPositionTick();
+            LocationUpdateClientRpc(location);
         }
         
         MovementTick(cursorMovement);
@@ -82,10 +58,9 @@ public class CursorLogic : NetworkBehaviour
     private void MovementTick(float movement)
     {
         // Online movement tick
-        if (MultiplayerManager.IsOnline)
+        if (MultiplayerManager.IsOnline && IsOwner)
         {
-            if (IsOwner) OwnerMovementTick();
-            else if (!IsServer) OpponentTick();
+            OwnerMovementTick();
         }
 
         // Local movement tick
@@ -104,23 +79,6 @@ public class CursorLogic : NetworkBehaviour
             {
                 MoveCursorServerRpc(movement, location);
             }
-        }
-        void OpponentTick()
-        {
-            ticksSincePositionUpdate++;
-            float cappedTicks = Mathf.Min(ticksSincePositionUpdate, GameSettings.Used.NetworkDiscrepancyCheckFrequency);
-            float interpolatePercent = cappedTicks / GameSettings.Used.NetworkDiscrepancyCheckFrequency;
-            location = Calculations.RelativeTo(previousServerSidePosition, serverSideLocation.Value, interpolatePercent);
-        }
-    }
-    private void ServerPositionTick()
-    {
-        ticksSincePositionUpdate++;
-        if (ticksSincePositionUpdate >= GameSettings.Used.NetworkDiscrepancyCheckFrequency)
-        {
-            serverSideLocation.Value = location;
-
-            ticksSincePositionUpdate = 0;
         }
     }
     
@@ -171,6 +129,13 @@ public class CursorLogic : NetworkBehaviour
     }
 
     // Server and Client Rpcs
+    [ClientRpc]
+    private void LocationUpdateClientRpc(float locationAroundSquare)
+    {
+        if (IsHost) return;
+        location = locationAroundSquare;
+    }
+
     [ServerRpc]
     private void MoveCursorServerRpc(float input, float clientLocation)
     {

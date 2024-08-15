@@ -6,7 +6,7 @@ public class DisplayLogs : MonoBehaviour
     string myLog = "*begin log";
     string filename = "";
     bool doShow = true;
-    int kChars = 700;
+    readonly int kChars = 700;
     void OnEnable() { Application.logMessageReceived += Log; }
     void OnDisable() { Application.logMessageReceived -= Log; }
     void Update() { if (Input.GetKeyDown(KeyCode.Space)) { doShow = !doShow; } }

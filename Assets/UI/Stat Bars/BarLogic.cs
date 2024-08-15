@@ -66,7 +66,7 @@ public class BarLogic : MonoBehaviour
 
     private void Awake()
     {
-        gameObject.tag = characterInfo.CharacterAndSortingTag;
+        tag = characterInfo.CharacterAndSortingTag;
     }
     private void Start()
     {
@@ -94,11 +94,11 @@ public class BarLogic : MonoBehaviour
         {
             if(statToModify == Stats.health)
             {
-                characterInfo.HealthBar = gameObject.GetComponent<BarLogic>();
+                characterInfo.HealthBar = GetComponent<BarLogic>();
             }
             else
             {
-                characterInfo.ManaBar = gameObject.GetComponent<BarLogic>();
+                characterInfo.ManaBar = GetComponent<BarLogic>();
             }
         }
     }
