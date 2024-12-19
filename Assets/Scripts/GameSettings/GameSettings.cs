@@ -5,6 +5,11 @@ public class GameSettings : ScriptableObject
 {
     public static GameSettings Used;
 
+    [Header("Other Settings")]
+    public VisualSettings UsedVisualSettings;
+    public static VisualSettings Visuals => Used.UsedVisualSettings;
+
+
     [Space]
     [Header("Spells")]
     public byte OffensiveSpellSlots, DefensiveSpellSlots;
@@ -44,7 +49,7 @@ public class GameSettings : ScriptableObject
     public int NetworkTickFrequency => Mathf.CeilToInt(1 / (NetworkTickRateHz * Time.fixedDeltaTime)); // Converts from Hz to number of ticks
     public float NetworkLocationDiscrepancyLimit;
     public float NetworkStatBarDiscrepancyLimit;
-    public int ManaAwaitingCountdownLimit;
+    public int ManaAwaitingTimeLimit;
     
     [Space]
     [Header("GUI")]

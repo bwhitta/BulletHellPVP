@@ -178,12 +178,12 @@ GameObject:
   m_Component:
   - component: {fileID: 2971767381870167635}
   - component: {fileID: 1892296493161063133}
+  - component: {fileID: -2673506372471646632}
   - component: {fileID: 2971767381870167634}
   - component: {fileID: 7091271839334964219}
   - component: {fileID: 2971767381870167632}
   - component: {fileID: 2971767381870167633}
   - component: {fileID: 2971767381870167662}
-  - component: {fileID: -2673506372471646632}
   - component: {fileID: 3570141258642958271}
   m_Layer: 0
   m_Name: CharacterPrefab
@@ -226,6 +226,20 @@ MonoBehaviour:
   AlwaysReplicateAsRoot: 0
   DontDestroyWithOwner: 0
   AutoObjectParentSync: 1
+--- !u!114 &-2673506372471646632
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2971767381870167636}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8d0727d5ae3244e3b569694d3912374, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TransitionStateInfoList: []
+  m_Animator: {fileID: 2971767381870167634}
 --- !u!95 &2971767381870167634
 Animator:
   serializedVersion: 5
@@ -304,8 +318,7 @@ MonoBehaviour:
     m_Interactions: 
     m_SingletonActionBindings: []
     m_Flags: 0
-  tempPush: {x: 0, y: 0}
-  tempMovementMod: 0
+  characterInfo: {fileID: 0}
 --- !u!114 &2971767381870167662
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -318,24 +331,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 917941745e2aa8f47b9c2c6e3bad1959, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  characterInfo: {fileID: 0}
-  maxMana: 0
   ManaAwaitingCountdown: 0
   ManaAwaiting: 0
---- !u!114 &-2673506372471646632
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2971767381870167636}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e8d0727d5ae3244e3b569694d3912374, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  TransitionStateInfoList: []
-  m_Animator: {fileID: 2971767381870167634}
+  maxMana: 0
 --- !u!114 &3570141258642958271
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -349,8 +347,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cursorPrefab: {fileID: 3066057991869530844, guid: 5d6ea00f1883c2848b44d422e6c1dabf, type: 3}
+  CursorObject: {fileID: 0}
   spellbookPrefab: {fileID: 4072268377957801891, guid: 99db6f395acb2cd40893e361ff5519f5, type: 3}
-  mainCanvasTag: MainCanvas
+  SpellbookObject: {fileID: 0}
+  statBarPrefab: {fileID: 1298312776246448393, guid: ff31fbeb164f5304e914d0e71050725e, type: 3}
+  HealthBar: {fileID: 0}
+  ManaBar: {fileID: 0}
+  CharacterIndex: 0
+  OwnedCharacterInfo: {fileID: 0}
+  OpponentCharacterInfo: {fileID: 0}
 --- !u!1 &2971767382177758301
 GameObject:
   m_ObjectHideFlags: 0

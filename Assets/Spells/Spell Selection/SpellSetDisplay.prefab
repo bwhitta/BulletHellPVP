@@ -132,7 +132,7 @@ GameObject:
   - component: {fileID: 2130220151547680759}
   - component: {fileID: 2130220151547680758}
   m_Layer: 0
-  m_Name: Set Prefab
+  m_Name: SpellSetDisplay
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

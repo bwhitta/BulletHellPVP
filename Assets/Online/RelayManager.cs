@@ -5,13 +5,15 @@ using System.Threading.Tasks;
 
 public class RelayManager : MonoBehaviour
 {
+    // Fields
+    [SerializeField] private byte maxPlayers;
+
     public static RelayManager Instance {  get; private set; }
     public static Allocation allocation;
     public static JoinAllocation joinAllocation;
-    [SerializeField] private byte maxPlayers;
-    public enum InstanceModes { Host, Client }
-    public static InstanceModes LocalInstanceMode;
+    public static bool IsHost;
 
+    // Methods
     private void Awake()
     {
         if (Instance != null)
@@ -20,8 +22,6 @@ public class RelayManager : MonoBehaviour
         }   
         Instance = this;
     }
-    
-    // Relay
     public async Task<string> CreateRelay()
     {
         try
@@ -32,9 +32,9 @@ public class RelayManager : MonoBehaviour
             // Find its join code
             string joinCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
             Debug.Log($"joinCode: {joinCode}");
-            
+
             // Store information on this instance then load the gameplay scene
-            LocalInstanceMode = InstanceModes.Host;
+            IsHost = true;
 
             return joinCode;
         }
@@ -44,7 +44,6 @@ public class RelayManager : MonoBehaviour
             return null;
         }
     }
-
     public async Task<JoinAllocation> JoinRelay(string joinCode)
     {
         try
@@ -52,7 +51,7 @@ public class RelayManager : MonoBehaviour
             Debug.Log($"Joining relay with {joinCode}");
             joinAllocation = await RelayService.Instance.JoinAllocationAsync(joinCode);
 
-            LocalInstanceMode = InstanceModes.Client;
+            IsHost = false;
             return joinAllocation;
         }
         catch (RelayServiceException e)

@@ -31,7 +31,7 @@ public static class Calculations
     /// </summary>
     public static float Modulo(float numberToModify, float modifyingNumber)
     {
-        return numberToModify - modifyingNumber * (Mathf.Floor(numberToModify / modifyingNumber));
+        return numberToModify - (modifyingNumber * Mathf.Floor(numberToModify / modifyingNumber));
     }
 
     /// <summary>

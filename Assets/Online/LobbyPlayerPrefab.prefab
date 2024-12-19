@@ -223,7 +223,7 @@ GameObject:
   - component: {fileID: 2675975296748520129}
   - component: {fileID: 2675975296748520128}
   m_Layer: 5
-  m_Name: LobbyPlayer
+  m_Name: LobbyPlayerPrefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

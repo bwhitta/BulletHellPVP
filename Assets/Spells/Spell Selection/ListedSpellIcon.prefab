@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 4900698460716851981}
   - component: {fileID: -2739748819430087086}
   m_Layer: 0
-  m_Name: EquippableSpellIcon
+  m_Name: ListedSpellIcon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

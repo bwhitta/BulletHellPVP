@@ -4,58 +4,42 @@ using UnityEngine.InputSystem;
 
 public class CursorLogic : NetworkBehaviour
 {
-    // Location
+    // Fields
     [HideInInspector] public float location = 0;
-
-    // Controls
     private InputAction cursorMovementInput, cursorAccelerationInput;
+    private SpellManager spellManager;
+    private bool hasCharacterInfo = false;
 
-    // References
-    private SpellManager _thisSpellManager;
-    private SpellManager ThisSpellManager
-    {
-        get
-        {
-            if (_thisSpellManager == null) _thisSpellManager = GetComponent<SpellManager>();
-            return _thisSpellManager;
-        }
-    }
-    
     public void CharacterInfoSet()
     {
-        // Set tag
-        tag = ThisSpellManager.characterInfo.CharacterAndSortingTag;
+        spellManager = GetComponent<SpellManager>();
+        tag = spellManager.characterInfo.CharacterAndSortingTag;
 
-        //Get the InputActionMap
-        InputActionMap controlsMap = ControlsManager.GetActionMap(ThisSpellManager.characterInfo.InputMapName);
-
-        // Find input actions
+        // Input stuff
+        InputActionMap controlsMap = ControlsManager.GetActionMap(spellManager.characterInfo.InputMapName);
         cursorMovementInput = controlsMap.FindAction(GameSettings.Used.CursorMovementInputName, true);
         cursorAccelerationInput = controlsMap.FindAction(GameSettings.Used.AccelerateCursorInputName, true);
-        
-        // Enable input
         cursorMovementInput.Enable();
         cursorAccelerationInput.Enable();
-    }
 
-    // Methods called each frame
+        hasCharacterInfo = true;
+    }
     private void FixedUpdate()
     {
+        if (!hasCharacterInfo) return;
+
         float cursorMovement = cursorMovementInput.ReadValue<float>() * Time.fixedDeltaTime;
+        bool acceleratorPressed = cursorAccelerationInput.ReadValue<float>() >= 0.5f;
         cursorMovement *= GameSettings.Used.CursorMovementSpeed;
-        if (cursorAccelerationInput.ReadValue<float>() >= 0.5f)
-        {
-            cursorMovement *= GameSettings.Used.CursorAcceleratedMovementMod;
-        }
 
         if (IsServer)
         {
             LocationUpdateClientRpc(location);
         }
         
-        MovementTick(cursorMovement);
+        MovementTick(cursorMovement, acceleratorPressed);
     }
-    private void MovementTick(float movement)
+    private void MovementTick(float input, bool acceleratorPressed)
     {
         // Online movement tick
         if (MultiplayerManager.IsOnline && IsOwner)
@@ -64,9 +48,15 @@ public class CursorLogic : NetworkBehaviour
         }
 
         // Local movement tick
-        if (MultiplayerManager.multiplayerType == MultiplayerManager.MultiplayerTypes.Local)
+        if (MultiplayerManager.IsOnline == false)
         {
-            location += movement;
+            float velocity = input;
+            if (acceleratorPressed)
+            {
+                velocity *= GameSettings.Used.CursorAcceleratedMovementMod;
+            }
+
+            location += velocity;
         }
 
         UpdateCursor();
@@ -74,24 +64,33 @@ public class CursorLogic : NetworkBehaviour
         // Local Methods
         void OwnerMovementTick()
         {
-            location += movement;
+            float velocity = input;
+            if (acceleratorPressed)
+            {
+                velocity *= GameSettings.Used.CursorAcceleratedMovementMod;
+            }
+
+            location += velocity;
+            
             if (!IsHost && IsClient)
             {
-                MoveCursorServerRpc(movement, location);
+                MoveCursorServerRpc(input, acceleratorPressed, location);
             }
         }
     }
-    
-    /// <summary> Visually updates the cursor </summary>
     public void UpdateCursor()
     {
         // Turn the side into a rotation
         int sideNumber = GetSideAtPosition(location);
-        transform.SetPositionAndRotation(GetCursorTransform(location, ThisSpellManager.characterInfo.OpponentAreaCenter), Quaternion.Euler(0, 0, -90 * (sideNumber)));
+        transform.SetPositionAndRotation(GetCursorTransform(location, spellManager.characterInfo.OpponentAreaCenter), Quaternion.Euler(0, 0, -90 * (sideNumber)));
     }
     public static Vector2 GetCursorTransform(float position, Vector2 opponentAreaCenter)
     {
         int sideNumber = GetSideAtPosition(position);
+        if (sideNumber < 0 || sideNumber >= 4)
+        {
+            Debug.LogWarning($"side number of {sideNumber} does not make sense. deleteme");
+        }
 
         float locationAroundSquare = Calculations.Modulo(position, GameSettings.Used.BattleSquareWidth * 4);
         float locationAroundSide = locationAroundSquare % GameSettings.Used.BattleSquareWidth;
@@ -118,44 +117,54 @@ public class CursorLogic : NetworkBehaviour
             return corners;
         }
     }
-
     public static int GetSideAtPosition(float cursorPosition)
     {
         // Makes it so that regardless of how many loops around the game area the cursor has done in either direction, it just tells distance clockwise from the top left corner.
-        var distanceAlongSide = Calculations.Modulo(cursorPosition, GameSettings.Used.BattleSquareWidth * 4f);
+        float distanceAlongSide = Calculations.Modulo(cursorPosition, GameSettings.Used.BattleSquareWidth * 4f);
+
+        int sideNumber = (int)Mathf.Floor(distanceAlongSide / GameSettings.Used.BattleSquareWidth);
         
+        // Floating points can create a bug when the value is a really small negative number (e.g. -1e^-8). If that happens, this will fix it.
+        if (sideNumber >= 4) sideNumber = 0;
+
         // Returns how many sides worth of distance the cursor is from the top left corner, going clockwise.
-        return (int)Mathf.Floor(distanceAlongSide / GameSettings.Used.BattleSquareWidth);
+        return sideNumber;
     }
 
     // Server and Client Rpcs
     [ClientRpc]
     private void LocationUpdateClientRpc(float locationAroundSquare)
     {
-        if (IsHost) return;
+        // Host doesn't need to tell itself what its own value is, and if you are the owner then discrepancy checks will tell you where you should be.
+        if (IsHost || IsOwner) return;
         location = locationAroundSquare;
     }
-
     [ServerRpc]
-    private void MoveCursorServerRpc(float input, float clientLocation)
+    private void MoveCursorServerRpc(float input, bool acceleratorPressed, float clientLocation)
     {
-        location += input;
-        float discrepancy = clientLocation - location;
-        if (discrepancy >= GameSettings.Used.NetworkLocationDiscrepancyLimit)
+        // I might want to add something where it checks to make sure multiple cursor inputs can't be sent in a single frame
+        float velocity = input;
+        if (acceleratorPressed)
         {
-            Debug.LogWarning($"{name} has a discrepancy of {discrepancy}");
+            velocity *= GameSettings.Used.CursorAcceleratedMovementMod;
+        }
+
+        location += velocity;
+        float discrepancy = location - clientLocation;
+
+        if (Mathf.Abs(discrepancy) >= GameSettings.Used.NetworkLocationDiscrepancyLimit)
+        {
+            Debug.LogWarning($"{name} has a discrepancy of {discrepancy}. Client's location: {clientLocation}, server estimate of location: {location}");
             FixDiscrepancyClientRpc(discrepancy);
         }
     }
-
     [ClientRpc]
     private void FixDiscrepancyClientRpc(float discrepancy)
     {
-        Debug.LogWarning($"Client location wrong (discrepancy {discrepancy}).");
+        Debug.LogWarning($"Location of this client is wrong (discrepancy {discrepancy}).");
         if (IsOwner)
         {
             location -= discrepancy;
         }
     }
-
 }

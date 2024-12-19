@@ -76,15 +76,16 @@ public class MenuController : MonoBehaviour
         DisableAllMenus();
         EnableMenu(MenuToOpen);
     }
-
-    public void StartLocal() // Called from the buttons on the main menu
+    
+    // Called from the buttons on the main menu
+    public void StartLocal() 
     {
-        MultiplayerManager.multiplayerType = MultiplayerManager.MultiplayerTypes.Local;
+        MultiplayerManager.IsOnline = false;
         SceneManager.LoadScene(spellSelectionScene);
     }
     public void StartOnline()
     {
-        MultiplayerManager.multiplayerType = MultiplayerManager.MultiplayerTypes.Online;
+        MultiplayerManager.IsOnline = true;
         SceneManager.LoadScene(lobbySetupScene);
     }
 }

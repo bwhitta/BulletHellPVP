@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e3b05189a0fe4054da35b28bb0c02070, type: 3}
   m_Name: Settings
   m_EditorClassIdentifier: 
+  UsedVisualSettings: {fileID: 11400000, guid: 6e80c9dd115406d4a9f436d317c83670, type: 2}
   OffensiveSpellSlots: 4
   DefensiveSpellSlots: 3
   TotalBooks: 3
@@ -36,7 +37,7 @@ MonoBehaviour:
   NetworkTickRateHz: 50
   NetworkLocationDiscrepancyLimit: 0.25
   NetworkStatBarDiscrepancyLimit: 1
-  ManaAwaitingCountdownLimit: 0
+  ManaAwaitingTimeLimit: 50
   StatLostVelocity: 1
   CursorMovementSpeed: 5
   CursorAcceleratedMovementMod: 3

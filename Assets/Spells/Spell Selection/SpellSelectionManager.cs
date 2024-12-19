@@ -1,35 +1,28 @@
-using System.Runtime.CompilerServices;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class SpellSelectionManager : MonoBehaviour
 {
     // Fields
-    [Header("Affected Character")]
-    [SerializeField] private int currentCharacterIndex;
+    [SerializeField] private GameSettings defaultGameSettings;
 
-    [Header("Spell List")]
-    [SerializeField] private GameObject spellListParent;
-    [SerializeField] private GameObject inSetPrefab;
-    [SerializeField] private int columnsOfIcons;
-    [SerializeField] private Vector2 distanceBetweenIcons;
-    
     [Header("Spellbooks")]
     [SerializeField] private byte currentBookIndex;
     [SerializeField] private GameObject spellbookIndexText;
 
-    [Header("Equipped Spell Slots")]
+    [Header("Equipped Spell Slot Locations")]
     [SerializeField] private Vector2 spellSlotStart;
     [SerializeField] private float spellSlotSpread;
     [SerializeField] private float slotSnapDistance;
-    [HideInInspector] public Vector2[] slotLocations;
+    [HideInInspector] public Vector2[] slotPositions;
 
-    [Header("Equipped Spells")] // Equipped Spells
+    [Header("Equipped Spell Displays")]
     [SerializeField] private GameObject equippedSpellsParent;
     [SerializeField] private GameObject equippedSpellPrefab;
 
-    // Properties or whatever
+    private LobbyManager lobbyManager;
+
+    // Properties
     private Text _bookIndexText;
     private Text BookIndexText
     {
@@ -40,27 +33,59 @@ public class SpellSelectionManager : MonoBehaviour
         }
     }
 
+    // At least for now, in online play the lobby host is always on the left.
+    private byte _currentCharacterIndex;
+    private byte CurrentCharacterIndex
+    {
+        get
+        {
+            if (MultiplayerManager.IsOnline)
+            {
+                if (lobbyManager.IsLobbyHost) _currentCharacterIndex = 0;
+                else _currentCharacterIndex = 1;
+            }
+            return _currentCharacterIndex;
+        }
+        set => _currentCharacterIndex = value;
+    }
+
+    private CharacterInfo.Spellbook CurrentEditedBook
+    {
+        get => GameSettings.Used.Characters[CurrentCharacterIndex].EquippedBooks[currentBookIndex];
+        set => GameSettings.Used.Characters[CurrentCharacterIndex].EquippedBooks[currentBookIndex] = value;
+    }
+
+    private void Awake()
+    {
+        GameSettings.Used = defaultGameSettings;
+    }
+
     private void Start()
     {
-        // Creates empty books for both players
+        if (MultiplayerManager.IsOnline)
+        {
+            lobbyManager = FindObjectOfType<LobbyManager>();
+        }
+
         foreach (CharacterInfo characterInfo in GameSettings.Used.Characters)
         {
-            characterInfo.CreateBooks(false);
+            characterInfo.CreateBooks();
         }
 
-        CalculateSlotLocations();
+        slotPositions = CalculateSlotPositions();
         SetBook(0);
 
-    }
-    private void CalculateSlotLocations()
-    {
-        slotLocations = new Vector2[GameSettings.Used.OffensiveSpellSlots + GameSettings.Used.DefensiveSpellSlots];
-        for (var i = 0; i < slotLocations.Length; i++)
+        // Local methods
+        Vector2[] CalculateSlotPositions()
         {
-            slotLocations[i] = spellSlotStart + (i * spellSlotSpread * Vector2.right);
+            Vector2[] locations = new Vector2[GameSettings.Used.OffensiveSpellSlots + GameSettings.Used.DefensiveSpellSlots];
+            for (var i = 0; i < locations.Length; i++)
+            {
+                locations[i] = spellSlotStart + (i * spellSlotSpread * Vector2.right);
+            }
+            return locations;
         }
     }
-
     private void SetBook(byte target)
     {
         currentBookIndex = target;
@@ -71,70 +96,38 @@ public class SpellSelectionManager : MonoBehaviour
     {
         SetBook((byte)((currentBookIndex + 1) % GameSettings.Used.TotalBooks));
     }
-
     public void PlaceInSlot(EquippableSpell spell)
     {
-        // Debug.Log($"Placing {spell} in slot, looping {usedSettings.Characters[currentCharacterIndex].EquippedSpellBooks.Length} times.");
-        for (int i = 0; i < GameSettings.Used.TotalSpellSlots; i++)
+        // Figure out which slot the spell fits in
+        for (byte i = 0; i < GameSettings.Used.TotalSpellSlots; i++)
         {
-            if(Vector2.Distance(spell.transform.position, slotLocations[i]) <= slotSnapDistance)
+            if (Vector2.Distance(spell.transform.position, slotPositions[i]) <= slotSnapDistance)
             {
-                CharacterInfo.Spellbook book = GameSettings.Used.Characters[currentCharacterIndex].CurrentBook;
-                book.SetIndexes[i] = spell.setIndex;
-                book.SpellIndexes[i] = spell.spellIndex;
+                CurrentEditedBook.SetIndexes[i] = spell.setIndex;
+                CurrentEditedBook.SpellIndexes[i] = spell.spellIndex;
                 UpdateBookDisplays();
                 return;
             }
         }
     }
-
-    public void CreateSpellObjects(byte selectedSet)
-    {
-        // Destroy all of the old child objects
-        for (byte i = 0; i < spellListParent.transform.childCount; i++)
-        {
-            Destroy(spellListParent.transform.GetChild(i).gameObject);
-        }
-
-        var set = GameSettings.Used.SpellSets[selectedSet];
-        for (byte i = 0; i < set.spellsInSet.Length; i++)
-        {
-            // Instaniates the prefab
-            GameObject instantiatedDisplay = Instantiate(inSetPrefab, spellListParent.transform);
-            EquippableSpell equippableSpellScript = instantiatedDisplay.GetComponent<EquippableSpell>();
-
-            float x = i % 5;
-            float y = Mathf.Floor(i / 5);
-
-            // Set position
-            Vector3 displacement = new(x * distanceBetweenIcons.x, y * -distanceBetweenIcons.y, 0);
-            instantiatedDisplay.transform.position = spellListParent.transform.position + displacement;
-
-            // Set the object's spell
-            equippableSpellScript.setIndex = selectedSet;
-            equippableSpellScript.spellIndex = i;
-
-            // Gives the spell a reference to this script
-            equippableSpellScript.managerScript = this;
-        }
-    }
+    
     private void UpdateBookDisplays()
     {
         // Destroy all of the old child objects
-        for (int i = 0; i < equippedSpellsParent.transform.childCount; i++)
+        foreach (Transform child in equippedSpellsParent.transform)
         {
-            Destroy(equippedSpellsParent.transform.GetChild(i).gameObject);
+            Destroy(child.gameObject);
         }
 
         for (int i = 0; i < GameSettings.Used.TotalSpellSlots; i++)
         {
             GameObject instantiatedDisplay = Instantiate(equippedSpellPrefab, equippedSpellsParent.transform);
 
-            CharacterInfo.Spellbook book = GameSettings.Used.Characters[currentCharacterIndex].CurrentBook;
+            CharacterInfo.Spellbook book = GameSettings.Used.Characters[CurrentCharacterIndex].CurrentBook;
             Sprite icon = SpellManager.GetSpellData(book, (byte)i).Icon;
 
             instantiatedDisplay.GetComponent<SpriteRenderer>().sprite = icon;
-            instantiatedDisplay.transform.position = slotLocations[i];
+            instantiatedDisplay.transform.position = slotPositions[i];
         }
     }
 }

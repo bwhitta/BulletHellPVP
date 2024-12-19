@@ -136,7 +136,7 @@ GameObject:
   - component: {fileID: 101930382}
   - component: {fileID: 101930383}
   m_Layer: 0
-  m_Name: Spell selection manager
+  m_Name: SpellSelectionManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -150,7 +150,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 101930379}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.00000047683716, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -169,17 +169,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce753a19664aefb4b97f1f2f2f764237, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentCharacterIndex: 0
-  spellListParent: {fileID: 1894641662}
-  inSetPrefab: {fileID: 2130220151547680756, guid: 89a835d8bd36dfb4b88305c1e43db7ad, type: 3}
-  columnsOfIcons: 5
-  distanceBetweenIcons: {x: 1.5, y: 1.5}
+  defaultGameSettings: {fileID: 11400000, guid: 3f0be8a9d474c2a4aa8c3837ebe92267, type: 2}
   currentBookIndex: 0
   spellbookIndexText: {fileID: 229582335}
   spellSlotStart: {x: -5, y: -4}
   spellSlotSpread: 1.5
   slotSnapDistance: 1.5
-  slotLocations: []
+  slotPositions: []
   equippedSpellsParent: {fileID: 1924683071}
   equippedSpellPrefab: {fileID: 2130220151547680756, guid: 5fc17fea2aa728546ae7a9d109bc1877, type: 3}
 --- !u!114 &101930382
@@ -194,12 +190,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 49d7c7419df1c4146a76725a9d5487c7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  usedSettings: {fileID: 11400000, guid: 3f0be8a9d474c2a4aa8c3837ebe92267, type: 2}
-  setDisplayParent: {fileID: 938946468}
-  setDisplayPrefab: {fileID: 2130220151547680756, guid: 839a0f39ec5a9354fa29c1973d68b149, type: 3}
+  selectedSetIndicator: {fileID: 1204457584}
+  spellSetParent: {fileID: 938946468}
+  spellSetPrefab: {fileID: 2130220151547680756, guid: 839a0f39ec5a9354fa29c1973d68b149, type: 3}
+  listedSpellsParent: {fileID: 1894641662}
+  listedSpellPrefab: {fileID: 2130220151547680756, guid: 89a835d8bd36dfb4b88305c1e43db7ad, type: 3}
   distanceBetweenIcons: 1.5
-  selectionDisplay: {fileID: 1204457584}
-  spellSelectionManager: {fileID: 101930381}
 --- !u!114 &101930383
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -223,7 +219,7 @@ GameObject:
   - component: {fileID: 102148598}
   - component: {fileID: 102148599}
   m_Layer: 0
-  m_Name: Start button area
+  m_Name: StartButtonArea
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -308,7 +304,7 @@ GameObject:
   - component: {fileID: 106144201}
   - component: {fileID: 106144200}
   m_Layer: 0
-  m_Name: Button Target
+  m_Name: ButtonTarget
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -384,7 +380,7 @@ GameObject:
   - component: {fileID: 229582338}
   - component: {fileID: 229582337}
   m_Layer: 0
-  m_Name: Current book text
+  m_Name: CurrentBookText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -463,7 +459,7 @@ GameObject:
   - component: {fileID: 336961590}
   - component: {fileID: 336961591}
   m_Layer: 0
-  m_Name: Spell list area
+  m_Name: SpellListArea
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -549,7 +545,7 @@ GameObject:
   - component: {fileID: 555364322}
   - component: {fileID: 555364326}
   m_Layer: 0
-  m_Name: Selected book
+  m_Name: SelectedBook
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -703,7 +699,7 @@ GameObject:
   m_Component:
   - component: {fileID: 661712951}
   m_Layer: 0
-  m_Name: Area backgrounds
+  m_Name: AreaBackgrounds
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -740,7 +736,7 @@ GameObject:
   - component: {fileID: 665672542}
   - component: {fileID: 665672541}
   m_Layer: 0
-  m_Name: Main Camera
+  m_Name: MainCamera
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -822,7 +818,7 @@ GameObject:
   m_Component:
   - component: {fileID: 938946469}
   m_Layer: 0
-  m_Name: Set display
+  m_Name: SpellSetsDisplay
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -854,7 +850,7 @@ GameObject:
   - component: {fileID: 1028397695}
   - component: {fileID: 1028397696}
   m_Layer: 0
-  m_Name: Equipped spells area
+  m_Name: EquippedSpellsArea
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1023,7 +1019,7 @@ RectTransform:
   - {fileID: 555364324}
   - {fileID: 1297315476}
   - {fileID: 1894641663}
-  - {fileID: 1589784277}
+  - {fileID: 2062878841}
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1121,7 +1117,7 @@ GameObject:
   - component: {fileID: 1204457585}
   - component: {fileID: 1204457586}
   m_Layer: 0
-  m_Name: Selected
+  m_Name: SelectionIndicator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1227,7 +1223,7 @@ Transform:
   m_Father: {fileID: 1037929475}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1560037514
+--- !u!1 &1348774620
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1235,9 +1231,9 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 1560037515}
-  - component: {fileID: 1560037517}
-  - component: {fileID: 1560037516}
+  - component: {fileID: 1348774621}
+  - component: {fileID: 1348774623}
+  - component: {fileID: 1348774622}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -1245,19 +1241,19 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!224 &1560037515
+--- !u!224 &1348774621
 RectTransform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1560037514}
+  m_GameObject: {fileID: 1348774620}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1589784277}
+  m_Father: {fileID: 2062878841}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -1265,13 +1261,13 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1560037516
+--- !u!114 &1348774622
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1560037514}
+  m_GameObject: {fileID: 1348774620}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
@@ -1354,13 +1350,13 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!222 &1560037517
+--- !u!222 &1348774623
 CanvasRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1560037514}
+  m_GameObject: {fileID: 1348774620}
   m_CullTransparentMesh: 1
 --- !u!1 &1570091709
 GameObject:
@@ -1373,7 +1369,7 @@ GameObject:
   - component: {fileID: 1570091710}
   - component: {fileID: 1570091711}
   m_Layer: 0
-  m_Name: Description area
+  m_Name: DescriptionArea
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1446,7 +1442,7 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!1 &1589784276
+--- !u!1 &1894641662
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1454,10 +1450,73 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 1589784277}
-  - component: {fileID: 1589784280}
-  - component: {fileID: 1589784279}
-  - component: {fileID: 1589784278}
+  - component: {fileID: 1894641663}
+  m_Layer: 0
+  m_Name: SpellList
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1894641663
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1894641662}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -6, y: 4, z: 0}
+  m_LocalScale: {x: 0.14, y: 0.14, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1037929475}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1924683071
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1924683072}
+  m_Layer: 0
+  m_Name: EquippedSpells
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1924683072
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1924683071}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -5.25, y: -4, z: 1}
+  m_LocalScale: {x: 0.14, y: 0.14, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1037929475}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2062878840
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2062878841}
+  - component: {fileID: 2062878845}
+  - component: {fileID: 2062878844}
+  - component: {fileID: 2062878843}
+  - component: {fileID: 2062878842}
   m_Layer: 5
   m_Name: Play button
   m_TagString: Untagged
@@ -1465,19 +1524,19 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!224 &1589784277
+--- !u!224 &2062878841
 RectTransform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1589784276}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_GameObject: {fileID: 2062878840}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1560037515}
+  - {fileID: 1348774621}
   m_Father: {fileID: 1037929475}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1486,13 +1545,26 @@ RectTransform:
   m_AnchoredPosition: {x: -1.3900146, y: 1}
   m_SizeDelta: {x: 1, y: 1}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1589784278
+--- !u!114 &2062878842
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1589784276}
+  m_GameObject: {fileID: 2062878840}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: defcd0db24ae3d140bce103f72d7aa55, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gameplayScene: Battle
+--- !u!114 &2062878843
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2062878840}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
@@ -1526,29 +1598,29 @@ MonoBehaviour:
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
   m_Interactable: 1
-  m_TargetGraphic: {fileID: 1589784279}
+  m_TargetGraphic: {fileID: 2062878844}
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 101930383}
-        m_TargetAssemblyTypeName: SceneLoader, Assembly-CSharp
-        m_MethodName: LoadScene
-        m_Mode: 5
+      - m_Target: {fileID: 2062878842}
+        m_TargetAssemblyTypeName: LoadBattle, Assembly-CSharp
+        m_MethodName: LoadGameplayScene
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: Battle
+          m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
---- !u!114 &1589784279
+--- !u!114 &2062878844
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1589784276}
+  m_GameObject: {fileID: 2062878840}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
@@ -1572,73 +1644,11 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!222 &1589784280
+--- !u!222 &2062878845
 CanvasRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1589784276}
+  m_GameObject: {fileID: 2062878840}
   m_CullTransparentMesh: 1
---- !u!1 &1894641662
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1894641663}
-  m_Layer: 0
-  m_Name: Spell list
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1894641663
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1894641662}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -5.75, y: 3.75, z: 0}
-  m_LocalScale: {x: 0.14, y: 0.14, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1037929475}
-  m_RootOrder: 3
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1924683071
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1924683072}
-  m_Layer: 0
-  m_Name: Equipped spells
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1924683072
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1924683071}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -5.25, y: -4, z: 1}
-  m_LocalScale: {x: 0.14, y: 0.14, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1037929475}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

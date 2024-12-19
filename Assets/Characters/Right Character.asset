@@ -23,8 +23,12 @@ MonoBehaviour:
   AnimatorTreeParameterX: FacingX
   AnimatorTreeParameterY: FacingY
   CurrentBookIndex: 0
-  DeveloperBookOverride: 0
+  overrideFirstBook: 0
+  overrideSetIndexes: 
+  overrideSpellIndexes: 
   OpponentAreaCenter: {x: -4, y: 0.25}
   SpellbookPosition: {x: 470, y: -460}
   SpellbookScale: {x: 7.5, y: 7.5}
+  healthBarPos: {x: 430, y: 486}
+  manaBarPos: {x: 890, y: 31}
   _spellbookLogicScript: {fileID: 0}

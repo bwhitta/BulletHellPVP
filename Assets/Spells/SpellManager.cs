@@ -4,41 +4,13 @@ using UnityEngine;
 
 public class SpellManager : NetworkBehaviour
 {
-    [HideInInspector] public CharacterInfo characterInfo;
-    public readonly NetworkVariable<byte> networkCharacterId = new();
+    [HideInInspector] public CharacterManager characterPartsManager;
+    private SpellbookLogic spellbookLogicScript;
+    public readonly NetworkVariable<byte> networkCharacterIndex = new();
 
     private void Start()
     {
-        // Set the tag on local or server instances
-        if (!MultiplayerManager.IsOnline || IsServer)
-        {
-            tag = characterInfo.CharacterObject.tag;
-        }
-        // Set the tag for non-host client instances
-        else
-        {
-            Debug.Log($"START: CharacterId is {networkCharacterId.Value}");
-            
-            // Set characterInfo and tag
-            characterInfo = GameSettings.Used.Characters[networkCharacterId.Value];
-            tag = characterInfo.CharacterObject.tag;
-
-            // If the character ID changes, update the characterInfo and tag.
-            networkCharacterId.OnValueChanged += NetworkCharacterIdChanged;
-        }
-
-        characterInfo.CursorLogicScript.CharacterInfoSet();
-
-        void NetworkCharacterIdChanged(byte prev, byte changedTo)
-        {
-            Debug.Log($"ID changed: CharacterId is {networkCharacterId.Value}");
-            characterInfo = GameSettings.Used.Characters[changedTo];
-            tag = characterInfo.CharacterObject.tag;
-
-            // Update cursorLogic to make sure it uses the new info
-            characterInfo.CursorLogicScript.CharacterInfoSet();
-            characterInfo.CursorLogicScript.UpdateCursor();
-        }
+        spellbookLogicScript = characterPartsManager.SpellbookObject.GetComponent<SpellbookLogic>();
     }
 
     public static SpellData GetSpellData(byte setIndex, byte spellIndex)
@@ -122,7 +94,7 @@ public class SpellManager : NetworkBehaviour
                 if (!IsServer)
                 {
                     characterInfo.Stats.ManaAwaiting += spellData.ManaCost;
-                    characterInfo.Stats.ManaAwaitingCountdown = GameSettings.Used.ManaAwaitingCountdownLimit;
+                    characterInfo.Stats.ManaAwaitingCountdown = GameSettings.Used.ManaAwaitingTimeLimit;
                 }
             }
             

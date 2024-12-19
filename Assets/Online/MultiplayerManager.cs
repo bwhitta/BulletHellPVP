@@ -1,4 +1,3 @@
-using System;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 using Unity.Networking.Transport.Relay;
@@ -7,18 +6,10 @@ using UnityEngine;
 
 public class MultiplayerManager : MonoBehaviour
 {
-    public enum MultiplayerTypes { Local, Online }
-    public static MultiplayerTypes multiplayerType;
-    [SerializeField] private GameObject characterPrefab; // what does this do? where is it used?
+    [SerializeField] private GameObject characterPrefab;
     [SerializeField] private GameSettings defaultGameSettings;
 
-    public static bool IsOnline 
-    {
-        get
-        {
-            return multiplayerType != MultiplayerTypes.Local;
-        }
-    }
+    public static bool IsOnline = false;
 
     private void Awake()
     {
@@ -27,47 +18,27 @@ public class MultiplayerManager : MonoBehaviour
             Debug.Log($"No GameSettings set during spell selection (or spell selection was skipped). Setting GameSettings according to Multiplayer Manager.");
             GameSettings.Used = defaultGameSettings;
         }
-            
     }
-
     private void Start()
     {
-        switch (multiplayerType)
+        if(IsOnline)
         {
-            case MultiplayerTypes.Online:
-                StartOnline();
-                break;
-            case MultiplayerTypes.Local:
-                Instantiate(characterPrefab);
-                Instantiate(characterPrefab);
-                break;
-            default:
-                Debug.LogWarning($"No multiplayer type detected, setting to default (local multiplayer).");
-                multiplayerType = MultiplayerTypes.Local;
-                Instantiate(characterPrefab);
-                Instantiate(characterPrefab);
-                break;
+            if (RelayManager.IsHost) StartRelayHost();
+            else StartRelayClient();
+        }
+        else
+        {
+            SpawnCharacter(0);
+            SpawnCharacter(1);
         }
 
-        void StartOnline(){
-            // PROBABLY PUT THIS ALL IN A SINGLE LOCAL METHOD CALLED FROM LINE 34!!!!! 
-            Debug.Log($"Multiplayer manager start [{Enum.GetName(typeof(RelayManager.InstanceModes), RelayManager.LocalInstanceMode)}]");
-            switch (RelayManager.LocalInstanceMode)
-            {
-                case RelayManager.InstanceModes.Host:
-                    StartRelayHost();
-                    break;
-                case RelayManager.InstanceModes.Client:
-                    StartRelayClient();
-                    break;
-                default:
-                    Debug.LogError($"This InstanceMode is not implemented.");
-                    break;
-            }
+        void SpawnCharacter(byte index)
+        {
+            GameObject character = Instantiate(characterPrefab);
+            character.GetComponent<CharacterManager>().CharacterIndex = index;
         }
     }
 
-    // Host relay
     private void StartRelayHost()
     {
         Debug.Log($"Hosting with relay.");
@@ -84,8 +55,6 @@ public class MultiplayerManager : MonoBehaviour
             Debug.LogWarning(e);
         }
     }
-
-    // Join relay
     private void StartRelayClient()
     {
         Debug.Log($"Joining as client with relay.");

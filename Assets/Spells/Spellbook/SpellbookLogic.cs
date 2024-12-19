@@ -65,6 +65,9 @@ public class SpellbookLogic : NetworkBehaviour
         void SetupGameObject()
         {
             // Set tag
+            Debug.Log($"Characterinfo: {characterInfo} DELETEME");
+            Debug.Log($"characterobject: {characterInfo.CharacterObject} DELETEME");
+            Debug.Log($"tag: {characterInfo.CharacterObject.tag} DELETEME");
             tag = characterInfo.CharacterObject.tag;
 
             GameObject mainCanvas = GameObject.FindGameObjectWithTag(characterInfo.MainCanvasTag);

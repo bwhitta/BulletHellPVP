@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using TMPro;
 using Unity.Services.Authentication;
@@ -10,15 +9,19 @@ using UnityEngine.SceneManagement;
 
 public class LobbyManager : MonoBehaviour
 {
-    private float heartbeatTimer, lobbyUpdatePollTimer;
+    private float heartbeatTimer;
     private string playerName;
 
     [Header("Lobby Info")]
     [SerializeField] private byte maxPlayers;
-    [SerializeField] private float lobbyOpenPingFrequency;
-    [SerializeField] private float lobbyUpdatePollFrequency;
+    [SerializeField] private float lobbbyHeartbeatFrequency;
+    [SerializeField] private string spellSelectionScene;
     [SerializeField] private string gameplayScene;
-    public const string KEY_START_GAME = "Start";
+
+    private const string KEY_START_GAME = "Start";
+    private const string KEY_SELECTING_SPELLS = "SelectingSpells";
+    private const string KEY_PLAYER_NAME = "PlayerName";
+
     private Lobby hostLobby; // I'll be honest I have no clue why I have two variables that both just say what lobby you're in, but I think that's what the tutorial had told me to do and I have no reason to change it yet.
     private Lobby joinedLobby;
     public bool IsLobbyHost => joinedLobby != null && joinedLobby.HostId == AuthenticationService.Instance.PlayerId;
@@ -37,8 +40,6 @@ public class LobbyManager : MonoBehaviour
     [SerializeField] private float lobbyPlayerOffsetY;
     private GameObject[] lobbyPlayerObjects;
 
-    private LobbyEventCallbacks callbacks; //potentially remove or change later? idk how this works
-
     private void Start()
     {
         SignIn();
@@ -46,7 +47,25 @@ public class LobbyManager : MonoBehaviour
     private void Update()
     {
         HeartbeatPing();
-        HandleLobbyUpdatePoll();
+    }
+
+    // Sign in to unity services
+    private async void SignIn()
+    {
+        // Connect to unity services
+        await UnityServices.InitializeAsync();
+
+        // Sign in anonomously. To make actions occur upon sign in: AuthenticationService.Instance.SignedIn += signedInActions;
+        await AuthenticationService.Instance.SignInAnonymouslyAsync();
+
+        DontDestroyOnLoad(gameObject);
+
+        // Set up UI
+        ToggleLobbySelectionButtons(true);
+        loadingText.SetActive(false);
+
+        playerName = $"Player_{AuthenticationService.Instance.PlayerId.ToString()[..5]}";
+        Debug.Log($"Player Name: {playerName}");
     }
 
     // Sends a "heartbeat" every while to let unity services know that the lobby is still active
@@ -55,91 +74,83 @@ public class LobbyManager : MonoBehaviour
         if (hostLobby == null) return;
 
         heartbeatTimer += Time.deltaTime;
-        if (heartbeatTimer >= lobbyOpenPingFrequency)
+        if (heartbeatTimer >= lobbbyHeartbeatFrequency)
         {
             heartbeatTimer = 0;
             Debug.Log("heartbeat ping");
+
             await LobbyService.Instance.SendHeartbeatPingAsync(hostLobby.Id);
         }
     }
-    
-    // Checks every few seconds to see if anything about the lobby has changed.
-    private async void HandleLobbyUpdatePoll()
+
+    // Lobby events
+    private async void LobbyEventSubscription(Lobby lobby)
     {
-        if (joinedLobby == null) return;
-
-        lobbyUpdatePollTimer += Time.deltaTime;
-        if (lobbyUpdatePollTimer >= lobbyUpdatePollFrequency)
+        // Subscribe to lobby events
+        LobbyEventCallbacks callbacks;
+        callbacks = new LobbyEventCallbacks();
+        callbacks.LobbyChanged += OnLobbyChanged;
+        // callbacks.KickedFromLobby += OnKickedFromLobby; // potentially implement later
+        // callbacks.LobbyEventConnectionStateChanged += OnLobbyEventConnectionStateChanged; // probably will want to use this some more later
+        try
         {
-            lobbyUpdatePollTimer = 0;
-            Debug.Log("lobby update poll");
+            Debug.Log("Subscribing to lobby events");
+            //var lobbyEvents = await Lobbies.Instance.SubscribeToLobbyEventsAsync(lobby.Id, callbacks); // is var right here? should I declare lobbyEvents elsewhere?
+            await Lobbies.Instance.SubscribeToLobbyEventsAsync(lobby.Id, callbacks);
+        }
+        catch (LobbyServiceException ex)
+        {
+            switch (ex.Reason)
+            {
+                case LobbyExceptionReason.AlreadySubscribedToLobby: Debug.LogWarning($"Already subscribed to lobby[{lobby.Id}]. We did not need to try and subscribe again. Exception Message: {ex.Message}"); break;
+                case LobbyExceptionReason.SubscriptionToLobbyLostWhileBusy: Debug.LogError($"Subscription to lobby events was lost while it was busy trying to subscribe. Exception Message: {ex.Message}"); throw;
+                case LobbyExceptionReason.LobbyEventServiceConnectionError: Debug.LogError($"Failed to connect to lobby events. Exception Message: {ex.Message}"); throw;
+                default: throw;
+            }
+        }
+    }
+    private void OnLobbyChanged(ILobbyChanges changes)
+    {
+        changes.ApplyToLobby(joinedLobby);
 
-            // Updates the joinedLobby's info.
-            joinedLobby = await LobbyService.Instance.GetLobbyAsync(joinedLobby.Id);
-
+        if (changes.PlayerData.Changed)
+        {
+            Debug.Log($"Lobby changed: Player data changed");
             UpdateLobbyVisuals(joinedLobby);
-
-            //Debug.Log($"Joined lobby: {joinedLobby}");
+        }
+        if (changes.PlayerLeft.Changed)
+        {
+            Debug.Log($"Player left");
+            UpdateLobbyVisuals(joinedLobby);
+        }
+        if (changes.PlayerJoined.Changed)
+        {
+            Debug.Log("Player joined");
+            UpdateLobbyVisuals(joinedLobby);
+            // lobby visuals or something should be changed here to show the new player as soon as they join.
+        }
+        if (changes.Data.Changed)
+        {
+            // Check if spell selection started
+            if (joinedLobby.Data[KEY_SELECTING_SPELLS].Value == "true" && SceneManager.GetActiveScene().name != spellSelectionScene && !IsLobbyHost)
+            {
+                Debug.Log($"Starting spell selection");
+                ClientLoadSpellSelection();
+            }
+            // Check if the game was started
             if (joinedLobby.Data[KEY_START_GAME].Value != "0")
             {
-                Debug.Log($"If this is a client, starting game!");
+                Debug.Log($"Starting game");
                 if (!IsLobbyHost)
                 {
                     ClientStartGame();
                 }
 
                 joinedLobby = null;
-            }
-        }
-        else
-        {
-            lobbyUpdatePollTimer += Time.deltaTime;
-        }
+            }        }
+        if (changes.Data.Added || changes.Data.Removed) Debug.LogWarning($"Lobby changed: Data added or removed");
     }
-
-    // Used to detect when players leave
-    private void OnLobbyChanged(ILobbyChanges changes)
-    {
-        Debug.Log($"Lobby changed.");
-        changes.ApplyToLobby(joinedLobby);
-
-        if (changes.PlayerData.Changed)
-        {
-            Debug.Log($"Player data changed");
-            UpdateLobbyVisuals(joinedLobby);
-        }
-
-        if (changes.PlayerLeft.Changed)
-        {
-            Debug.Log($"Player left");
-            UpdateLobbyVisuals(joinedLobby);
-        }
-
-        if (changes.PlayerJoined.Changed)
-        {
-            Debug.Log("Player joined");
-            UpdateLobbyVisuals(joinedLobby);
-        }
-
-    }
-
-    // Sign in to unity services
-    private async void SignIn()
-    {
-        // Connect to unity services
-        await UnityServices.InitializeAsync();
-        
-        // Sign in anonomously. To make actions occur upon sign in: AuthenticationService.Instance.SignedIn += signedInActions;
-        await AuthenticationService.Instance.SignInAnonymouslyAsync();
-
-        // Set up UI
-        ToggleLobbySelectionButtons(true);
-        loadingText.SetActive(false);
-        
-        playerName = $"Player_{AuthenticationService.Instance.PlayerId.ToString()[..5]}";
-        Debug.Log($"Player Name: {playerName}");
-    }
-
+    
     // Toggle the Host and Join buttons
     private void ToggleLobbySelectionButtons(bool enabled)
     {
@@ -215,10 +226,11 @@ public class LobbyManager : MonoBehaviour
         return new()
         {
             IsPrivate = privateLobby,
-            Player = GetPlayer(),
+            Player = FindPlayerData(),
             Data = new Dictionary<string, DataObject>
                 {
-                    { KEY_START_GAME, new DataObject(DataObject.VisibilityOptions.Member, "0") }
+                    { KEY_START_GAME, new DataObject(DataObject.VisibilityOptions.Member, "0") }, 
+                    { KEY_SELECTING_SPELLS, new DataObject(DataObject.VisibilityOptions.Member, "false")}
                 }
         };
     }
@@ -239,7 +251,7 @@ public class LobbyManager : MonoBehaviour
                                     op: QueryFilter.OpOptions.GE,
                                     value: "1")
                 },
-                Player = GetPlayer()
+                Player = FindPlayerData()
             };
 
             // Join lobby
@@ -266,7 +278,7 @@ public class LobbyManager : MonoBehaviour
             // Lobby joining options
             JoinLobbyByCodeOptions options = new()
             {
-                Player = GetPlayer()
+                Player = FindPlayerData()
             };
 
             // Join the lobby
@@ -285,32 +297,36 @@ public class LobbyManager : MonoBehaviour
         }
     }
 
-    private async void LobbyEventSubscription(Lobby lobby)
+    // Scene loading
+    public async void HostLoadSpellSelection()
     {
-        // Subscribe to lobby events
-        callbacks = new LobbyEventCallbacks();
-        callbacks.LobbyChanged += OnLobbyChanged;
-        // callbacks.KickedFromLobby += OnKickedFromLobby; // potentially implement later?
-        // callbacks.LobbyEventConnectionStateChanged += OnLobbyEventConnectionStateChanged; // probably will want to use this some more later
+        Debug.Log($"Loading spell selection");
         try
         {
-            Debug.Log("subscribing to lobby events I think");
-            var lobbyEvents = await Lobbies.Instance.SubscribeToLobbyEventsAsync(lobby.Id, callbacks); // is var right here? should I declare lobbyEvents elsewhere?
-        }
-        catch (LobbyServiceException ex)
-        {
-            switch (ex.Reason)
+            // Update the lobby options to say that spell selection has begun
+            Lobby lobby = await Lobbies.Instance.UpdateLobbyAsync(joinedLobby.Id, new UpdateLobbyOptions
             {
-                case LobbyExceptionReason.AlreadySubscribedToLobby: Debug.LogWarning($"Already subscribed to lobby[{lobby.Id}]. We did not need to try and subscribe again. Exception Message: {ex.Message}"); break;
-                case LobbyExceptionReason.SubscriptionToLobbyLostWhileBusy: Debug.LogError($"Subscription to lobby events was lost while it was busy trying to subscribe. Exception Message: {ex.Message}"); throw;
-                case LobbyExceptionReason.LobbyEventServiceConnectionError: Debug.LogError($"Failed to connect to lobby events. Exception Message: {ex.Message}"); throw;
-                default: throw;
-            }
+                Data = new Dictionary<string, DataObject>
+                {
+                    {  KEY_SELECTING_SPELLS, new DataObject(DataObject.VisibilityOptions.Member, "true") }
+                }
+            });
+            joinedLobby = lobby;
+
+            // Load spell selection
+            SceneManager.LoadScene(spellSelectionScene);
+        }
+        catch (LobbyServiceException e)
+        {
+            Debug.LogWarning(e);
         }
     }
-
-    // Start game
-    public async void StartGame()
+    public void ClientLoadSpellSelection()
+    {
+        Debug.Log($"Client loading spell selection.");
+        SceneManager.LoadScene(spellSelectionScene);
+    }
+    public async void HostStartGame()
     {
         Debug.Log($"Starting game");
         try
@@ -318,10 +334,11 @@ public class LobbyManager : MonoBehaviour
             string relayCode = await RelayManager.Instance.CreateRelay();
             if (relayCode == null)
             {
-                Debug.Log($"Relay code null, cancelling start of game");
+                Debug.LogWarning($"Relay code null, cancelling start of game");
                 return;
             }
 
+            // Update the lobby options to say that the game is starting
             Lobby lobby = await Lobbies.Instance.UpdateLobbyAsync(joinedLobby.Id, new UpdateLobbyOptions
             {
                 Data = new Dictionary<string, DataObject>
@@ -329,8 +346,12 @@ public class LobbyManager : MonoBehaviour
                     { KEY_START_GAME , new DataObject(DataObject.VisibilityOptions.Member, relayCode) }
                 }
             });
+
             joinedLobby = lobby;
             SceneManager.LoadScene(gameplayScene);
+
+            Destroy(gameObject);
+            Debug.Log($"Destroying lobby manager");
         }
         catch (LobbyServiceException e)
         {
@@ -341,19 +362,23 @@ public class LobbyManager : MonoBehaviour
     {
         Debug.Log($"Client starting game.");
         await RelayManager.Instance.JoinRelay(joinedLobby.Data[KEY_START_GAME].Value);
-        Debug.Log($"joined relay, loading scene {gameplayScene}, [{Enum.GetName(typeof(RelayManager.InstanceModes), RelayManager.LocalInstanceMode)}]");
+
+        Debug.Log($"joined relay, loading scene {gameplayScene}");
         SceneManager.LoadScene(gameplayScene);
+
+        Debug.Log($"Destroying lobby manager");
+        Destroy(gameObject);
     }
 
     // Finds your personal player data
-    private Player GetPlayer()
+    private Player FindPlayerData()
     {
         Player player = new()
         {
             Data = new Dictionary<string, PlayerDataObject>
-                    {
-                        {"PlayerName", new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, playerName)}
-                    }
+            {
+                {KEY_PLAYER_NAME, new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, playerName)}
+            }
         };
         return player;
     }
@@ -361,7 +386,8 @@ public class LobbyManager : MonoBehaviour
     // Update what the lobby looks like (e.g. who is in it and their names)
     private void UpdateLobbyVisuals(Lobby lobby)
     {
-        Debug.Log($"Updating lobby visuals!");
+        //Debug.Log($"Updating lobby visuals!");
+
         // Skip if no lobby is joined
         if (joinedLobby == null) return;
 
@@ -390,12 +416,11 @@ public class LobbyManager : MonoBehaviour
         {
             lobbyPlayerObjects = new GameObject[lobby.Players.Count];
             
-            Debug.Log($"Creating {lobby.Players.Count} lobby player objects.");
             for (int i = 0; i < lobby.Players.Count; i++)
             {
 
                 // Create lobby player object
-                Debug.Log($"creating player {i + 1}");
+                Debug.Log($"creating lobby player {i + 1}");
                 GameObject lobbyPlayer = Instantiate(lobbyPlayerPrefab, canvasObject.transform);
 
                 // Update visuals and position
@@ -406,5 +431,4 @@ public class LobbyManager : MonoBehaviour
             }
         }
     }
-
 }

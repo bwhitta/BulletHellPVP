@@ -1,14 +1,15 @@
+using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using System.Collections.Generic;
 
 public class CharacterControls : NetworkBehaviour
 {
     // Fields
     [HideInInspector] public InputAction movementAction;
-    private CharacterInfo characterInfo;
+    [HideInInspector] public CharacterInfo characterInfo;
     private Animator characterAnimator;
+    private bool started = false;
     public class TempMovementMod
     {
         public Vector2 tempPush = Vector2.zero;
@@ -17,61 +18,52 @@ public class CharacterControls : NetworkBehaviour
         // public ushort lifetime; Not using for now, should instead change removeEffect from the SpellModuleBehavior
     }
     public List<TempMovementMod> tempMovementMods = new();
-    
-    // Monobehavior Methods
-    private void Start()
-    {
-        Debug.LogWarning($"interpolation is currently removed! probably should re-add, delete me later.");
 
-        SetObjectReferences();
+    // Methods
+    public void Startup()
+    {
+        Debug.Log($"interpolation is currently removed! probably should re-add, delete me later.");
+
+        if (characterInfo == null) Debug.LogWarning($"Character info null!");
+        
+        characterAnimator = GetComponent<Animator>();
+
         EnableMovement();
+
         transform.position = characterInfo.CharacterStartLocation;
-        SetPositionOnline();
+        if (IsServer) LocationUpdateClientRpc(transform.position);
+
+        started = true;
 
         // Local Methods
-        void SetObjectReferences()
-        {
-            characterInfo = GetComponent<CharacterStats>().characterInfo;
-            characterAnimator = GetComponent<Animator>();
-        }
         void EnableMovement()
         {
             InputActionMap controllingMap = ControlsManager.GetActionMap(characterInfo.InputMapName);
             movementAction = controllingMap.FindAction(characterInfo.MovementActionName, true);
             movementAction.Enable();
         }
-        void SetPositionOnline()
-        {
-            if (IsServer)
-            {
-                LocationUpdateClientRpc(transform.position);
-            }
-        }
     }
     private void FixedUpdate()
     {
+        if (started == false) return;
+
         MovementTick();
         if (IsServer && IsOwner)
         {
             LocationUpdateClientRpc(transform.position);
         }
     }
-
-    // Methods
     private void MovementTick()
     {
         Vector2 movementInput = movementAction.ReadValue<Vector2>();
 
-        // Online Multiplayer
-        if (MultiplayerManager.IsOnline && IsOwner)
-        {
-            OwnerMovementTick();
-        }
-
-        // Local multiplayer
-        if (MultiplayerManager.multiplayerType == MultiplayerManager.MultiplayerTypes.Local)
+        if (MultiplayerManager.IsOnline == false)
         {
             MoveCharacter(movementInput);
+        }
+        else if (IsOwner)
+        {
+            OwnerMovementTick();
         }
 
         // Counts down the remaining time on temporary movement effects
@@ -92,11 +84,12 @@ public class CharacterControls : NetworkBehaviour
         }
         void TempMovementTick()
         {
-            for (ushort i = 0; i < tempMovementMods.Count; i++)
+            foreach (TempMovementMod tempMod in tempMovementMods)
             {
-                if (tempMovementMods[i].removeEffect)
+                if (tempMod.removeEffect)
                 {
-                    tempMovementMods.RemoveAt(i);
+                    Debug.Log($"this seems to be set up in the dumbest possible way, why does the tempMod not just have a built in timer?? delete me later.");
+                    tempMovementMods.Remove(tempMod);
                 }
             }
         }
@@ -111,7 +104,8 @@ public class CharacterControls : NetworkBehaviour
         characterAnimator.SetFloat(characterInfo.AnimatorTreeParameterY, movementInput.y);
 
         // Local Methods
-        float CalculateTempMovementMod(){
+        float CalculateTempMovementMod()
+        {
             float movementMod = 1f;
             foreach (TempMovementMod tempMod in tempMovementMods)
             {
@@ -129,7 +123,7 @@ public class CharacterControls : NetworkBehaviour
             return movementMod;
         }
     }
-    
+
     // Rpcs
     [ClientRpc]
     private void LocationUpdateClientRpc(Vector2 pos)
