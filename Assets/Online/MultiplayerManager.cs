@@ -34,8 +34,9 @@ public class MultiplayerManager : MonoBehaviour
 
         void SpawnCharacter(byte index)
         {
+            Debug.Log($"spawning character {index}", this);
             GameObject character = Instantiate(characterPrefab);
-            character.GetComponent<CharacterManager>().CharacterIndex = index;
+            character.GetComponentInChildren<CharacterManager>().SetCharacterInfo(index);
         }
     }
 

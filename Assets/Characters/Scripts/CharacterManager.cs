@@ -4,101 +4,45 @@ using Unity.Netcode;
 
 public class CharacterManager : NetworkBehaviour
 {
-    public CharacterParts Parts = new();
-    
-    [SerializeField] private GameObject cursorPrefab;
-    [SerializeField] private GameObject spellbookPrefab;
-    [SerializeField] private GameObject statBarPrefab;
+    // probably should rename this script, especially once I finalize its functionality
+
+    // Fields
+    [SerializeField] private GameObject healthBar;
+    [SerializeField] private GameObject manaBar;
 
     [HideInInspector] public byte CharacterIndex;
+    [HideInInspector] public CharacterInfo OwnedCharacterInfo;
+    [HideInInspector] public CharacterInfo OpponentCharacterInfo;
+    [HideInInspector] public GameObject CharacterObject;
 
-    void Start()
+    // Methods
+    private void Start()
     {
         if (MultiplayerManager.IsOnline)
         {
             if ((IsHost && IsOwner) || (!IsHost && !IsOwner))
             {
-                CharacterIndex = 0;
+                SetCharacterInfo(0);
             }
             else
             {
-                CharacterIndex = 1;
+                SetCharacterInfo(1);
             }
         }
-
-        Parts.OwnedCharacterInfo = GameSettings.Used.Characters[CharacterIndex];
-        if (CharacterIndex == 0) OpponentCharacterInfo = GameSettings.Used.Characters[1];
-        else OpponentCharacterInfo = GameSettings.Used.Characters[0];
 
         name = OwnedCharacterInfo.name;
 
-        // Alternatively, I could just give these a reference to this class and make that the way they get the characterInfo.
-        CharacterControls characterControls = GetComponent<CharacterControls>();
-        characterControls.characterInfo = OwnedCharacterInfo; //REMOVE CHARACTERINFO FROM CHARACTERCONTROLS
-        characterControls.Startup();
-        
-        InstantiateCursor();
-        InstantiateSpellbook();
-        HealthBar = InstantiateStatBar(GameSettings.Visuals.HealthBarColors);
-        ManaBar = InstantiateStatBar(GameSettings.Visuals.ManaBarColors);
+        // Move health and mana bars to the right position
+        healthBar.GetComponent<RectTransform>().localPosition = OwnedCharacterInfo.healthBarPos;
+        manaBar.GetComponent<RectTransform>().localPosition = OwnedCharacterInfo.manaBarPos;
+    }
+    public void SetCharacterInfo(byte index)
+    {
+        CharacterIndex = index;
 
-        //Local Methods
-        void InstantiateCursor()
-        {
-            if (!MultiplayerManager.IsOnline)
-            {
-                CursorObject = Instantiate(cursorPrefab);
-                CursorObject.GetComponent<SpellManager>().characterPartsManager = this;
-            }
-            if (MultiplayerManager.IsOnline && IsServer)
-            {
-                // Create object locally
-                CursorObject = Instantiate(cursorPrefab);
-                SpellManager spellManagerScript = CursorObject.GetComponent<SpellManager>();
-                spellManagerScript.characterPartsManager = this;
+        OwnedCharacterInfo = GameSettings.Used.Characters[CharacterIndex];
 
-                // Spawn on network
-                CursorObject.GetComponent<NetworkObject>().SpawnWithOwnership(OwnerClientId);
-                Debug.Log($"Spawned cursor for character {OwnedCharacterInfo}", CursorObject);
-
-                // Sets the characterId online
-                byte characterIndex = (byte)Array.IndexOf(GameSettings.Used.Characters, OwnedCharacterInfo);
-                spellManagerScript.networkCharacterIndex.Value = characterIndex;
-            }
-        }
-        void InstantiateSpellbook()
-        {
-            if (!MultiplayerManager.IsOnline)
-            {
-                SpellbookObject = Instantiate(spellbookPrefab);
-                SpellbookObject.GetComponent<SpellbookLogic>().characterInfo = OwnedCharacterInfo;
-            }
-            else if (MultiplayerManager.IsOnline && IsServer)
-            {
-                // Create object locally
-                SpellbookObject = Instantiate(spellbookPrefab);
-                SpellbookLogic spellbookLogic = SpellbookObject.GetComponent<SpellbookLogic>();
-                spellbookLogic.characterInfo = OwnedCharacterInfo;
-
-                // Spawn on network
-                SpellbookObject.GetComponent<NetworkObject>().SpawnWithOwnership(OwnerClientId);
-                Debug.Log($"Spawned spellbook for character {OwnedCharacterInfo}", SpellbookObject);
-
-                // Sets the characterId online
-                byte characterIndex = (byte)Array.IndexOf(GameSettings.Used.Characters, OwnedCharacterInfo);
-                spellbookLogic.networkCharacterId.Value = characterIndex;
-            }
-        }
-        BarLogic InstantiateStatBar(VisualSettings.BarColors barColors)
-        {
-            if (MultiplayerManager.IsOnline)
-            {
-                Debug.LogWarning($"I'm not sure if stat bars will work online yet");
-            }
-            GameObject statBar = Instantiate(statBarPrefab);
-            BarLogic barLogic = statBar.GetComponent<BarLogic>();
-            barLogic.BarColors = barColors;
-            return barLogic;
-        }
+        if (CharacterIndex == 0) OpponentCharacterInfo = GameSettings.Used.Characters[1];
+        else OpponentCharacterInfo = GameSettings.Used.Characters[0];
     }
 }

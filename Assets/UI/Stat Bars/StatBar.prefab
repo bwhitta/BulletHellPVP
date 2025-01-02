@@ -359,13 +359,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 302cfd36e61c2524b8db6cc6f54e713a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  baseObject: {fileID: 1298312775817863733}
-  statValueObject: {fileID: 1298312776148912038}
-  vanishingLossesObject: {fileID: 1298312775918382381}
   valueTextObject: {fileID: 3709127658924126526}
-  BaseColor: {r: 0, g: 0, b: 0, a: 0}
-  ValueColor: {r: 0, g: 0, b: 0, a: 0}
-  LossesColor: {r: 0, g: 0, b: 0, a: 0}
+  vanishingLossesObject: {fileID: 1298312775918382381}
+  statValueObject: {fileID: 1298312776148912038}
+  divider: {fileID: 1298312776721041398}
+  dividerRange: 10536
 --- !u!1 &1298312776721041401
 GameObject:
   m_ObjectHideFlags: 0

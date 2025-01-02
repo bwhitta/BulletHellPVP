@@ -3,11 +3,8 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Character Information")]
 public class CharacterInfo : ScriptableObject
 {
-    public CharacterInfo OpponentCharacterInfo; // DELETE SOON
-
-    [Space(25)] // Tags
-    public string CharacterAndSortingTag;
-    public string MainCanvasTag;
+    [Space(25)] // Sorting layer
+    public string SortingLayer;
 
     [Space(25)] // Controls
     public string InputMapName;
@@ -15,15 +12,12 @@ public class CharacterInfo : ScriptableObject
     public string NextBookActionName;
     public string CastingActionName;
 
-    [Space(25)] // Movement
-    public Vector2 CharacterStartLocation;
-
     [Space(25)] // Animation
     public string AnimatorTreeParameterX;
     public string AnimatorTreeParameterY;
 
     [Space(25)] // Equipped Spells
-    public byte CurrentBookIndex;
+    public byte CurrentBookIndex; // PROBABLY SHOULDN'T BE PART OF CHARACTERINFO
     [SerializeField] private bool overrideFirstBook;
     [SerializeField] private byte[] overrideSetIndexes, overrideSpellIndexes;
     public Spellbook[] EquippedBooks;
@@ -34,15 +28,18 @@ public class CharacterInfo : ScriptableObject
         public byte[] SpellIndexes;
     }
 
+    [Space(25)] // Movement
+    public Vector2 CharacterStartLocation;
+
     [Space(25)] // Positioning
     public Vector2 OpponentAreaCenter;
     public Vector2 SpellbookPosition;
-    public Vector2 SpellbookScale;
 
     [Space(25)] // Stat bars
     public Vector2 healthBarPos;
     public Vector2 manaBarPos;
 
+    // honestly having this in CharacterInfo is a bit of a stretch
     public void CreateBooks()
     {
         if (EquippedBooks != null)

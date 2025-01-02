@@ -7,9 +7,9 @@ public class CharacterControls : NetworkBehaviour
 {
     // Fields
     [HideInInspector] public InputAction movementAction;
-    [HideInInspector] public CharacterInfo characterInfo;
     private Animator characterAnimator;
     private bool started = false;
+    private CharacterManager characterManager;
     public class TempMovementMod
     {
         public Vector2 tempPush = Vector2.zero;
@@ -19,18 +19,18 @@ public class CharacterControls : NetworkBehaviour
     }
     public List<TempMovementMod> tempMovementMods = new();
 
+
     // Methods
-    public void Startup()
+    private void Start()
     {
         Debug.Log($"interpolation is currently removed! probably should re-add, delete me later.");
-
-        if (characterInfo == null) Debug.LogWarning($"Character info null!");
         
         characterAnimator = GetComponent<Animator>();
+        characterManager = GetComponent<CharacterManager>();
 
         EnableMovement();
 
-        transform.position = characterInfo.CharacterStartLocation;
+        transform.position = characterManager.OwnedCharacterInfo.CharacterStartLocation;
         if (IsServer) LocationUpdateClientRpc(transform.position);
 
         started = true;
@@ -38,8 +38,8 @@ public class CharacterControls : NetworkBehaviour
         // Local Methods
         void EnableMovement()
         {
-            InputActionMap controllingMap = ControlsManager.GetActionMap(characterInfo.InputMapName);
-            movementAction = controllingMap.FindAction(characterInfo.MovementActionName, true);
+            InputActionMap controllingMap = ControlsManager.GetActionMap(characterManager.OwnedCharacterInfo.InputMapName);
+            movementAction = controllingMap.FindAction(characterManager.OwnedCharacterInfo.MovementActionName, true);
             movementAction.Enable();
         }
     }
@@ -100,8 +100,8 @@ public class CharacterControls : NetworkBehaviour
 
         transform.position += (movement + (Vector3)CalculateTempPush()) * Time.fixedDeltaTime;
 
-        characterAnimator.SetFloat(characterInfo.AnimatorTreeParameterX, movementInput.x);
-        characterAnimator.SetFloat(characterInfo.AnimatorTreeParameterY, movementInput.y);
+        characterAnimator.SetFloat(characterManager.OwnedCharacterInfo.AnimatorTreeParameterX, movementInput.x);
+        characterAnimator.SetFloat(characterManager.OwnedCharacterInfo.AnimatorTreeParameterY, movementInput.y);
 
         // Local Methods
         float CalculateTempMovementMod()

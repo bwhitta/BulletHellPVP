@@ -1,17 +1,29 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-// 249, 264 (margins around image)
-
 public class BarLogic : MonoBehaviour
 {
-    [SerializeField] private GameObject baseObject, statValueObject, vanishingLossesObject;
+    // Fields
     [SerializeField] private Text valueTextObject;
-    [HideInInspector] public VisualSettings.BarColors BarColors;
-
+    [SerializeField] private GameObject vanishingLossesObject;
     private float vanishingLossesValue;
     private float vanishingLossesVelocity = 0;
+    [SerializeField] private GameObject statValueObject;
+    private Image _statValueImage;
+    private Image StatValueImage
+    {
+        get
+        {
+            _statValueImage = _statValueImage != null ? _statValueImage : statValueObject.GetComponent<Image>();
+            return _statValueImage;
+        }
+        set => _statValueImage = value;
+    }
 
+    [SerializeField] private RectTransform divider;
+    [SerializeField] private float dividerRange;
+
+    // Properties
     private float _statValue;
     public float StatValue
     {
@@ -21,11 +33,10 @@ public class BarLogic : MonoBehaviour
         }
         set
         {
+            _statValue = Mathf.Clamp(value, 0f, StatMax);
             UpdateStat();
-            _statValue = value;
         }
     }
-
     private float _statMax;
     public float StatMax
     {
@@ -35,35 +46,28 @@ public class BarLogic : MonoBehaviour
         }
         set
         {
+            _statMax = Mathf.Max(value, 0f);
             UpdateStat();
-            _statMax = value;
         }
     }
 
-    private void Start()
-    {
-        baseObject.GetComponent<Image>().color = BarColors.BaseColor;
-        statValueObject.GetComponent<Image>().color = BarColors.ValueColor;
-        vanishingLossesObject.GetComponent<Image>().color = BarColors.LossesColor;
-    }
-
+    // Methods
     private void Update()
     {
+        StatValue = _statValue; // DELETE
+
         UpdateVanishingLosses();
     }
     private void UpdateStat()
     {
-        // Update the text
         valueTextObject.text = Mathf.Floor(StatValue).ToString();
-
         float statPercentage = StatValue / StatMax;
-        statValueObject.GetComponent<Image>().fillAmount = statPercentage;
-        
-        /*// Divider bar
-        float minimumDivPos = (-displayImage.preferredWidth / 2) + edgeLeft;
-        float divPos = minimumDivPos + ((displayImage.preferredWidth - (edgeLeft + edgeRight)) * statPercentage);
-        GameObject div = displayImage.transform.GetChild(0).gameObject;
-        div.GetComponent<RectTransform>().anchoredPosition = new Vector2(divPos, 0);*/
+        StatValueImage.fillAmount = statPercentage;
+
+        // Update the divider
+        Vector3 adjustedPosition = divider.anchoredPosition;
+        adjustedPosition.x = Calculations.RelativeTo(-dividerRange / 2, dividerRange / 2, statPercentage);
+        divider.anchoredPosition = adjustedPosition;
     }
     private void UpdateVanishingLosses()
     {
@@ -79,9 +83,8 @@ public class BarLogic : MonoBehaviour
             vanishingLossesValue = StatValue; 
             vanishingLossesVelocity = 0;
         }
-        // Update the text
+        
         valueTextObject.text = Mathf.Floor(StatValue).ToString();
-
         float lossesPercentage = vanishingLossesValue / StatMax;
         vanishingLossesObject.GetComponent<Image>().fillAmount = lossesPercentage;
     }

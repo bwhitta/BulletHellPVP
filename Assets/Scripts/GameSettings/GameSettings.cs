@@ -5,12 +5,6 @@ public class GameSettings : ScriptableObject
 {
     public static GameSettings Used;
 
-    [Header("Other Settings")]
-    public VisualSettings UsedVisualSettings;
-    public static VisualSettings Visuals => Used.UsedVisualSettings;
-
-
-    [Space]
     [Header("Spells")]
     public byte OffensiveSpellSlots, DefensiveSpellSlots;
     public byte TotalBooks;

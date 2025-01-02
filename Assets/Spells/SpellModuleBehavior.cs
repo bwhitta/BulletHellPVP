@@ -56,6 +56,8 @@ public class SpellModuleBehavior : NetworkBehaviour
 
     // Readonlys
     private readonly float outOfBoundsDistance = 15f;
+
+    private CursorLogic cursorLogic;
     #endregion
     
     private void Start()
@@ -69,7 +71,8 @@ public class SpellModuleBehavior : NetworkBehaviour
         // If local or server set cursor position on cast
         if (!MultiplayerManager.IsOnline || IsServer)
         {
-            cursorPositionOnCast = OwnerCharacterInfo.CursorLogicScript.location;
+            // probably should rework this anyways so that it only tracks the cursor's position on cast if it matters (if it tracks it at all)
+            //cursorPositionOnCast = OwnerCharacterInfo.CursorLogicScript.location;
         }
         
         // Send data to client
@@ -92,16 +95,9 @@ public class SpellModuleBehavior : NetworkBehaviour
         // Attach module (if applicable)
         if (Module.ModuleType == SpellData.ModuleTypes.PlayerAttached)
         {
-            /*if ((MultiplayerManager.IsOnline && IsServer) || !MultiplayerManager.IsOnline)
-            {
-                // Set up parenting
-                transform.parent = OwnerCharacterInfo.CharacterObject.transform;
-                transform.localPosition = Vector2.zero;
-            }*/
-
             // Set up parenting
-            transform.parent = OwnerCharacterInfo.CharacterObject.transform;
-            transform.localPosition = Vector2.zero;
+            //transform.parent = OwnerCharacterInfo.CharacterObject.transform; DISABLED FOR RESTRUCTURING
+            //transform.localPosition = Vector2.zero;
 
             // Set how long the spell should last
             attachmentTime = Module.AttachmentTime;
@@ -193,13 +189,13 @@ public class SpellModuleBehavior : NetworkBehaviour
             string spellMaskLayer;
             if (Module.ModuleType == SpellData.ModuleTypes.PlayerAttached)
             {
-                spellMaskLayer = OwnerCharacterInfo.CharacterAndSortingTag;
+                spellMaskLayer = OwnerCharacterInfo.SortingLayer;
             }
             else
             {
-                spellMaskLayer = OwnerCharacterInfo.OpponentCharacterInfo.CharacterAndSortingTag;
+                // spellMaskLayer = OwnerCharacterInfo.OpponentCharacterInfo.CharacterAndSortingTag; DISABLED FOR RESTRUCTURING
             }
-            spriteRenderer.sortingLayerName = spellMaskLayer;
+            // spriteRenderer.sortingLayerName = spellMaskLayer; DISABLED FOR RESTRUCTURING
         }
         void EnableAnimator()
         {
@@ -218,15 +214,15 @@ public class SpellModuleBehavior : NetworkBehaviour
                 string spellMaskLayer;
                 if (Module.ModuleType == SpellData.ModuleTypes.PlayerAttached)
                 {
-                    spellMaskLayer = OwnerCharacterInfo.CharacterAndSortingTag;
+                    spellMaskLayer = OwnerCharacterInfo.SortingLayer;
                 }
                 else
                 {
-                    spellMaskLayer = OwnerCharacterInfo.OpponentCharacterInfo.CharacterAndSortingTag;
+                    // spellMaskLayer = OwnerCharacterInfo.OpponentCharacterInfo.CharacterAndSortingTag; DISABLED FOR RESTRUCTURING
                 }
                 
                 // Set the mask layer
-                currentAnimationPrefab.GetComponent<SpriteRenderer>().sortingLayerName = spellMaskLayer;
+                // currentAnimationPrefab.GetComponent<SpriteRenderer>().sortingLayerName = spellMaskLayer; DISABLED FOR RESTRUCTURING
             }
 
             // Enables the animator if Animated is set to true
@@ -290,7 +286,7 @@ public class SpellModuleBehavior : NetworkBehaviour
         // Only deduct Mana Awaiting if this is the first SpellModuleBehavior
         if (behaviorId == 0)
         {
-            OwnerCharacterInfo.Stats.ManaAwaiting -= ModuleSpellData.ManaCost;
+            // OwnerCharacterInfo.Stats.ManaAwaiting -= ModuleSpellData.ManaCost; DISABLED FOR RESTRUCTURING, also I don't get how this even works. Is the spawned spell seriously responsible for deducting the mana?
         }
         Debug.Log($"This client recieved data from the server!\n(data was - setIndex: {setIndex}, spellIndex: {spellIndex}, moduleIndex: {moduleIndex}, behaviorId: {behaviorId}, ownerId: {ownerId}, serverCursorPositionOnCast: {serverCursorPositionOnCast})");
     }
@@ -383,8 +379,8 @@ public class SpellModuleBehavior : NetworkBehaviour
         switch (Module.TargetingType)
         {
             case SpellData.TargetTypes.Opponent:
-                GameObject opponent = OwnerCharacterInfo.OpponentCharacterInfo.CharacterObject;
-                transform.right = opponent.transform.position - transform.position; // Point towards character
+                //GameObject opponent = OwnerCharacterInfo.OpponentCharacterInfo.CharacterObject; DISABLED FOR RESTRUCTURING
+                //transform.right = opponent.transform.position - transform.position; // Point towards character DISABLED FOR RESTRUCTURING
                 break;
             case SpellData.TargetTypes.NotApplicable:
                 //Do nothing

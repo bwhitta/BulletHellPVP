@@ -6,67 +6,66 @@ public class CharacterStats : NetworkBehaviour
 {
     private float remainingInvincibilityTime = 0;
     private bool started = false;
-    private CharacterManager characterPartsManager;
+    [SerializeField] private BarLogic healthBar;
+    [SerializeField] private BarLogic manaBar;
 
     // Health
-    private float? _currentHealth;
+    private float _currentHealth;
     private float CurrentHealth
     {
-        get
-        {
-            _currentHealth ??= GameSettings.Used.MaxHealth;
-            return (float)_currentHealth;
-        }
+        get => _currentHealth;
         set
         {
-            _currentHealth ??= GameSettings.Used.MaxHealth;
 
             if (value > GameSettings.Used.MaxHealth)
             {
                 _currentHealth = GameSettings.Used.MaxHealth;
+            }
+            else if (value <= 0)
+            {
+                _currentHealth = 0;
+                Debug.Log("dead");
+                Destroy(gameObject);
             }
             else
             {
                 _currentHealth = value;
             }
 
-            characterPartsManager.HealthBar.StatValue = value;
-
-            if (value <= 0)
-            {
-                _currentHealth = 0;
-                Debug.Log("dead");
-                Destroy(gameObject);
-            }
+            healthBar.StatValue = _currentHealth;
         }
     }
     private readonly NetworkVariable<float> ServerSideHealth = new();
 
     // Mana
-    private float? _currentMana;
+    private float _currentMana;
     public float CurrentMana
     {
-        get
-        {
-            _currentMana ??= maxMana;
-            return (float)_currentMana;
-        }
+        get => _currentMana;
         set
         {
-            _currentMana ??= maxMana;
-            if (value > maxMana)
-                _currentMana = maxMana;
+            if (value > MaxMana)
+                _currentMana = MaxMana;
             else
                 _currentMana = value;
 
-            characterPartsManager.ManaBar.StatValue = value;
+            manaBar.StatValue = _currentMana;
         }
     }
     private readonly NetworkVariable<float> ServerSideMana = new();
     [HideInInspector] public int ManaAwaitingCountdown = 0;
     [HideInInspector] public float ManaAwaiting;
     private float manaScalingTime;
-    [HideInInspector] public float maxMana;
+    private float _maxMana;
+    public float MaxMana
+    {
+        get => _maxMana;
+        set
+        {
+            _maxMana = value;
+            manaBar.StatMax = _maxMana;
+        }
+    }
 
     // Network
     private byte ticksSinceUpdate;
@@ -74,15 +73,17 @@ public class CharacterStats : NetworkBehaviour
     // Methods
     public void Start()
     {
-        characterPartsManager = GetComponent<CharacterManager>();
+        healthBar.StatMax = GameSettings.Used.MaxHealth;
+        MaxMana = GameSettings.Used.StartingMaxMana;
+        manaBar.StatMax = GameSettings.Used.StartingMaxMana;
 
-        maxMana = GameSettings.Used.StartingMaxMana;
+        CurrentHealth = GameSettings.Used.MaxHealth;
+        CurrentMana = GameSettings.Used.StartingMaxMana;
 
         if (MultiplayerManager.IsOnline && !IsServer) NetworkVariableListeners();
 
         started = true;
 
-        // Local methods
         void NetworkVariableListeners()
         {
             ServerSideHealth.OnValueChanged += ServerHealthUpdate;
@@ -114,12 +115,12 @@ public class CharacterStats : NetworkBehaviour
         ManaRegenTick();
         ManaAwaitingTick();
         if (IsServer) ServerDiscrepancyTick();
-        
+
         void ServerDiscrepancyTick()
         {
             // Discrepancy check ticks
             ticksSinceUpdate++;
-            if(ticksSinceUpdate >= GameSettings.Used.NetworkDiscrepancyCheckFrequency)
+            if (ticksSinceUpdate >= GameSettings.Used.NetworkDiscrepancyCheckFrequency)
             {
                 ServerSideHealth.Value = CurrentHealth;
                 ServerSideMana.Value = CurrentMana;
@@ -139,15 +140,13 @@ public class CharacterStats : NetworkBehaviour
                 if (ManaAwaitingCountdown <= 0)
                 {
                     ManaAwaiting = 0;
-                    Debug.LogWarning("Countdown complete!");
+                    Debug.Log("Countdown complete!");
                 }
             }
         }
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        Debug.Log($"Trigger entered! Collision2D: {collision}"); // temp log
-
         if (gameObject.activeSelf == false)
         {
             Debug.Log($"Self is not active"); // temp log
@@ -157,14 +156,13 @@ public class CharacterStats : NetworkBehaviour
         if (collision.GetComponent<SpellModuleBehavior>() != null)
         {
             SpellModuleBehavior collisionSpellBehavior = collision.GetComponent<SpellModuleBehavior>();
-            Debug.Log($"Spell module is not null: {collision.GetComponent<SpellModuleBehavior>()}");
             if (remainingInvincibilityTime <= 0 && collisionSpellBehavior.Module.AbilityDealsDamage)
             {
                 DamageDealt(collisionSpellBehavior);
             }
         }
 
-
+        // Local Methods
         void DamageDealt(SpellModuleBehavior collisionSpellBehavior)
         {
             remainingInvincibilityTime = GameSettings.Used.InvincibilityTime;
@@ -177,14 +175,14 @@ public class CharacterStats : NetworkBehaviour
     private void ManaScalingTick()
     {
         // Skip scaling if opponent is not connected
-        if (characterPartsManager.OpponentCharacterInfo.CharacterObject == null) return;
-        
+        // if (characterPartsManager.OpponentCharacterInfo.CharacterObject == null) return; DISABLED FOR RESTRUCTURING
+
         // Mana scaling end
         if (manaScalingTime > GameSettings.Used.ManaScalingTime) return;
 
         manaScalingTime += Time.fixedDeltaTime;
         float percentageCompleted = manaScalingTime / GameSettings.Used.ManaScalingTime;
-        maxMana = Calculations.RelativeTo(GameSettings.Used.StartingMaxMana, GameSettings.Used.EndingMaxMana, percentageCompleted);
+        MaxMana = Calculations.RelativeTo(GameSettings.Used.StartingMaxMana, GameSettings.Used.EndingMaxMana, percentageCompleted);
     }
     private void ManaRegenTick()
     {

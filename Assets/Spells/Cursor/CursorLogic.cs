@@ -4,19 +4,20 @@ using UnityEngine.InputSystem;
 
 public class CursorLogic : NetworkBehaviour
 {
+    // maybe rename this sto "CusorControls" or something that more accurately describes it
+
     // Fields
-    [HideInInspector] public float location = 0;
+    [SerializeField] private CharacterManager characterManager;
     private InputAction cursorMovementInput, cursorAccelerationInput;
-    private SpellManager spellManager;
     private bool hasCharacterInfo = false;
+    [HideInInspector] public float location = 0;
 
-    public void CharacterInfoSet()
+    public void Start()
     {
-        spellManager = GetComponent<SpellManager>();
-        tag = spellManager.characterInfo.CharacterAndSortingTag;
-
         // Input stuff
-        InputActionMap controlsMap = ControlsManager.GetActionMap(spellManager.characterInfo.InputMapName);
+        Debug.Log($"characterManager: {characterManager}");
+        Debug.Log($"characterManager.OwnedCharacterInfo: {characterManager.OwnedCharacterInfo}");
+        InputActionMap controlsMap = ControlsManager.GetActionMap(characterManager.OwnedCharacterInfo.InputMapName);
         cursorMovementInput = controlsMap.FindAction(GameSettings.Used.CursorMovementInputName, true);
         cursorAccelerationInput = controlsMap.FindAction(GameSettings.Used.AccelerateCursorInputName, true);
         cursorMovementInput.Enable();
@@ -82,7 +83,7 @@ public class CursorLogic : NetworkBehaviour
     {
         // Turn the side into a rotation
         int sideNumber = GetSideAtPosition(location);
-        transform.SetPositionAndRotation(GetCursorTransform(location, spellManager.characterInfo.OpponentAreaCenter), Quaternion.Euler(0, 0, -90 * (sideNumber)));
+        transform.SetPositionAndRotation(GetCursorTransform(location, characterManager.OwnedCharacterInfo.OpponentAreaCenter), Quaternion.Euler(0, 0, -90 * (sideNumber)));
     }
     public static Vector2 GetCursorTransform(float position, Vector2 opponentAreaCenter)
     {

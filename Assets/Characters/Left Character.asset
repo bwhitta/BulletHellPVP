@@ -12,23 +12,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c9ee4449936a7034ab20aaceaba2ef65, type: 3}
   m_Name: Left Character
   m_EditorClassIdentifier: 
-  OpponentCharacterInfo: {fileID: 11400000, guid: 54331a60389e0df4a9a8faa6f1473c05, type: 2}
-  CharacterAndSortingTag: Left Character
-  MainCanvasTag: MainCanvas
+  SortingLayer: Left Character
   InputMapName: Left Character
   MovementActionName: Movement
   NextBookActionName: NextBook
   CastingActionName: SpellcastingSelection
-  CharacterStartLocation: {x: -4, y: 0}
   AnimatorTreeParameterX: FacingX
   AnimatorTreeParameterY: FacingY
   CurrentBookIndex: 0
   overrideFirstBook: 1
   overrideSetIndexes: 00000100000000
   overrideSpellIndexes: 00010000000000
+  CharacterStartLocation: {x: -4, y: 0}
   OpponentAreaCenter: {x: 4, y: 0.25}
   SpellbookPosition: {x: -470, y: -460}
   SpellbookScale: {x: 7.5, y: 7.5}
   healthBarPos: {x: -430, y: 486}
   manaBarPos: {x: -890, y: 31}
-  _spellbookLogicScript: {fileID: 0}

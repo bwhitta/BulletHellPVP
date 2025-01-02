@@ -4,14 +4,11 @@ using UnityEngine;
 
 public class SpellManager : NetworkBehaviour
 {
-    [HideInInspector] public CharacterManager characterPartsManager;
-    private SpellbookLogic spellbookLogicScript;
-    public readonly NetworkVariable<byte> networkCharacterIndex = new();
+    // Note to self: probably should rename this script, since it's not really an actual manager script
 
-    private void Start()
-    {
-        spellbookLogicScript = characterPartsManager.SpellbookObject.GetComponent<SpellbookLogic>();
-    }
+    [SerializeField] private SpellbookLogic spellbookLogicScript;
+    [SerializeField] private CharacterStats characterStats;
+    [SerializeField] private CharacterManager characterManager; // probably want to remove this and make it so that the id of the current book is stored as part of this object or the spellbook.
 
     public static SpellData GetSpellData(byte setIndex, byte spellIndex)
     {
@@ -30,14 +27,14 @@ public class SpellManager : NetworkBehaviour
     public void AttemptSpell(byte slot)
     {
         // Check slot validity
-        if (GetSpellData(characterInfo.CurrentBook, slot) == null)
+        if (GetSpellData(characterManager.OwnedCharacterInfo.CurrentBook, slot) == null)
         {
             Debug.Log($"No spell in slot {slot}");
             return;
         }
 
         // Gets the spell in the slot
-        SpellData spellData = GetSpellData(characterInfo.CurrentBook, slot);
+        SpellData spellData = GetSpellData(characterManager.OwnedCharacterInfo.CurrentBook, slot);
 
         // Check cooldown and mana
         bool canCastSpell = CooldownAndManaAvailable(spellData, slot, false);
@@ -54,12 +51,12 @@ public class SpellManager : NetworkBehaviour
             for (byte j = 0; j < moduleBehaviors.Length; j++)
             {
                 SpellModuleBehavior behavior = moduleBehaviors[j]; 
-                behavior.setIndex = characterInfo.CurrentBook.SetIndexes[slot];
-                behavior.spellIndex = characterInfo.CurrentBook.SpellIndexes[slot];
-                Debug.Log($"SetIndex: {characterInfo.CurrentBook.SetIndexes[slot]}, SpellIndex: {characterInfo.CurrentBook.SpellIndexes[slot]}");
+                behavior.setIndex = characterManager.OwnedCharacterInfo.CurrentBook.SetIndexes[slot];
+                behavior.spellIndex = characterManager.OwnedCharacterInfo.CurrentBook.SpellIndexes[slot];
+                Debug.Log($"SetIndex: {characterManager.OwnedCharacterInfo.CurrentBook.SetIndexes[slot]}, SpellIndex: {characterManager.OwnedCharacterInfo.CurrentBook.SpellIndexes[slot]}");
                 behavior.moduleIndex = i;
                 behavior.behaviorId = j;
-                behavior.ownerId = (byte)Array.IndexOf(GameSettings.Used.Characters, characterInfo);
+                behavior.ownerId = (byte)Array.IndexOf(GameSettings.Used.Characters, characterManager.OwnedCharacterInfo);
                 
                 if (IsServer)
                 {
@@ -74,12 +71,12 @@ public class SpellManager : NetworkBehaviour
     }
     public bool CooldownAndManaAvailable(SpellData spellData, byte slot, bool modifyOnlyAsClient)
     {
-        if (characterInfo.SpellbookLogicScript.spellCooldowns[slot] > 0)
+        if (spellbookLogicScript.spellCooldowns[slot] > 0)
         {
             Debug.Log("Spell on cooldown.");
             return false;
         }
-        else if (spellData.ManaCost > characterInfo.Stats.CurrentMana)
+        else if (spellData.ManaCost > characterStats.CurrentMana)
         {
             Debug.Log("Not enough mana.");
             return false;
@@ -89,12 +86,12 @@ public class SpellManager : NetworkBehaviour
             if ((modifyOnlyAsClient && IsServer) == false)
             {
                 Debug.Log("Deducting mana!");
-                characterInfo.SpellbookLogicScript.spellCooldowns[slot] = spellData.SpellCooldown;
-                characterInfo.Stats.CurrentMana -= spellData.ManaCost;
+                spellbookLogicScript.spellCooldowns[slot] = spellData.SpellCooldown;
+                characterStats.CurrentMana -= spellData.ManaCost;
                 if (!IsServer)
                 {
-                    characterInfo.Stats.ManaAwaiting += spellData.ManaCost;
-                    characterInfo.Stats.ManaAwaitingCountdown = GameSettings.Used.ManaAwaitingTimeLimit;
+                    characterStats.ManaAwaiting += spellData.ManaCost;
+                    characterStats.ManaAwaitingCountdown = GameSettings.Used.ManaAwaitingTimeLimit;
                 }
             }
             

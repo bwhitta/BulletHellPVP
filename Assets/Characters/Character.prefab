@@ -26,7 +26,7 @@ Transform:
   m_GameObject: {fileID: 2971767380781274567}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: -1}
-  m_LocalScale: {x: 1.0000001, y: 1.0000001, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2971767381870167635}
@@ -186,7 +186,7 @@ GameObject:
   - component: {fileID: 2971767381870167662}
   - component: {fileID: 3570141258642958271}
   m_Layer: 0
-  m_Name: CharacterPrefab
+  m_Name: Character
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -343,7 +343,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2971767381870167636}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d07999ecc3bcfc24283031fe64d8014e, type: 3}
+  m_Script: {fileID: 11500000, guid: c3c63ed0b7e70eb47b05713a4640292c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   cursorPrefab: {fileID: 3066057991869530844, guid: 5d6ea00f1883c2848b44d422e6c1dabf, type: 3}
@@ -356,6 +356,7 @@ MonoBehaviour:
   CharacterIndex: 0
   OwnedCharacterInfo: {fileID: 0}
   OpponentCharacterInfo: {fileID: 0}
+  CharacterObject: {fileID: 0}
 --- !u!1 &2971767382177758301
 GameObject:
   m_ObjectHideFlags: 0
