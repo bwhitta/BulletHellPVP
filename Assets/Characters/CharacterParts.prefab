@@ -406,7 +406,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4702213150140224698}
   - component: {fileID: 2581057075624382118}
-  - component: {fileID: 2581057075624382113}
   m_Layer: 0
   m_Name: Spellbook
   m_TagString: Untagged
@@ -460,22 +459,6 @@ MonoBehaviour:
   characterManager: {fileID: 5324122265146412018}
   spellCooldowns: []
   spellManager: {fileID: 7623185581945276686}
---- !u!114 &2581057075624382113
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2581057075624382116}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 951099334
-  AlwaysReplicateAsRoot: 0
-  DontDestroyWithOwner: 0
-  AutoObjectParentSync: 0
 --- !u!1 &5860716669837191705
 GameObject:
   m_ObjectHideFlags: 0
@@ -623,6 +606,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   healthBar: {fileID: 7124641555871300263}
   manaBar: {fileID: 1483302033742889200}
+  characterManager: {fileID: 0}
   ManaAwaitingCountdown: 0
   ManaAwaiting: 0
 --- !u!114 &5324122265146412018
@@ -990,7 +974,6 @@ GameObject:
   - component: {fileID: 7623185581945276687}
   - component: {fileID: 7623185581945276686}
   - component: {fileID: 7623185581945276681}
-  - component: {fileID: 7623185581945276680}
   m_Layer: 0
   m_Name: Cursor
   m_TagString: Untagged
@@ -1043,22 +1026,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   characterManager: {fileID: 5324122265146412018}
   location: 0
---- !u!114 &7623185581945276680
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7623185581945276684}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 951099334
-  AlwaysReplicateAsRoot: 0
-  DontDestroyWithOwner: 0
-  AutoObjectParentSync: 1
 --- !u!1 &8676365494037463687
 GameObject:
   m_ObjectHideFlags: 0

@@ -38,8 +38,8 @@ public class CharacterControls : NetworkBehaviour
         // Local Methods
         void EnableMovement()
         {
-            InputActionMap controllingMap = ControlsManager.GetActionMap(characterManager.OwnedCharacterInfo.InputMapName);
-            movementAction = controllingMap.FindAction(characterManager.OwnedCharacterInfo.MovementActionName, true);
+            InputActionMap controlsMap = ControlsManager.GetActionMap(characterManager.OwnedCharacterInfo.InputMapName);
+            movementAction = controlsMap.FindAction(characterManager.OwnedCharacterInfo.MovementActionName, true);
             movementAction.Enable();
         }
     }

@@ -1,13 +1,12 @@
-using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
 public class CharacterStats : NetworkBehaviour
 {
     private float remainingInvincibilityTime = 0;
-    private bool started = false;
     [SerializeField] private BarLogic healthBar;
     [SerializeField] private BarLogic manaBar;
+    [SerializeField] private CharacterManager characterManager;
 
     // Health
     private float _currentHealth;
@@ -69,7 +68,7 @@ public class CharacterStats : NetworkBehaviour
 
     // Network
     private byte ticksSinceUpdate;
-
+    
     // Methods
     public void Start()
     {
@@ -79,16 +78,16 @@ public class CharacterStats : NetworkBehaviour
 
         CurrentHealth = GameSettings.Used.MaxHealth;
         CurrentMana = GameSettings.Used.StartingMaxMana;
-
-        if (MultiplayerManager.IsOnline && !IsServer) NetworkVariableListeners();
-
-        started = true;
-
-        void NetworkVariableListeners()
+        
+        if (MultiplayerManager.IsOnline)
         {
-            ServerSideHealth.OnValueChanged += ServerHealthUpdate;
-            ServerSideMana.OnValueChanged += ServerManaUpdate;
+            if (!IsServer)
+            {
+                ServerSideHealth.OnValueChanged += ServerHealthUpdate;
+                ServerSideMana.OnValueChanged += ServerManaUpdate;
+            }
         }
+
         void ServerHealthUpdate(float oldValue, float newValue)
         {
             CurrentHealth = Calculations.DiscrepancyCheck(CurrentHealth, newValue, GameSettings.Used.NetworkStatBarDiscrepancyLimit);
@@ -108,7 +107,7 @@ public class CharacterStats : NetworkBehaviour
     }
     private void FixedUpdate()
     {
-        if (!started) return;
+        if (!MultiplayerManager.GameStarted) return;
 
         if (remainingInvincibilityTime > 0) InvincibilityTick();
         ManaScalingTick();
@@ -174,8 +173,8 @@ public class CharacterStats : NetworkBehaviour
     }
     private void ManaScalingTick()
     {
-        // Skip scaling if opponent is not connected
-        // if (characterPartsManager.OpponentCharacterInfo.CharacterObject == null) return; DISABLED FOR RESTRUCTURING
+        // Don't start scaling mana until both players have joined
+        if (!MultiplayerManager.GameStarted) return;
 
         // Mana scaling end
         if (manaScalingTime > GameSettings.Used.ManaScalingTime) return;

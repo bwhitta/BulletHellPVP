@@ -3,10 +3,12 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Character Information")]
 public class CharacterInfo : ScriptableObject
 {
+    // THERE PROBABLY SHOULDN'T BE ANY FIELDS IN THIS SCRIPT THAT ARE MODIFIED AT RUNTIME
+
     [Space(25)] // Sorting layer
     public string SortingLayer;
 
-    [Space(25)] // Controls
+    [Space(25)] // Controls (MAYBE SPLIT OFF)
     public string InputMapName;
     public string MovementActionName;
     public string NextBookActionName;
@@ -16,7 +18,7 @@ public class CharacterInfo : ScriptableObject
     public string AnimatorTreeParameterX;
     public string AnimatorTreeParameterY;
 
-    [Space(25)] // Equipped Spells
+    [Space(25)] // Equipped Spells (SPLIT OFF MOST OF THIS)
     public byte CurrentBookIndex; // PROBABLY SHOULDN'T BE PART OF CHARACTERINFO
     [SerializeField] private bool overrideFirstBook;
     [SerializeField] private byte[] overrideSetIndexes, overrideSpellIndexes;

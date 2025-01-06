@@ -40,7 +40,10 @@ public class SpellbookLogic : NetworkBehaviour
             }
         }
 
-        SetupGameObject();
+        // Set position
+        RectTransform rectTransform = GetComponent<RectTransform>();
+        rectTransform.localPosition = characterManager.OwnedCharacterInfo.SpellbookPosition;
+
         EnableControls();
         SetupCooldownUi();
         UpdateUi();
@@ -52,12 +55,6 @@ public class SpellbookLogic : NetworkBehaviour
             characterManager.OwnedCharacterInfo.CurrentBookIndex = newValue;
 
             UpdateUi();
-        }
-        void SetupGameObject()
-        {
-            // Set position
-            RectTransform rectTransform = GetComponent<RectTransform>();
-            rectTransform.localPosition = characterManager.OwnedCharacterInfo.SpellbookPosition;
         }
         void SetupCooldownUi()
         {
@@ -71,6 +68,23 @@ public class SpellbookLogic : NetworkBehaviour
                 SetCooldownUI(i, 0);
             }
         }
+        void EnableControls()
+        {
+            InputActionMap controlsMap;
+            InputAction castingAction;
+            InputAction nextBookAction;
+
+            // Find the controls
+            controlsMap = ControlsManager.GetActionMap(characterManager.OwnedCharacterInfo.InputMapName);
+            castingAction = controlsMap.FindAction(characterManager.OwnedCharacterInfo.CastingActionName, true);
+            nextBookAction = controlsMap.FindAction(characterManager.OwnedCharacterInfo.NextBookActionName, true);
+
+            // Enable controls
+            castingAction.Enable();
+            castingAction.performed += context => CastingInputPerformed((byte)(castingAction.ReadValue<float>() - 1f));
+            nextBookAction.Enable();
+            nextBookAction.performed += context => NextBookInputPerformed();
+        }
     }
     private void FixedUpdate()
     {
@@ -78,6 +92,7 @@ public class SpellbookLogic : NetworkBehaviour
         {
             ServerDiscrepancyTick();
         }
+        CooldownTick();
 
         void ServerDiscrepancyTick()
         {
@@ -90,25 +105,36 @@ public class SpellbookLogic : NetworkBehaviour
             }
         }
     }
-
-    // Enabling spell controls
-    private InputActionMap controlsMap;
-    private InputAction castingAction;
-    private InputAction nextBookAction;
-    private void EnableControls()
+    private void CooldownTick()
     {
-        // Find the controls
-        controlsMap ??= ControlsManager.GetActionMap(characterManager.OwnedCharacterInfo.InputMapName);
-        castingAction ??= controlsMap.FindAction(characterManager.OwnedCharacterInfo.CastingActionName, true);
-        nextBookAction ??= controlsMap.FindAction(characterManager.OwnedCharacterInfo.NextBookActionName, true);
-
-        // Enable controls
-        castingAction.Enable();
-        castingAction.performed += context => CastingInputPerformed((byte)(castingAction.ReadValue<float>() - 1f));
-        nextBookAction.Enable();
-        nextBookAction.performed += context => NextBookInputPerformed();
+        // Set up cooldowns if data is invalid
+        if (spellCooldowns == null || spellCooldowns.Length != GameSettings.Used.TotalSpellSlots)
+        {
+            spellCooldowns = new float[GameSettings.Used.TotalSpellSlots];
+        }
+        
+        // Reduce time on each cooldown
+        for (int i = 0; i < spellCooldowns.Length; i++)
+        {
+            if (spellCooldowns[i] > 0)
+            {
+                spellCooldowns[i] -= Time.fixedDeltaTime;
+                SetCooldownUI(i, spellCooldowns[i] / SpellDataFromSlot((byte)i).SpellCooldown);
+            }
+            if (spellCooldowns[i] < 0)
+            {
+                spellCooldowns[i] = 0;
+            }
+        }
     }
+    private void SetCooldownUI(int index, float percentFilled)
+    {
+        // Gets the top bar GameObject
+        GameObject bottomBar = spellDisplays[index].transform.GetChild(0).gameObject;
+        GameObject topBar = bottomBar.transform.GetChild(0).gameObject;
 
+        topBar.GetComponent<Image>().fillAmount = percentFilled;
+    }
     private void UpdateUi()
     {
         // Update text
@@ -151,15 +177,6 @@ public class SpellbookLogic : NetworkBehaviour
         }
         UpdateUi();
     }
-
-    [ServerRpc]
-    private void NextBookInputServerRpc()
-    {
-        Debug.Log($"serverrpc resolution");
-        NextBook();
-        UpdateUi();
-    }
-    
     private void NextBook()
     {
         if (GameSettings.Used.CanLoopBooks)
@@ -168,19 +185,27 @@ public class SpellbookLogic : NetworkBehaviour
         }
         else
         {
-            characterManager.OwnedCharacterInfo.CurrentBookIndex = (byte) Mathf.Min(characterManager.OwnedCharacterInfo.CurrentBookIndex + 1, GameSettings.Used.TotalBooks-1);
+            characterManager.OwnedCharacterInfo.CurrentBookIndex = (byte)Mathf.Min(characterManager.OwnedCharacterInfo.CurrentBookIndex + 1, GameSettings.Used.TotalBooks - 1);
         }
+    }
+    [ServerRpc]
+    private void NextBookInputServerRpc()
+    {
+        Debug.Log($"serverrpc resolution");
+        NextBook();
+        UpdateUi();
     }
     
     private void CastingInputPerformed(byte spellbookSlotIndex)
     {
-        if (gameObject.activeSelf == false)
-        {
-            Debug.Log($"Casting cancelled, spellbook disabled.");
-            return;
-        }
         if (MultiplayerManager.IsOnline)
         {
+            if (!IsOwner)
+            {
+                Debug.Log($"Can't cast spells, not owner.");
+                return;
+            }
+
             // potentially first check max mana here, and then deduct mana from here for the client-side if the player isn't the host
             SpellData spellData = SpellManager.GetSpellData(characterManager.OwnedCharacterInfo.CurrentBook, spellbookSlotIndex);
             bool canCastSpell = spellManager.CooldownAndManaAvailable(spellData, spellbookSlotIndex, true);
@@ -198,45 +223,5 @@ public class SpellbookLogic : NetworkBehaviour
         {
             spellManager.AttemptSpell(spellbookSlotIndex);
         }
-    }
-
-    private void Update()
-    {
-        UpdateCooldown();
-    }
-    private void UpdateCooldown()
-    {
-        // Set up cooldowns if data is invalid
-        if (spellCooldowns == null || spellCooldowns.Length != GameSettings.Used.TotalSpellSlots)
-        {
-            spellCooldowns = new float[GameSettings.Used.TotalSpellSlots];
-        }
-
-        // Loop through cooldowns and serverTick down by time.deltatime
-        if (spellCooldowns == new float[GameSettings.Used.TotalSpellSlots])
-        {
-            Debug.Log("skipping cooldown, all zero");
-            return;
-        }
-        for (int i = 0; i < spellCooldowns.Length; i++)
-        {
-            if (spellCooldowns[i] > 0)
-            {
-                spellCooldowns[i] -= Time.deltaTime;
-                SetCooldownUI(i, spellCooldowns[i] / SpellDataFromSlot((byte)i).SpellCooldown);
-            }
-            if (spellCooldowns[i] < 0)
-            {
-                spellCooldowns[i] = 0;
-            }
-        }
-    }
-    private void SetCooldownUI(int index, float percentFilled)
-    {
-        // Gets the top bar GameObject
-        GameObject bottomBar = spellDisplays[index].transform.GetChild(0).gameObject;
-        GameObject topBar = bottomBar.transform.GetChild(0).gameObject;
-
-        topBar.GetComponent<Image>().fillAmount = percentFilled;
     }
 }

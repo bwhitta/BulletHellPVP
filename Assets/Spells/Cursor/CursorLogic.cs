@@ -15,8 +15,6 @@ public class CursorLogic : NetworkBehaviour
     public void Start()
     {
         // Input stuff
-        Debug.Log($"characterManager: {characterManager}");
-        Debug.Log($"characterManager.OwnedCharacterInfo: {characterManager.OwnedCharacterInfo}");
         InputActionMap controlsMap = ControlsManager.GetActionMap(characterManager.OwnedCharacterInfo.InputMapName);
         cursorMovementInput = controlsMap.FindAction(GameSettings.Used.CursorMovementInputName, true);
         cursorAccelerationInput = controlsMap.FindAction(GameSettings.Used.AccelerateCursorInputName, true);

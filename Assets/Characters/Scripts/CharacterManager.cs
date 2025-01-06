@@ -10,27 +10,23 @@ public class CharacterManager : NetworkBehaviour
     [SerializeField] private GameObject healthBar;
     [SerializeField] private GameObject manaBar;
 
-    [HideInInspector] public byte CharacterIndex;
+    private byte CharacterIndex;
     [HideInInspector] public CharacterInfo OwnedCharacterInfo;
     [HideInInspector] public CharacterInfo OpponentCharacterInfo;
     [HideInInspector] public GameObject CharacterObject;
 
     // Methods
+    public override void OnNetworkSpawn()
+    {
+        SetCharacterInfo((byte)OwnerClientId);
+        if (!IsOwnedByServer)
+        {
+            MultiplayerManager.NonHostClientJoined = true;
+        }
+    }
     private void Start()
     {
-        if (MultiplayerManager.IsOnline)
-        {
-            if ((IsHost && IsOwner) || (!IsHost && !IsOwner))
-            {
-                SetCharacterInfo(0);
-            }
-            else
-            {
-                SetCharacterInfo(1);
-            }
-        }
-
-        name = OwnedCharacterInfo.name;
+        transform.parent.name = OwnedCharacterInfo.name;
 
         // Move health and mana bars to the right position
         healthBar.GetComponent<RectTransform>().localPosition = OwnedCharacterInfo.healthBarPos;
@@ -38,6 +34,8 @@ public class CharacterManager : NetworkBehaviour
     }
     public void SetCharacterInfo(byte index)
     {
+        Debug.Log($"char index {index} deleteme");
+
         CharacterIndex = index;
 
         OwnedCharacterInfo = GameSettings.Used.Characters[CharacterIndex];

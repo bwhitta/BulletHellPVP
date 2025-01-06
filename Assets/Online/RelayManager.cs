@@ -8,7 +8,7 @@ public class RelayManager : MonoBehaviour
     // Fields
     [SerializeField] private byte maxPlayers;
 
-    public static RelayManager Instance {  get; private set; }
+    public static RelayManager Instance { get; private set; }
     public static Allocation allocation;
     public static JoinAllocation joinAllocation;
     public static bool IsHost;
@@ -52,6 +52,9 @@ public class RelayManager : MonoBehaviour
             joinAllocation = await RelayService.Instance.JoinAllocationAsync(joinCode);
 
             IsHost = false;
+
+            Debug.Log($"relay joined, not host,, delete me later");
+
             return joinAllocation;
         }
         catch (RelayServiceException e)

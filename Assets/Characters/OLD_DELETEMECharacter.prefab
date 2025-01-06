@@ -186,7 +186,7 @@ GameObject:
   - component: {fileID: 2971767381870167662}
   - component: {fileID: 3570141258642958271}
   m_Layer: 0
-  m_Name: Character
+  m_Name: OLD_DELETEMECharacter
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

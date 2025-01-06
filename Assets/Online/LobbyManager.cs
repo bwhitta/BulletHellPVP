@@ -147,7 +147,8 @@ public class LobbyManager : MonoBehaviour
                 }
 
                 joinedLobby = null;
-            }        }
+            }
+        }
         if (changes.Data.Added || changes.Data.Removed) Debug.LogWarning($"Lobby changed: Data added or removed");
     }
     
