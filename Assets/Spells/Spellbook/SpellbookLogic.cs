@@ -7,26 +7,17 @@ public class SpellbookLogic : NetworkBehaviour
 {
     // Fields
     [SerializeField] private Image[] spellDisplays;
-    [SerializeField] private GameObject bookNumberTextObject;
+    [SerializeField] private Text bookNumber;
     [SerializeField] private CharacterManager characterManager;
 
+    [HideInInspector] public float[] spellCooldowns;
+    
+    private byte CurrentBookIndex;
+    public Spellbook CurrentBook => characterManager.OwnerInfo.EquippedBooks[CurrentBookIndex];
     private int ticksSinceDiscrepancyCheck;
     private readonly NetworkVariable<byte> ServerBookIndex = new();
-    
-    // Properties
-    private Text _bookNumberText;
-    private Text BookNumberText
-    {
-        get
-        {
-            _bookNumberText = _bookNumberText != null ? _bookNumberText : bookNumberTextObject.GetComponent<Text>();
-            return _bookNumberText;
-        }
-    }
 
-    [HideInInspector] public float[] spellCooldowns;
-    [SerializeField] private SpellManager spellManager;
-
+    // Methods
     private void Start()
     {
         Debug.Log($"Note to self: tracking the current book and stuff should probably be done outside of CharacterInfo, and then this probably doesn't need to access characterManager nearly as much. " +
@@ -42,7 +33,7 @@ public class SpellbookLogic : NetworkBehaviour
 
         // Set position
         RectTransform rectTransform = GetComponent<RectTransform>();
-        rectTransform.localPosition = characterManager.OwnedCharacterInfo.SpellbookPosition;
+        rectTransform.localPosition = characterManager.OwnerInfo.SpellbookPosition;
 
         EnableControls();
         SetupCooldownUi();
@@ -52,7 +43,7 @@ public class SpellbookLogic : NetworkBehaviour
         void BookIndexUpdated(byte oldValue, byte newValue)
         {
             Debug.Log($"Book index updated to {newValue}");
-            characterManager.OwnedCharacterInfo.CurrentBookIndex = newValue;
+            CurrentBookIndex = newValue;
 
             UpdateUi();
         }
@@ -63,7 +54,7 @@ public class SpellbookLogic : NetworkBehaviour
                 Debug.LogError("Used Game Settings is null. Did you forget a reference in the Character Info?");
                 return;
             }
-            for (int i = 0; i < GameSettings.Used.TotalSpellSlots; i++)
+            for (int i = 0; i < GameSettings.Used.SpellSlots; i++)
             {
                 SetCooldownUI(i, 0);
             }
@@ -71,17 +62,12 @@ public class SpellbookLogic : NetworkBehaviour
         void EnableControls()
         {
             InputActionMap controlsMap;
-            InputAction castingAction;
             InputAction nextBookAction;
 
-            // Find the controls
-            controlsMap = ControlsManager.GetActionMap(characterManager.OwnedCharacterInfo.InputMapName);
-            castingAction = controlsMap.FindAction(characterManager.OwnedCharacterInfo.CastingActionName, true);
-            nextBookAction = controlsMap.FindAction(characterManager.OwnedCharacterInfo.NextBookActionName, true);
+            controlsMap = ControlsManager.GetActionMap(characterManager.OwnerInfo.InputMapName);
+            nextBookAction = controlsMap.FindAction(characterManager.OwnerInfo.NextBookActionName, true);
 
             // Enable controls
-            castingAction.Enable();
-            castingAction.performed += context => CastingInputPerformed((byte)(castingAction.ReadValue<float>() - 1f));
             nextBookAction.Enable();
             nextBookAction.performed += context => NextBookInputPerformed();
         }
@@ -99,7 +85,7 @@ public class SpellbookLogic : NetworkBehaviour
             ticksSinceDiscrepancyCheck++;
             if (ticksSinceDiscrepancyCheck >= GameSettings.Used.NetworkDiscrepancyCheckFrequency)
             {
-                ServerBookIndex.Value = characterManager.OwnedCharacterInfo.CurrentBookIndex;
+                ServerBookIndex.Value = CurrentBookIndex;
 
                 ticksSinceDiscrepancyCheck = 0;
             }
@@ -108,9 +94,9 @@ public class SpellbookLogic : NetworkBehaviour
     private void CooldownTick()
     {
         // Set up cooldowns if data is invalid
-        if (spellCooldowns == null || spellCooldowns.Length != GameSettings.Used.TotalSpellSlots)
+        if (spellCooldowns == null || spellCooldowns.Length != GameSettings.Used.SpellSlots)
         {
-            spellCooldowns = new float[GameSettings.Used.TotalSpellSlots];
+            spellCooldowns = new float[GameSettings.Used.SpellSlots];
         }
         
         // Reduce time on each cooldown
@@ -137,15 +123,17 @@ public class SpellbookLogic : NetworkBehaviour
     }
     private void UpdateUi()
     {
-        // Update text
-        BookNumberText.text = (characterManager.OwnedCharacterInfo.CurrentBookIndex + 1).ToString();
+        if (bookNumber == null) Debug.LogWarning($"forgot to set reference after restructuring everything!!! deleteme.");
 
-        characterManager.OwnedCharacterInfo.CreateBooks();
+        // Update text
+        bookNumber.text = (CurrentBookIndex + 1).ToString();
+
+        characterManager.OwnerInfo.EquippedBooks = Spellbook.CreateBooks(GameSettings.Used.SpellSlots);
 
         // Loop through and update each sprite using the data from 
         for (int i = 0; i < spellDisplays.Length; i++)
         {
-            if (characterManager.OwnedCharacterInfo.CurrentBook == null)
+            if (CurrentBook == null)
             {
                 spellDisplays[i].gameObject.SetActive(false);
                 continue;
@@ -154,11 +142,11 @@ public class SpellbookLogic : NetworkBehaviour
             spellDisplays[i].sprite = SpellDataFromSlot((byte)i).Icon;
         }
     }
-
+    
     private SpellData SpellDataFromSlot(byte slotIndex)
     {
-        byte setIndex = characterManager.OwnedCharacterInfo.CurrentBook.SetIndexes[slotIndex];
-        byte spellIndex = characterManager.OwnedCharacterInfo.CurrentBook.SpellIndexes[slotIndex];
+        byte setIndex = CurrentBook.SetIndexes[slotIndex];
+        byte spellIndex = CurrentBook.SpellIndexes[slotIndex];
 
         SpellSetInfo setInfo = GameSettings.Used.SpellSets[setIndex];
         SpellData spell = setInfo.spellsInSet[spellIndex];
@@ -181,11 +169,11 @@ public class SpellbookLogic : NetworkBehaviour
     {
         if (GameSettings.Used.CanLoopBooks)
         {
-            characterManager.OwnedCharacterInfo.CurrentBookIndex = (byte)((characterManager.OwnedCharacterInfo.CurrentBookIndex + 1) % GameSettings.Used.TotalBooks);
+            CurrentBookIndex = (byte)((CurrentBookIndex + 1) % GameSettings.Used.TotalBooks);
         }
         else
         {
-            characterManager.OwnedCharacterInfo.CurrentBookIndex = (byte)Mathf.Min(characterManager.OwnedCharacterInfo.CurrentBookIndex + 1, GameSettings.Used.TotalBooks - 1);
+            CurrentBookIndex = (byte)Mathf.Min(CurrentBookIndex + 1, GameSettings.Used.TotalBooks - 1);
         }
     }
     [ServerRpc]
@@ -196,32 +184,4 @@ public class SpellbookLogic : NetworkBehaviour
         UpdateUi();
     }
     
-    private void CastingInputPerformed(byte spellbookSlotIndex)
-    {
-        if (MultiplayerManager.IsOnline)
-        {
-            if (!IsOwner)
-            {
-                Debug.Log($"Can't cast spells, not owner.");
-                return;
-            }
-
-            // potentially first check max mana here, and then deduct mana from here for the client-side if the player isn't the host
-            SpellData spellData = SpellManager.GetSpellData(characterManager.OwnedCharacterInfo.CurrentBook, spellbookSlotIndex);
-            bool canCastSpell = spellManager.CooldownAndManaAvailable(spellData, spellbookSlotIndex, true);
-
-            if (canCastSpell)
-            {
-                spellManager.AttemptSpellServerRpc(spellbookSlotIndex);
-            }
-            else
-            {
-                Debug.Log("Skipped casting spell - there is not enough mana or the spell is on cooldown.");
-            }
-        }
-        else
-        {
-            spellManager.AttemptSpell(spellbookSlotIndex);
-        }
-    }
 }

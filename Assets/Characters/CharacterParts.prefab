@@ -606,7 +606,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   healthBar: {fileID: 7124641555871300263}
   manaBar: {fileID: 1483302033742889200}
-  characterManager: {fileID: 0}
   ManaAwaitingCountdown: 0
   ManaAwaiting: 0
 --- !u!114 &5324122265146412018
@@ -623,7 +622,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   healthBar: {fileID: 7124641555871300265}
   manaBar: {fileID: 1483302033742889214}
-  CharacterIndex: 0
   OwnedCharacterInfo: {fileID: 0}
   OpponentCharacterInfo: {fileID: 0}
   CharacterObject: {fileID: 0}
@@ -1012,6 +1010,7 @@ MonoBehaviour:
   spellbookLogicScript: {fileID: 2581057075624382118}
   characterStats: {fileID: 5860716669837191715}
   characterManager: {fileID: 5324122265146412018}
+  modulePrefab: {fileID: 1062348163457161292, guid: a12a2eac476853e4184718ce4ef910dc, type: 3}
 --- !u!114 &7623185581945276681
 MonoBehaviour:
   m_ObjectHideFlags: 0

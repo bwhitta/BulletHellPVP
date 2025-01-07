@@ -52,14 +52,13 @@ public class SpellModuleBehavior : NetworkBehaviour
     }
 
     // Information for online sync
-    public float cursorPositionOnCast;
+    public float cursorLocationOnCast;
 
     // Readonlys
     private readonly float outOfBoundsDistance = 15f;
-
-    private CursorLogic cursorLogic;
     #endregion
     
+    // Methods
     private void Start()
     {
         // Error logging
@@ -72,14 +71,14 @@ public class SpellModuleBehavior : NetworkBehaviour
         if (!MultiplayerManager.IsOnline || IsServer)
         {
             // probably should rework this anyways so that it only tracks the cursor's position on cast if it matters (if it tracks it at all)
-            //cursorPositionOnCast = OwnerCharacterInfo.CursorLogicScript.location;
+            //cursorPositionOnCast = OwnerCharacterInfo.CursorLogicScript.location; // DISABLED FOR RESTRUCTURING
         }
         
         // Send data to client
         if (IsServer)
         {
             Debug.Log($"Sending module data to clients");
-            ModuleDataClientRpc(setIndex, spellIndex, moduleIndex, behaviorId, ownerId, cursorPositionOnCast);
+            ModuleDataClientRpc(setIndex, spellIndex, moduleIndex, behaviorId, ownerId, cursorLocationOnCast);
         }
         
         // Set variables
@@ -147,23 +146,23 @@ public class SpellModuleBehavior : NetworkBehaviour
             switch (Module.ProjectileSpawningArea)
             {
                 case SpellData.SpawningAreas.Point:
-                    transform.position = CursorLogic.GetCursorTransform(cursorPositionOnCast, OwnerCharacterInfo.OpponentAreaCenter);
+                    // transform.position = CursorMovement.CalculateCursorTransform(cursorPositionOnCast, OwnerCharacterInfo.OpponentAreaCenter); 
                     break;
                 case SpellData.SpawningAreas.AdjacentCorners:
                     // Turns the float position of the cursor into a rotation.
-                    int side = CursorLogic.GetSideAtPosition(cursorPositionOnCast);
+                    int side = CursorMovement.SquareSideAtPosition(GameSettings.Used.BattleSquareWidth, cursorLocationOnCast);
                     Quaternion cursorAngleOnCast = Quaternion.Euler(0, 0, (-90 * side) - 90); // no clue why I use -90 and not 90 here, but that's what I did for other parts of the code so I won't question it.                    
                     // Sets the position and rotation
-                    transform.SetPositionAndRotation(AdjacentCornersPos(), cursorAngleOnCast);
+                    // transform.SetPositionAndRotation(AdjacentCornersPos(), cursorAngleOnCast);  DISABLED FOR RESTRUCTURING
                     break;
                 default:
                     Debug.LogWarning("Not yet implemented spawning area!");
                     break;
             }
             
-            Vector2 AdjacentCornersPos(/*potentially add some sort of float as input here?*/)
+            /*Vector2 AdjacentCornersPos()
             {
-                int side = CursorLogic.GetSideAtPosition(cursorPositionOnCast);
+                int side = CursorMovement.SquareSideAtPosition(GameSettings.Used.BattleSquareWidth, cursorLocationOnCast);
                 Vector2[] corners = Calculations.GetSquareCorners(GameSettings.Used.BattleSquareWidth, OwnerCharacterInfo.OpponentAreaCenter);
 
                 // Points to instantiate at
@@ -173,7 +172,7 @@ public class SpellModuleBehavior : NetworkBehaviour
                         corners[(side + 1) % 4]
                 };
                 return spawnPoints[behaviorId];
-            }
+            } */ // DISABLED FOR RESTRUCTURING
         }
         void SetScale()
         {
@@ -269,28 +268,6 @@ public class SpellModuleBehavior : NetworkBehaviour
             characterControls.tempMovementMods.Add(tempPlayerMovementMod);
         }
     }
-
-    [ClientRpc]
-    private void ModuleDataClientRpc(byte serverSetIndex, byte serverSpellIndex, byte serverModuleIndex, byte serverBehaviorId, byte serverOwnerId, float serverCursorPositionOnCast)
-    {
-        if (IsHost)
-        {
-            return;
-        }
-        setIndex = serverSetIndex;
-        spellIndex = serverSpellIndex;
-        moduleIndex = serverModuleIndex;
-        behaviorId = serverBehaviorId;
-        ownerId = serverOwnerId;
-        cursorPositionOnCast = serverCursorPositionOnCast;
-        // Only deduct Mana Awaiting if this is the first SpellModuleBehavior
-        if (behaviorId == 0)
-        {
-            // OwnerCharacterInfo.Stats.ManaAwaiting -= ModuleSpellData.ManaCost; DISABLED FOR RESTRUCTURING, also I don't get how this even works. Is the spawned spell seriously responsible for deducting the mana?
-        }
-        Debug.Log($"This client recieved data from the server!\n(data was - setIndex: {setIndex}, spellIndex: {spellIndex}, moduleIndex: {moduleIndex}, behaviorId: {behaviorId}, ownerId: {ownerId}, serverCursorPositionOnCast: {serverCursorPositionOnCast})");
-    }
-
     private void FixedUpdate()
     {
         if (IsServer) ServerPositionTick();
@@ -316,6 +293,7 @@ public class SpellModuleBehavior : NetworkBehaviour
             }
         }
     }
+
     private void PlayerAttachedTick()
     {
         // Attatchment Time
@@ -451,7 +429,7 @@ public class SpellModuleBehavior : NetworkBehaviour
     
     private void DestroySelfNetworkSafe()
     {
-        if (MultiplayerManager.IsOnline == false)
+        if (!MultiplayerManager.IsOnline)
         {
             Debug.Log($"Destroying {gameObject.name}.");
             Destroy(gameObject);
@@ -461,10 +439,31 @@ public class SpellModuleBehavior : NetworkBehaviour
             Debug.Log($"Destroying {gameObject.name} as online server.");
             NetworkObject.Despawn(gameObject);
         }
-        else if (IsClient)
+        else
         {
             Debug.Log($"Disabling {gameObject.name} until it is destroyed by server.");
             gameObject.SetActive(false);
         }
+    }
+
+    [ClientRpc]
+    private void ModuleDataClientRpc(byte serverSetIndex, byte serverSpellIndex, byte serverModuleIndex, byte serverBehaviorId, byte serverOwnerId, float serverCursorPositionOnCast)
+    {
+        if (IsHost)
+        {
+            return;
+        }
+        setIndex = serverSetIndex;
+        spellIndex = serverSpellIndex;
+        moduleIndex = serverModuleIndex;
+        behaviorId = serverBehaviorId;
+        ownerId = serverOwnerId;
+        cursorLocationOnCast = serverCursorPositionOnCast;
+        // Only deduct Mana Awaiting if this is the first SpellModuleBehavior
+        if (behaviorId == 0)
+        {
+            // OwnerCharacterInfo.Stats.ManaAwaiting -= ModuleSpellData.ManaCost; DISABLED FOR RESTRUCTURING, also I don't get how this even works. Is the spawned spell seriously responsible for deducting the mana?
+        }
+        Debug.Log($"This client recieved data from the server!\n(data was - setIndex: {setIndex}, spellIndex: {spellIndex}, moduleIndex: {moduleIndex}, behaviorId: {behaviorId}, ownerId: {ownerId}, serverCursorPositionOnCast: {serverCursorPositionOnCast})");
     }
 }

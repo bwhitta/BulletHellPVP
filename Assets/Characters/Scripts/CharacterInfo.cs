@@ -18,56 +18,17 @@ public class CharacterInfo : ScriptableObject
     public string AnimatorTreeParameterX;
     public string AnimatorTreeParameterY;
 
-    [Space(25)] // Equipped Spells (SPLIT OFF MOST OF THIS)
-    public byte CurrentBookIndex; // PROBABLY SHOULDN'T BE PART OF CHARACTERINFO
-    [SerializeField] private bool overrideFirstBook;
-    [SerializeField] private byte[] overrideSetIndexes, overrideSpellIndexes;
+    [Space(25)] // Spellbook
+    /*[SerializeField] private bool overrideFirstBook;
+    [SerializeField] private byte[] overrideSetIndexes, overrideSpellIndexes;*/ // DISABLED FOR RESTRUCTURING
     public Spellbook[] EquippedBooks;
-    public Spellbook CurrentBook => EquippedBooks[CurrentBookIndex];
-    public class Spellbook
-    {
-        public byte[] SetIndexes;
-        public byte[] SpellIndexes;
-    }
 
     [Space(25)] // Movement
     public Vector2 CharacterStartLocation;
 
     [Space(25)] // Positioning
-    public Vector2 OpponentAreaCenter;
+    public Vector2 BattleAreaCenter;
     public Vector2 SpellbookPosition;
-
-    [Space(25)] // Stat bars
-    public Vector2 healthBarPos;
-    public Vector2 manaBarPos;
-
-    // honestly having this in CharacterInfo is a bit of a stretch
-    public void CreateBooks()
-    {
-        if (EquippedBooks != null)
-        {
-            return;
-        }
-
-        // Debug.Log($"Equipped books found null, creating new spellbooks");
-        EquippedBooks = new Spellbook[GameSettings.Used.TotalBooks];
-        
-        for (int i = 0; i < EquippedBooks.Length; i++)
-        {
-            if(i == 0 && overrideFirstBook)
-            {
-                EquippedBooks[i] = new()
-                {
-                    SetIndexes = overrideSetIndexes,
-                    SpellIndexes = overrideSpellIndexes
-                };
-                continue;
-            }
-            EquippedBooks[i] = new()
-            {
-                SetIndexes = new byte[GameSettings.Used.TotalSpellSlots],
-                SpellIndexes = new byte[GameSettings.Used.TotalSpellSlots]
-            };
-        }
-    }
+    public Vector2 HealthBarPos;
+    public Vector2 ManaBarPos;
 }

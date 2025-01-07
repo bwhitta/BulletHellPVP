@@ -83,10 +83,6 @@ public class SpellEditor : Editor
     
     private void DisplayModules(SerializedProperty module)
     {
-        // Prefab
-        DisplayFieldFromModule(module, "Prefab");
-        EditorGUILayout.Space(spaceWidth / 2);
-
         // Module Type
         switch ((SpellData.ModuleTypes)DisplayEnumFromModule(module, "ModuleType"))
         {
@@ -309,6 +305,7 @@ public class SpellEditor : Editor
         EditorStyles.label.fontStyle = FontStyle.Normal;
         EditorGUI.EndChangeCheck();
     }
+    
     /* UNUSED METHODS - DO NOT ERASE
     private void CustomDropdown(string dropdownVariableName, Dictionary<string, string[]> variablesToDisplay)
     {

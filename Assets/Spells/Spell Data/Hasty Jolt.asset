@@ -20,7 +20,6 @@ MonoBehaviour:
   ModuleQuantity: 1
   UsedModules:
   - FoldoutOpen: 1
-    Prefab: {fileID: 1062348163457161292, guid: a12a2eac476853e4184718ce4ef910dc, type: 3}
     ModuleType: 0
     ProjectileSpawningArea: 0
     TargetingType: 0

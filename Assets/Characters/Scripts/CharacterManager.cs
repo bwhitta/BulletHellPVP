@@ -1,5 +1,4 @@
 using UnityEngine;
-using System;
 using Unity.Netcode;
 
 public class CharacterManager : NetworkBehaviour
@@ -10,9 +9,8 @@ public class CharacterManager : NetworkBehaviour
     [SerializeField] private GameObject healthBar;
     [SerializeField] private GameObject manaBar;
 
-    private byte CharacterIndex;
-    [HideInInspector] public CharacterInfo OwnedCharacterInfo;
-    [HideInInspector] public CharacterInfo OpponentCharacterInfo;
+    [HideInInspector] public CharacterInfo OwnerInfo; // Gonna try to lean a lot less on these
+    [HideInInspector] public CharacterInfo OpponentInfo;
     [HideInInspector] public GameObject CharacterObject;
 
     // Methods
@@ -26,21 +24,17 @@ public class CharacterManager : NetworkBehaviour
     }
     private void Start()
     {
-        transform.parent.name = OwnedCharacterInfo.name;
+        transform.parent.name = OwnerInfo.name;
 
-        // Move health and mana bars to the right position
-        healthBar.GetComponent<RectTransform>().localPosition = OwnedCharacterInfo.healthBarPos;
-        manaBar.GetComponent<RectTransform>().localPosition = OwnedCharacterInfo.manaBarPos;
+        // Position stat bars
+        healthBar.GetComponent<RectTransform>().localPosition = OwnerInfo.HealthBarPos;
+        manaBar.GetComponent<RectTransform>().localPosition = OwnerInfo.ManaBarPos;
     }
     public void SetCharacterInfo(byte index)
     {
-        Debug.Log($"char index {index} deleteme");
+        OwnerInfo = GameSettings.Used.Characters[index];
 
-        CharacterIndex = index;
-
-        OwnedCharacterInfo = GameSettings.Used.Characters[CharacterIndex];
-
-        if (CharacterIndex == 0) OpponentCharacterInfo = GameSettings.Used.Characters[1];
-        else OpponentCharacterInfo = GameSettings.Used.Characters[0];
+        if (index == 0) OpponentInfo = GameSettings.Used.Characters[1];
+        else OpponentInfo = GameSettings.Used.Characters[0];
     }
 }

@@ -32,6 +32,7 @@ public class SpellSelectionManager : MonoBehaviour
             return _bookIndexText;
         }
     }
+    private CharacterInfo CurrentCharacter => GameSettings.Used.Characters[CurrentCharacterIndex];
 
     // At least for now, in online play the lobby host is always on the left.
     private byte _currentCharacterIndex;
@@ -49,7 +50,7 @@ public class SpellSelectionManager : MonoBehaviour
         set => _currentCharacterIndex = value;
     }
 
-    private CharacterInfo.Spellbook CurrentEditedBook
+    private Spellbook CurrentEditedBook
     {
         get => GameSettings.Used.Characters[CurrentCharacterIndex].EquippedBooks[currentBookIndex];
         set => GameSettings.Used.Characters[CurrentCharacterIndex].EquippedBooks[currentBookIndex] = value;
@@ -69,7 +70,7 @@ public class SpellSelectionManager : MonoBehaviour
 
         foreach (CharacterInfo characterInfo in GameSettings.Used.Characters)
         {
-            characterInfo.CreateBooks();
+            characterInfo.EquippedBooks = Spellbook.CreateBooks(GameSettings.Used.SpellSlots);
         }
 
         slotPositions = CalculateSlotPositions();
@@ -78,7 +79,7 @@ public class SpellSelectionManager : MonoBehaviour
         // Local methods
         Vector2[] CalculateSlotPositions()
         {
-            Vector2[] locations = new Vector2[GameSettings.Used.OffensiveSpellSlots + GameSettings.Used.DefensiveSpellSlots];
+            Vector2[] locations = new Vector2[GameSettings.Used.SpellSlots];
             for (var i = 0; i < locations.Length; i++)
             {
                 locations[i] = spellSlotStart + (i * spellSlotSpread * Vector2.right);
@@ -99,7 +100,7 @@ public class SpellSelectionManager : MonoBehaviour
     public void PlaceInSlot(EquippableSpell spell)
     {
         // Figure out which slot the spell fits in
-        for (byte i = 0; i < GameSettings.Used.TotalSpellSlots; i++)
+        for (byte i = 0; i < GameSettings.Used.SpellSlots; i++)
         {
             if (Vector2.Distance(spell.transform.position, slotPositions[i]) <= slotSnapDistance)
             {
@@ -119,12 +120,12 @@ public class SpellSelectionManager : MonoBehaviour
             Destroy(child.gameObject);
         }
 
-        for (int i = 0; i < GameSettings.Used.TotalSpellSlots; i++)
+        for (int i = 0; i < GameSettings.Used.SpellSlots; i++)
         {
             GameObject instantiatedDisplay = Instantiate(equippedSpellPrefab, equippedSpellsParent.transform);
 
-            CharacterInfo.Spellbook book = GameSettings.Used.Characters[CurrentCharacterIndex].CurrentBook;
-            Sprite icon = SpellManager.GetSpellData(book, (byte)i).Icon;
+            Spellbook book = CurrentCharacter.EquippedBooks[currentBookIndex];
+            Sprite icon = SpellSpawner.GetSpellData(book, (byte)i).Icon;
 
             instantiatedDisplay.GetComponent<SpriteRenderer>().sprite = icon;
             instantiatedDisplay.transform.position = slotPositions[i];

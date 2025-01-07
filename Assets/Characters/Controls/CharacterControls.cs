@@ -30,7 +30,7 @@ public class CharacterControls : NetworkBehaviour
 
         EnableMovement();
 
-        transform.position = characterManager.OwnedCharacterInfo.CharacterStartLocation;
+        transform.position = characterManager.OwnerInfo.CharacterStartLocation;
         if (IsServer) LocationUpdateClientRpc(transform.position);
 
         started = true;
@@ -38,8 +38,8 @@ public class CharacterControls : NetworkBehaviour
         // Local Methods
         void EnableMovement()
         {
-            InputActionMap controlsMap = ControlsManager.GetActionMap(characterManager.OwnedCharacterInfo.InputMapName);
-            movementAction = controlsMap.FindAction(characterManager.OwnedCharacterInfo.MovementActionName, true);
+            InputActionMap controlsMap = ControlsManager.GetActionMap(characterManager.OwnerInfo.InputMapName);
+            movementAction = controlsMap.FindAction(characterManager.OwnerInfo.MovementActionName, true);
             movementAction.Enable();
         }
     }
@@ -100,8 +100,8 @@ public class CharacterControls : NetworkBehaviour
 
         transform.position += (movement + (Vector3)CalculateTempPush()) * Time.fixedDeltaTime;
 
-        characterAnimator.SetFloat(characterManager.OwnedCharacterInfo.AnimatorTreeParameterX, movementInput.x);
-        characterAnimator.SetFloat(characterManager.OwnedCharacterInfo.AnimatorTreeParameterY, movementInput.y);
+        characterAnimator.SetFloat(characterManager.OwnerInfo.AnimatorTreeParameterX, movementInput.x);
+        characterAnimator.SetFloat(characterManager.OwnerInfo.AnimatorTreeParameterY, movementInput.y);
 
         // Local Methods
         float CalculateTempMovementMod()

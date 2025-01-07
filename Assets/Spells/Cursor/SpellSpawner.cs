@@ -1,15 +1,15 @@
-using System;
-using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.InputSystem;
+using Unity.Netcode;
 
-public class SpellManager : NetworkBehaviour
+public class SpellSpawner : NetworkBehaviour
 {
-    // Note to self: probably should rename this script, since it's not really an actual manager script
-
-    [SerializeField] private SpellbookLogic spellbookLogicScript;
+    // very likely that I'll want to split up this script
+    [SerializeField] private SpellbookLogic spellbookLogic;
+    [SerializeField] private CharacterManager characterManager;
     [SerializeField] private CharacterStats characterStats;
-    [SerializeField] private CharacterManager characterManager; // probably want to remove this and make it so that the id of the current book is stored as part of this object or the spellbook.
-
+    [SerializeField] private GameObject modulePrefab;
+    
     public static SpellData GetSpellData(byte setIndex, byte spellIndex)
     {
         SpellSetInfo set = GameSettings.Used.SpellSets[setIndex];
@@ -19,29 +19,63 @@ public class SpellManager : NetworkBehaviour
         }
         return set.spellsInSet[spellIndex];
     }
-    public static SpellData GetSpellData(CharacterInfo.Spellbook currentBook, byte slot)
+    public static SpellData GetSpellData(Spellbook currentBook, byte slot)
     {
         return GetSpellData(currentBook.SetIndexes[slot], currentBook.SpellIndexes[slot]);
     }
 
+    private void Start()
+    {
+        InputActionMap controlsMap = ControlsManager.GetActionMap(characterManager.OwnerInfo.InputMapName);
+        InputAction castingAction = controlsMap.FindAction(characterManager.OwnerInfo.CastingActionName, true);
+        castingAction.Enable();
+        castingAction.performed += context => CastingInputPerformed((byte)(castingAction.ReadValue<float>() - 1f));
+    }
+    private void CastingInputPerformed(byte spellbookSlotIndex)
+    {
+        if (MultiplayerManager.IsOnline)
+        {
+            if (!IsOwner)
+            {
+                Debug.Log($"Can't cast spells, not owner.");
+                return;
+            }
+
+            // potentially first check max mana here, and then deduct mana from here for the client-side if the player isn't the host
+            SpellData spellData = GetSpellData(spellbookLogic.CurrentBook, spellbookSlotIndex);
+            bool canCastSpell = CooldownAndManaAvailable(spellData, spellbookSlotIndex, true);
+
+            if (canCastSpell)
+            {
+                AttemptSpellServerRpc(spellbookSlotIndex);
+            }
+            else
+            {
+                Debug.Log("Skipped casting spell - there is not enough mana or the spell is on cooldown.");
+            }
+        }
+        else
+        {
+            AttemptSpell(spellbookSlotIndex);
+        }
+    }
     public void AttemptSpell(byte slot)
     {
         // Check slot validity
-        if (GetSpellData(characterManager.OwnedCharacterInfo.CurrentBook, slot) == null)
+        if (GetSpellData(spellbookLogic.CurrentBook, slot) == null)
         {
             Debug.Log($"No spell in slot {slot}");
             return;
         }
 
         // Gets the spell in the slot
-        SpellData spellData = GetSpellData(characterManager.OwnedCharacterInfo.CurrentBook, slot);
+        SpellData spellData = GetSpellData(spellbookLogic.CurrentBook, slot);
 
         // Check cooldown and mana
         bool canCastSpell = CooldownAndManaAvailable(spellData, slot, false);
         if (canCastSpell == false)
             return;
-
-        // Debug.Log($"Starting instantation of spell in slot {slot}");
+        
         for (byte i = 0; i < spellData.UsedModules.Length; i++)
         {
             SpellData.Module module = spellData.UsedModules[i];
@@ -51,12 +85,11 @@ public class SpellManager : NetworkBehaviour
             for (byte j = 0; j < moduleBehaviors.Length; j++)
             {
                 SpellModuleBehavior behavior = moduleBehaviors[j]; 
-                behavior.setIndex = characterManager.OwnedCharacterInfo.CurrentBook.SetIndexes[slot];
-                behavior.spellIndex = characterManager.OwnedCharacterInfo.CurrentBook.SpellIndexes[slot];
-                Debug.Log($"SetIndex: {characterManager.OwnedCharacterInfo.CurrentBook.SetIndexes[slot]}, SpellIndex: {characterManager.OwnedCharacterInfo.CurrentBook.SpellIndexes[slot]}");
+                behavior.setIndex = spellbookLogic.CurrentBook.SetIndexes[slot];
+                behavior.spellIndex = spellbookLogic.CurrentBook.SpellIndexes[slot];
                 behavior.moduleIndex = i;
                 behavior.behaviorId = j;
-                behavior.ownerId = (byte)Array.IndexOf(GameSettings.Used.Characters, characterManager.OwnedCharacterInfo);
+                behavior.ownerId = (byte)OwnerClientId;
                 
                 if (IsServer)
                 {
@@ -66,12 +99,10 @@ public class SpellManager : NetworkBehaviour
                 }
             }
         }
-
-        
     }
     public bool CooldownAndManaAvailable(SpellData spellData, byte slot, bool modifyOnlyAsClient)
     {
-        if (spellbookLogicScript.spellCooldowns[slot] > 0)
+        if (spellbookLogic.spellCooldowns[slot] > 0)
         {
             Debug.Log("Spell on cooldown.");
             return false;
@@ -86,7 +117,7 @@ public class SpellManager : NetworkBehaviour
             if ((modifyOnlyAsClient && IsServer) == false)
             {
                 Debug.Log("Deducting mana!");
-                spellbookLogicScript.spellCooldowns[slot] = spellData.SpellCooldown;
+                spellbookLogic.spellCooldowns[slot] = spellData.SpellCooldown;
                 characterStats.CurrentMana -= spellData.ManaCost;
                 if (!IsServer)
                 {
@@ -98,22 +129,21 @@ public class SpellManager : NetworkBehaviour
             return true;
         }
     }
-
-    [ServerRpc]
-    public void AttemptSpellServerRpc(byte slotIndex)
-    {
-        Debug.Log($"ServerRpc recieved, attempting spell server-side");
-        AttemptSpell(slotIndex);
-    }
-
     private SpellModuleBehavior[] InstantiateModule(SpellData.Module module)
     {
         SpellModuleBehavior[] spellBehaviors = new SpellModuleBehavior[module.InstantiationQuantity];
 
         for (var i = 0; i < module.InstantiationQuantity; i++)
         {
-            spellBehaviors[i] = Instantiate(module.Prefab).GetComponent<SpellModuleBehavior>();
+            spellBehaviors[i] = Instantiate(modulePrefab).GetComponent<SpellModuleBehavior>();
         }
         return spellBehaviors;
+    }
+
+    [ServerRpc]
+    public void AttemptSpellServerRpc(byte slotIndex)
+    {
+        Debug.Log($"ServerRpc recieved, attempting spell in slot {slotIndex} server-side");
+        AttemptSpell(slotIndex);
     }
 }

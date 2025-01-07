@@ -25,8 +25,6 @@ public class SpellData : ScriptableObject
     {
         /*Hidden*/ public bool FoldoutOpen;
 
-        public GameObject Prefab;
-
         public ModuleTypes ModuleType;
         /* -- ModuleType: Projectile -- */
         public SpawningAreas ProjectileSpawningArea;
@@ -45,7 +43,6 @@ public class SpellData : ScriptableObject
         public bool AffectsPlayerMovement;
         public float PlayerMovementMod;
         
-
         public int InstantiationQuantity; 
         public float InstantiationScale;
 

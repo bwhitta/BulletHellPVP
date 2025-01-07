@@ -6,7 +6,6 @@ public class CharacterStats : NetworkBehaviour
     private float remainingInvincibilityTime = 0;
     [SerializeField] private BarLogic healthBar;
     [SerializeField] private BarLogic manaBar;
-    [SerializeField] private CharacterManager characterManager;
 
     // Health
     private float _currentHealth;
@@ -70,7 +69,7 @@ public class CharacterStats : NetworkBehaviour
     private byte ticksSinceUpdate;
     
     // Methods
-    public void Start()
+    private void Start()
     {
         healthBar.StatMax = GameSettings.Used.MaxHealth;
         MaxMana = GameSettings.Used.StartingMaxMana;

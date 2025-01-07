@@ -69,21 +69,18 @@ public static class Calculations
     /// <summary>
     /// Gets the positions of the corners of a square.
     /// </summary>
-    /// <param name="sideLength"></param>
-    /// <param name="centerPoint"></param>
     /// <returns>The positions of the corners, starting from the top left and continuing clockwise</returns>
     public static Vector2[] GetSquareCorners(float sideLength, Vector2 centerPoint)
     {
-        // The way this method works is pretty janky, and so I might go through and rework it at some point.
+        float offset = sideLength;
+
         Vector2[] corners = new Vector2[4];
+        corners[0] = centerPoint + new Vector2(-offset, -offset);
+        corners[1] = centerPoint + new Vector2(offset, -offset);
+        corners[2] = centerPoint + new Vector2(offset, offset);
+        corners[3] = centerPoint + new Vector2(-offset, offset);
 
-        int[,] cornerDirection = { { -1, 1 }, { 1, 1 }, { 1, -1 }, { -1, -1 } }; // Starts in top left, continues clockwise
-
-        for (int i = 0; i < 4; i++)
-        {
-            corners[i].x = centerPoint.x + (sideLength * cornerDirection[i, 0] * 0.5f);
-            corners[i].y = centerPoint.y + (sideLength * cornerDirection[i, 1] * 0.5f);
-        }
         return corners;
     }
+
 }

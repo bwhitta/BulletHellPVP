@@ -6,10 +6,9 @@ public class GameSettings : ScriptableObject
     public static GameSettings Used;
 
     [Header("Spells")]
-    public byte OffensiveSpellSlots, DefensiveSpellSlots;
     public byte TotalBooks;
     public bool CanLoopBooks;
-    public int TotalSpellSlots => OffensiveSpellSlots + DefensiveSpellSlots;
+    public byte SpellSlots;
     public SpellSetInfo[] SpellSets;
 
     [Space]
