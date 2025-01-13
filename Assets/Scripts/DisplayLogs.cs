@@ -1,6 +1,6 @@
 using UnityEngine;
 
-// The following code is taken from "bboysil" in this unity forum post: https://answers.unity.com/questions/125049/is-there-any-way-to-view-the-console-in-a-build.html
+// The following code is taken and slightly tweaked from "bboysil" in this unity forum post: https://answers.unity.com/questions/125049/is-there-any-way-to-view-the-console-in-a-build.html
 public class DisplayLogs : MonoBehaviour
 {
     string myLog = "*begin log";
@@ -29,6 +29,10 @@ public class DisplayLogs : MonoBehaviour
         catch { }
     }
 
+    private void Start()
+    {
+        DontDestroyOnLoad(gameObject);
+    }
     void OnGUI()
     {
         if (!doShow) { return; }

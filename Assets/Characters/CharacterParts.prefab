@@ -447,6 +447,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 380446329d796424b9a24125730e1f4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  nextBookActionName: NextBook
   spellDisplays:
   - {fileID: 9097261446782226172}
   - {fileID: 9219223302985683739}
@@ -455,10 +456,9 @@ MonoBehaviour:
   - {fileID: 3216291776258181}
   - {fileID: 3481747996755251571}
   - {fileID: 8762945468939749593}
-  bookNumberTextObject: {fileID: 2581057074977270303}
+  bookNumber: {fileID: 2581057074977270297}
   characterManager: {fileID: 5324122265146412018}
   spellCooldowns: []
-  spellManager: {fileID: 7623185581945276686}
 --- !u!1 &5860716669837191705
 GameObject:
   m_ObjectHideFlags: 0
@@ -583,6 +583,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4d5f79528ac06b41a12b1066e076982, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  animatorTreeParameterX: FacingX
+  animatorTreeParameterY: FacingY
+  movementActionName: Movement
   movementAction:
     m_Name: Movement
     m_Type: 0
@@ -622,8 +625,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   healthBar: {fileID: 7124641555871300265}
   manaBar: {fileID: 1483302033742889214}
-  OwnedCharacterInfo: {fileID: 0}
-  OpponentCharacterInfo: {fileID: 0}
+  inputMapNames: []
+  CharacterIndex: 0
+  OwnerInfo: {fileID: 0}
+  OpponentInfo: {fileID: 0}
   CharacterObject: {fileID: 0}
 --- !u!1 &5860716670533881872
 GameObject:
@@ -1007,10 +1012,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 687ff52990f4f674d9aa09fc307e8307, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spellbookLogicScript: {fileID: 2581057075624382118}
-  characterStats: {fileID: 5860716669837191715}
+  spellbookLogic: {fileID: 2581057075624382118}
   characterManager: {fileID: 5324122265146412018}
+  characterStats: {fileID: 5860716669837191715}
   modulePrefab: {fileID: 1062348163457161292, guid: a12a2eac476853e4184718ce4ef910dc, type: 3}
+  castingActionName: SpellcastingSelection
 --- !u!114 &7623185581945276681
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1024,7 +1030,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   characterManager: {fileID: 5324122265146412018}
-  location: 0
 --- !u!1 &8676365494037463687
 GameObject:
   m_ObjectHideFlags: 0

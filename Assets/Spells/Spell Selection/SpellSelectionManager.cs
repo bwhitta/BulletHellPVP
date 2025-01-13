@@ -32,7 +32,6 @@ public class SpellSelectionManager : MonoBehaviour
             return _bookIndexText;
         }
     }
-    private CharacterInfo CurrentCharacter => GameSettings.Used.Characters[CurrentCharacterIndex];
 
     // At least for now, in online play the lobby host is always on the left.
     private byte _currentCharacterIndex;
@@ -52,15 +51,15 @@ public class SpellSelectionManager : MonoBehaviour
 
     private Spellbook CurrentEditedBook
     {
-        get => GameSettings.Used.Characters[CurrentCharacterIndex].EquippedBooks[currentBookIndex];
-        set => GameSettings.Used.Characters[CurrentCharacterIndex].EquippedBooks[currentBookIndex] = value;
+        get => SpellbookLogic.EquippedBooks[CurrentCharacterIndex][currentBookIndex];
+        set => SpellbookLogic.EquippedBooks[CurrentCharacterIndex][currentBookIndex] = value;
     }
 
+    // Methods
     private void Awake()
     {
         GameSettings.Used = defaultGameSettings;
     }
-
     private void Start()
     {
         if (MultiplayerManager.IsOnline)
@@ -68,9 +67,11 @@ public class SpellSelectionManager : MonoBehaviour
             lobbyManager = FindObjectOfType<LobbyManager>();
         }
 
-        foreach (CharacterInfo characterInfo in GameSettings.Used.Characters)
+        // what happens if I start the game when in the battle scene? how does this get started?
+        SpellbookLogic.EquippedBooks = new Spellbook[GameSettings.Used.Characters.Length][];
+        for (int i = 0; i < GameSettings.Used.Characters.Length; i++)
         {
-            characterInfo.EquippedBooks = Spellbook.CreateBooks(GameSettings.Used.SpellSlots);
+            SpellbookLogic.EquippedBooks[i] = Spellbook.CreateBooks(GameSettings.Used.SpellSlots);
         }
 
         slotPositions = CalculateSlotPositions();
@@ -89,6 +90,7 @@ public class SpellSelectionManager : MonoBehaviour
     }
     private void SetBook(byte target)
     {
+        Debug.Log($"setting book to {target}");
         currentBookIndex = target;
         BookIndexText.text = (target + 1).ToString();
         UpdateBookDisplays();
@@ -96,6 +98,27 @@ public class SpellSelectionManager : MonoBehaviour
     public void NextBook()
     {
         SetBook((byte)((currentBookIndex + 1) % GameSettings.Used.TotalBooks));
+    }
+    
+    // surely I could re-work this so it doesn't delete and re-spawn all children every time I change something, right?
+    private void UpdateBookDisplays()
+    {
+        // Destroy all of the old child objects
+        foreach (Transform child in equippedSpellsParent.transform)
+        {
+            Destroy(child.gameObject);
+        }
+
+        for (int i = 0; i < GameSettings.Used.SpellSlots; i++)
+        {
+            GameObject instantiatedDisplay = Instantiate(equippedSpellPrefab, equippedSpellsParent.transform);
+
+            Spellbook book = SpellbookLogic.EquippedBooks[CurrentCharacterIndex][currentBookIndex];
+            Sprite icon = SpellSpawner.GetSpellData(book, (byte)i).Icon;
+
+            instantiatedDisplay.GetComponent<SpriteRenderer>().sprite = icon;
+            instantiatedDisplay.transform.position = slotPositions[i];
+        }
     }
     public void PlaceInSlot(EquippableSpell spell)
     {
@@ -109,26 +132,6 @@ public class SpellSelectionManager : MonoBehaviour
                 UpdateBookDisplays();
                 return;
             }
-        }
-    }
-    
-    private void UpdateBookDisplays()
-    {
-        // Destroy all of the old child objects
-        foreach (Transform child in equippedSpellsParent.transform)
-        {
-            Destroy(child.gameObject);
-        }
-
-        for (int i = 0; i < GameSettings.Used.SpellSlots; i++)
-        {
-            GameObject instantiatedDisplay = Instantiate(equippedSpellPrefab, equippedSpellsParent.transform);
-
-            Spellbook book = CurrentCharacter.EquippedBooks[currentBookIndex];
-            Sprite icon = SpellSpawner.GetSpellData(book, (byte)i).Icon;
-
-            instantiatedDisplay.GetComponent<SpriteRenderer>().sprite = icon;
-            instantiatedDisplay.transform.position = slotPositions[i];
         }
     }
 }

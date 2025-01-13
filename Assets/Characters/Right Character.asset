@@ -19,13 +19,8 @@ MonoBehaviour:
   CastingActionName: SpellcastingSelection
   AnimatorTreeParameterX: FacingX
   AnimatorTreeParameterY: FacingY
-  CurrentBookIndex: 0
-  overrideFirstBook: 0
-  overrideSetIndexes: 
-  overrideSpellIndexes: 
   CharacterStartLocation: {x: 2, y: 2}
-  OpponentAreaCenter: {x: -4, y: 0.25}
+  BattleAreaCenter: {x: -4, y: 0.25}
   SpellbookPosition: {x: 470, y: -460}
-  SpellbookScale: {x: 7.5, y: 7.5}
-  healthBarPos: {x: 430, y: 486}
-  manaBarPos: {x: 890, y: 31}
+  HealthBarPosition: {x: 430, y: 486}
+  ManaBarPosition: {x: 890, y: 31}

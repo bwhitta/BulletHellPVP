@@ -6,13 +6,27 @@ public class CharacterManager : NetworkBehaviour
     // probably should rename this script, especially once I finalize its functionality
 
     // Fields
+    public string[] SortingLayers;
     [SerializeField] private GameObject healthBar;
     [SerializeField] private GameObject manaBar;
+    [SerializeField] private string[] inputMapNames;
 
-    [HideInInspector] public CharacterInfo OwnerInfo; // Gonna try to lean a lot less on these
+    [HideInInspector] public byte CharacterIndex;
+    [HideInInspector] public CharacterInfo OwnerInfo;
     [HideInInspector] public CharacterInfo OpponentInfo;
     [HideInInspector] public GameObject CharacterObject;
 
+    // Properties
+    public string InputMapName => inputMapNames[CharacterIndex];
+    public byte OpponentCharacterIndex
+    {
+        get
+        {
+            if (CharacterIndex == 0) return 1;
+            else return 2;
+        }
+    }
+    
     // Methods
     public override void OnNetworkSpawn()
     {
@@ -27,14 +41,14 @@ public class CharacterManager : NetworkBehaviour
         transform.parent.name = OwnerInfo.name;
 
         // Position stat bars
-        healthBar.GetComponent<RectTransform>().localPosition = OwnerInfo.HealthBarPos;
-        manaBar.GetComponent<RectTransform>().localPosition = OwnerInfo.ManaBarPos;
+        healthBar.GetComponent<RectTransform>().localPosition = OwnerInfo.HealthBarPosition;
+        manaBar.GetComponent<RectTransform>().localPosition = OwnerInfo.ManaBarPosition;
     }
     public void SetCharacterInfo(byte index)
     {
+        CharacterIndex = index;
         OwnerInfo = GameSettings.Used.Characters[index];
 
-        if (index == 0) OpponentInfo = GameSettings.Used.Characters[1];
-        else OpponentInfo = GameSettings.Used.Characters[0];
+        
     }
 }

@@ -12,11 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e3b05189a0fe4054da35b28bb0c02070, type: 3}
   m_Name: Settings
   m_EditorClassIdentifier: 
-  UsedVisualSettings: {fileID: 11400000, guid: 6e80c9dd115406d4a9f436d317c83670, type: 2}
-  OffensiveSpellSlots: 4
-  DefensiveSpellSlots: 3
   TotalBooks: 3
   CanLoopBooks: 1
+  SpellSlots: 7
   SpellSets:
   - {fileID: 11400000, guid: 2254d440d774c7045a553d3c6a640f6e, type: 2}
   - {fileID: 11400000, guid: 696f88c2f7e58bb44b74c4601b71fd84, type: 2}

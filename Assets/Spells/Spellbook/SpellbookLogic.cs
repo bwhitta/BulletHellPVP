@@ -6,153 +6,99 @@ using UnityEngine.UI;
 public class SpellbookLogic : NetworkBehaviour
 {
     // Fields
+    public static Spellbook[][] EquippedBooks;
+
+    [SerializeField] private string nextBookActionName;
     [SerializeField] private Image[] spellDisplays;
     [SerializeField] private Text bookNumber;
     [SerializeField] private CharacterManager characterManager;
 
     [HideInInspector] public float[] spellCooldowns;
-    
-    private byte CurrentBookIndex;
-    public Spellbook CurrentBook => characterManager.OwnerInfo.EquippedBooks[CurrentBookIndex];
-    private int ticksSinceDiscrepancyCheck;
+
+    private byte currentBookIndex;
     private readonly NetworkVariable<byte> ServerBookIndex = new();
+
+    // Properties
+    public Spellbook[] CharacterBooks => EquippedBooks[characterManager.CharacterIndex];
+    public Spellbook CurrentBook => CharacterBooks[currentBookIndex];
 
     // Methods
     private void Start()
     {
-        Debug.Log($"Note to self: tracking the current book and stuff should probably be done outside of CharacterInfo, and then this probably doesn't need to access characterManager nearly as much. " +
-            $"Also, this script (SpellbookLogic) probably can be split into several smaller parts. Delete me later. ");
-        if (MultiplayerManager.IsOnline)
+        if (MultiplayerManager.IsOnline && !IsServer)
         {
-            // If info is updated by the server, also update that client-side
-            if (!IsServer)
-            {
-                ServerBookIndex.OnValueChanged += BookIndexUpdated;
-            }
+            ServerBookIndex.OnValueChanged += ServerBookIndexUpdated;
         }
+        
+        // Starting position
+        GetComponent<RectTransform>().localPosition = characterManager.OwnerInfo.SpellbookPosition;
 
-        // Set position
-        RectTransform rectTransform = GetComponent<RectTransform>();
-        rectTransform.localPosition = characterManager.OwnerInfo.SpellbookPosition;
-
-        EnableControls();
+        // Set up the equipped books if spell selection was skipped (e.g. if the game is run in unity starting in the battle scene)
+        EquippedBooks[characterManager.CharacterIndex] ??= Spellbook.CreateBooks(GameSettings.Used.SpellSlots);
+        RefreshBookUi();
         SetupCooldownUi();
-        UpdateUi();
+        EnableControls();
         
         // Local Methods
-        void BookIndexUpdated(byte oldValue, byte newValue)
+        void ServerBookIndexUpdated(byte oldValue, byte newValue)
         {
             Debug.Log($"Book index updated to {newValue}");
-            CurrentBookIndex = newValue;
-
-            UpdateUi();
+            currentBookIndex = newValue;
         }
         void SetupCooldownUi()
         {
-            if (GameSettings.Used == null)
+            spellCooldowns = new float[GameSettings.Used.SpellSlots];
+            for (byte i = 0; i < GameSettings.Used.SpellSlots; i++)
             {
-                Debug.LogError("Used Game Settings is null. Did you forget a reference in the Character Info?");
-                return;
-            }
-            for (int i = 0; i < GameSettings.Used.SpellSlots; i++)
-            {
-                SetCooldownUI(i, 0);
+                DisplayCooldown(i, 0);
             }
         }
         void EnableControls()
         {
-            InputActionMap controlsMap;
-            InputAction nextBookAction;
-
-            controlsMap = ControlsManager.GetActionMap(characterManager.OwnerInfo.InputMapName);
-            nextBookAction = controlsMap.FindAction(characterManager.OwnerInfo.NextBookActionName, true);
-
-            // Enable controls
+            InputActionMap controlsMap = ControlsManager.GetActionMap(characterManager.InputMapName);
+            InputAction nextBookAction = controlsMap.FindAction(nextBookActionName, true);
             nextBookAction.Enable();
             nextBookAction.performed += context => NextBookInputPerformed();
         }
     }
     private void FixedUpdate()
     {
-        if (IsServer)
-        {
-            ServerDiscrepancyTick();
-        }
         CooldownTick();
-
-        void ServerDiscrepancyTick()
-        {
-            ticksSinceDiscrepancyCheck++;
-            if (ticksSinceDiscrepancyCheck >= GameSettings.Used.NetworkDiscrepancyCheckFrequency)
-            {
-                ServerBookIndex.Value = CurrentBookIndex;
-
-                ticksSinceDiscrepancyCheck = 0;
-            }
-        }
     }
     private void CooldownTick()
     {
-        // Set up cooldowns if data is invalid
-        if (spellCooldowns == null || spellCooldowns.Length != GameSettings.Used.SpellSlots)
-        {
-            spellCooldowns = new float[GameSettings.Used.SpellSlots];
-        }
-        
-        // Reduce time on each cooldown
-        for (int i = 0; i < spellCooldowns.Length; i++)
+        for (byte i = 0; i < spellCooldowns.Length; i++)
         {
             if (spellCooldowns[i] > 0)
             {
-                spellCooldowns[i] -= Time.fixedDeltaTime;
-                SetCooldownUI(i, spellCooldowns[i] / SpellDataFromSlot((byte)i).SpellCooldown);
-            }
-            if (spellCooldowns[i] < 0)
-            {
-                spellCooldowns[i] = 0;
+                spellCooldowns[i] -= Mathf.Max(Time.fixedDeltaTime, 0);
+                DisplayCooldown(i, spellCooldowns[i] / SpellDataInSlot(i).SpellCooldown);
             }
         }
     }
-    private void SetCooldownUI(int index, float percentFilled)
+    private void DisplayCooldown(byte cooldownBarIndex, float percentFilled)
     {
-        // Gets the top bar GameObject
-        GameObject bottomBar = spellDisplays[index].transform.GetChild(0).gameObject;
+        GameObject bottomBar = spellDisplays[cooldownBarIndex].transform.GetChild(0).gameObject;
         GameObject topBar = bottomBar.transform.GetChild(0).gameObject;
-
         topBar.GetComponent<Image>().fillAmount = percentFilled;
     }
-    private void UpdateUi()
+    private void RefreshBookUi()
     {
-        if (bookNumber == null) Debug.LogWarning($"forgot to set reference after restructuring everything!!! deleteme.");
-
-        // Update text
-        bookNumber.text = (CurrentBookIndex + 1).ToString();
-
-        characterManager.OwnerInfo.EquippedBooks = Spellbook.CreateBooks(GameSettings.Used.SpellSlots);
-
-        // Loop through and update each sprite using the data from 
-        for (int i = 0; i < spellDisplays.Length; i++)
+        bookNumber.text = (currentBookIndex + 1).ToString();
+        
+        for (byte i = 0; i < spellDisplays.Length; i++)
         {
-            if (CurrentBook == null)
-            {
-                spellDisplays[i].gameObject.SetActive(false);
-                continue;
-            }
-            spellDisplays[i].enabled = true;
-            spellDisplays[i].sprite = SpellDataFromSlot((byte)i).Icon;
+            spellDisplays[i].sprite = SpellDataInSlot(i).Icon;
         }
     }
-    
-    private SpellData SpellDataFromSlot(byte slotIndex)
+    private SpellData SpellDataInSlot(byte slotIndex)
     {
         byte setIndex = CurrentBook.SetIndexes[slotIndex];
         byte spellIndex = CurrentBook.SpellIndexes[slotIndex];
 
         SpellSetInfo setInfo = GameSettings.Used.SpellSets[setIndex];
-        SpellData spell = setInfo.spellsInSet[spellIndex];
-        return spell;
+        return setInfo.spellsInSet[spellIndex];
     }
-
     private void NextBookInputPerformed()
     {
         if (!MultiplayerManager.IsOnline || IsServer)
@@ -163,25 +109,24 @@ public class SpellbookLogic : NetworkBehaviour
         {
             NextBookInputServerRpc();
         }
-        UpdateUi();
     }
     private void NextBook()
     {
         if (GameSettings.Used.CanLoopBooks)
         {
-            CurrentBookIndex = (byte)((CurrentBookIndex + 1) % GameSettings.Used.TotalBooks);
+            currentBookIndex = (byte)((currentBookIndex + 1) % GameSettings.Used.TotalBooks);
         }
         else
         {
-            CurrentBookIndex = (byte)Mathf.Min(CurrentBookIndex + 1, GameSettings.Used.TotalBooks - 1);
+            currentBookIndex = (byte)Mathf.Min(currentBookIndex + 1, GameSettings.Used.TotalBooks - 1);
         }
+        RefreshBookUi();
     }
+
     [ServerRpc]
     private void NextBookInputServerRpc()
     {
-        Debug.Log($"serverrpc resolution");
         NextBook();
-        UpdateUi();
+        RefreshBookUi();
     }
-    
 }

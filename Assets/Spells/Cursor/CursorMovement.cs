@@ -13,7 +13,7 @@ public class CursorMovement : NetworkBehaviour
     // Methods
     private void Start()
     {
-        InputActionMap controlsMap = ControlsManager.GetActionMap(characterManager.OwnerInfo.InputMapName);
+        InputActionMap controlsMap = ControlsManager.GetActionMap(characterManager.InputMapName);
         
         cursorMovementInput = controlsMap.FindAction(GameSettings.Used.CursorMovementInputName, true);
         cursorAccelerationInput = controlsMap.FindAction(GameSettings.Used.AccelerateCursorInputName, true);

@@ -185,10 +185,10 @@ public class SpellModuleBehavior : NetworkBehaviour
             spriteRenderer.sprite = Module.UsedSprite;
 
             // Set the mask layer
-            string spellMaskLayer;
+            // string spellMaskLayer; DISABLED FOR RESTRUCTURING
             if (Module.ModuleType == SpellData.ModuleTypes.PlayerAttached)
             {
-                spellMaskLayer = OwnerCharacterInfo.SortingLayer;
+                // spellMaskLayer = OwnerCharacterInfo.SortingLayer; DISABLED FOR RESTRUCTURING
             }
             else
             {
@@ -210,10 +210,10 @@ public class SpellModuleBehavior : NetworkBehaviour
                 currentAnimationPrefab.name = animationPrefab.name;
 
                 // Make sure the sprite shows up on your own side of the play area when it is attached to yourself 
-                string spellMaskLayer;
+                // string spellMaskLayer; DISABLED FOR RESTRUCTURING
                 if (Module.ModuleType == SpellData.ModuleTypes.PlayerAttached)
                 {
-                    spellMaskLayer = OwnerCharacterInfo.SortingLayer;
+                    // spellMaskLayer = OwnerCharacterInfo.SortingLayer; DISABLED FOR RESTRUCTURING
                 }
                 else
                 {

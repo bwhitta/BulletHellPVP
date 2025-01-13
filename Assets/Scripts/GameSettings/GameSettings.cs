@@ -11,17 +11,12 @@ public class GameSettings : ScriptableObject
     public byte SpellSlots;
     public SpellSetInfo[] SpellSets;
 
-    [Space]
     [Header("Play Area")]
     public float BattleSquareWidth;
 
-    [Space]
     [Header("Characters")]
     public CharacterInfo[] Characters;
     public float CharacterMovementSpeed;
-
-    [Space]
-    [Header("Character Stats")]
     //Health
     public float MaxHealth;
     //Mana
@@ -34,7 +29,6 @@ public class GameSettings : ScriptableObject
     public float InvincibilityTime;
     public float InvincibilityAlphaMod;
 
-    [Space]
     [Header("Online")]
     [SerializeField][Range(10, 30)] private int NetworkDiscrepancyCheckHz; // reasonable rate is between 30 and 10Hz
     public int NetworkDiscrepancyCheckFrequency => Mathf.CeilToInt (1 / (NetworkDiscrepancyCheckHz * Time.fixedDeltaTime)); // Converts from Hz to number of ticks
@@ -44,11 +38,9 @@ public class GameSettings : ScriptableObject
     public float NetworkStatBarDiscrepancyLimit;
     public int ManaAwaitingTimeLimit;
     
-    [Space]
     [Header("GUI")]
     public float StatLostVelocity;
     
-    [Space]
     [Header("Cursor")]
     public float CursorMovementSpeed;
     public float CursorAcceleratedMovementMod;

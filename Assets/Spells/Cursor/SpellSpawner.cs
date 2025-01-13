@@ -9,7 +9,8 @@ public class SpellSpawner : NetworkBehaviour
     [SerializeField] private CharacterManager characterManager;
     [SerializeField] private CharacterStats characterStats;
     [SerializeField] private GameObject modulePrefab;
-    
+    [SerializeField] private string castingActionName;
+
     public static SpellData GetSpellData(byte setIndex, byte spellIndex)
     {
         SpellSetInfo set = GameSettings.Used.SpellSets[setIndex];
@@ -26,8 +27,8 @@ public class SpellSpawner : NetworkBehaviour
 
     private void Start()
     {
-        InputActionMap controlsMap = ControlsManager.GetActionMap(characterManager.OwnerInfo.InputMapName);
-        InputAction castingAction = controlsMap.FindAction(characterManager.OwnerInfo.CastingActionName, true);
+        InputActionMap controlsMap = ControlsManager.GetActionMap(characterManager.InputMapName);
+        InputAction castingAction = controlsMap.FindAction(castingActionName, true);
         castingAction.Enable();
         castingAction.performed += context => CastingInputPerformed((byte)(castingAction.ReadValue<float>() - 1f));
     }
