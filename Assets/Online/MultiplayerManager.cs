@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 using Unity.Networking.Transport.Relay;
@@ -45,7 +43,7 @@ public class MultiplayerManager : MonoBehaviour
         {
             Debug.Log($"spawning character {index}", this);
             GameObject character = Instantiate(characterPrefab);
-            character.GetComponentInChildren<CharacterManager>().SetCharacterInfo(index);
+            character.GetComponentInChildren<CharacterManager>().CharacterIndex = index;
         }
     }
     

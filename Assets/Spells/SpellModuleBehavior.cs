@@ -43,13 +43,6 @@ public class SpellModuleBehavior : NetworkBehaviour
     private int ticksSincePositionUpdate;
 
     // Character Information
-    private CharacterInfo OwnerCharacterInfo
-    {
-        get
-        {
-            return GameSettings.Used.Characters[ownerId];
-        }
-    }
 
     // Information for online sync
     public float cursorLocationOnCast;

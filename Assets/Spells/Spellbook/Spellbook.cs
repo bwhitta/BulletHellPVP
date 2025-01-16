@@ -1,13 +1,18 @@
+using UnityEngine;
+[System.Serializable]
 public class Spellbook
 {
-    // Since this is very simple, it can probably be part of another script rather than it's own.
+    // Fields
     public byte[] SetIndexes;
     public byte[] SpellIndexes;
 
-    public static Spellbook[] CreateBooks(byte slots)
+    // Methods
+    public static Spellbook[] CreateBooks(byte numberOfBooks, byte slots, Spellbook firstBookOverride = null)
     {
-        Spellbook[] books = new Spellbook[slots];
-        for (int i = 0; i < slots; i++)
+        if (numberOfBooks == 0 || slots == 0) Debug.LogError($"invalid number of books or slots per book when creating books! numberOfBooks: {numberOfBooks}, slots: {slots}");
+
+        Spellbook[] books = new Spellbook[numberOfBooks];
+        for (int i = 0; i < books.Length; i++)
         {
             books[i] = new()
             {
@@ -15,6 +20,27 @@ public class Spellbook
                 SpellIndexes = new byte[slots]
             };
         }
+
+        if (firstBookOverride != null)
+        {
+            Debug.Log($"Overriding first book");
+            books[0] = firstBookOverride;
+        }
+
         return books;
+    }
+
+    public static SpellData GetSpellData(byte setIndex, byte spellIndex)
+    {
+        SpellSetInfo set = GameSettings.Used.SpellSets[setIndex];
+        return set.spellsInSet[spellIndex];
+    }
+    public SpellData SpellInSlot(byte slotIndex)
+    {
+        byte setIndex = SetIndexes[slotIndex];
+        byte spellIndex = SpellIndexes[slotIndex];
+
+        SpellSetInfo set = GameSettings.Used.SpellSets[setIndex];
+        return set.spellsInSet[spellIndex];
     }
 }

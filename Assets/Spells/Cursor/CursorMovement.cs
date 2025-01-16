@@ -6,6 +6,8 @@ public class CursorMovement : NetworkBehaviour
 {
     // Fields
     [SerializeField] private CharacterManager characterManager;
+    [SerializeField] private Vector2[] battleAreaCenters;
+
     private float location = 0;
     private InputAction cursorMovementInput;
     private InputAction cursorAccelerationInput;
@@ -49,7 +51,7 @@ public class CursorMovement : NetworkBehaviour
         }
 
         // Calculate and set the position and rotation based on location
-        Vector2 position = CalculateCursorTransform(location, characterManager.OpponentInfo.BattleAreaCenter);
+        Vector2 position = CalculateCursorTransform(location, battleAreaCenters[characterManager.CharacterIndex]);
         Quaternion angle = Quaternion.Euler(0, 0, -90 * SquareSideAtPosition(GameSettings.Used.BattleSquareWidth, location));
         transform.SetPositionAndRotation(position, angle);
     }

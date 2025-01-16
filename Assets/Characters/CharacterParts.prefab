@@ -458,6 +458,13 @@ MonoBehaviour:
   - {fileID: 8762945468939749593}
   bookNumber: {fileID: 2581057074977270297}
   characterManager: {fileID: 5324122265146412018}
+  spellbookPositions:
+  - {x: -470, y: -460}
+  - {x: 470, y: -460}
+  overrideFirstBook: 1
+  overrideBook:
+    SetIndexes: 00000100000000
+    SpellIndexes: 00010000000000
   spellCooldowns: []
 --- !u!1 &5860716669837191705
 GameObject:
@@ -586,6 +593,9 @@ MonoBehaviour:
   animatorTreeParameterX: FacingX
   animatorTreeParameterY: FacingY
   movementActionName: Movement
+  characterStartPositions:
+  - {x: -4, y: 0.25}
+  - {x: 2, y: 2}
   movementAction:
     m_Name: Movement
     m_Type: 0
@@ -623,12 +633,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3c63ed0b7e70eb47b05713a4640292c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  SortingLayers:
+  - Left Character
+  - Right Character
   healthBar: {fileID: 7124641555871300265}
+  healthBarPositions:
+  - {x: -430, y: 486}
+  - {x: 430, y: 486}
   manaBar: {fileID: 1483302033742889214}
-  inputMapNames: []
+  manaBarPositions:
+  - {x: -890, y: 31}
+  - {x: 890, y: 31}
+  inputMapNames:
+  - Left Character
+  - Right Character
+  characterParentObjectName:
+  - LeftCharacter
+  - RightCharacter
   CharacterIndex: 0
-  OwnerInfo: {fileID: 0}
-  OpponentInfo: {fileID: 0}
   CharacterObject: {fileID: 0}
 --- !u!1 &5860716670533881872
 GameObject:
@@ -1030,6 +1052,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   characterManager: {fileID: 5324122265146412018}
+  battleAreaCenters:
+  - {x: -4, y: 0.25}
+  - {x: 4, y: 0.25}
 --- !u!1 &8676365494037463687
 GameObject:
   m_ObjectHideFlags: 0

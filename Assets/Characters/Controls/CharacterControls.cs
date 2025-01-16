@@ -9,11 +9,11 @@ public class CharacterControls : NetworkBehaviour
     [SerializeField] private string animatorTreeParameterX;
     [SerializeField] private string animatorTreeParameterY;
     [SerializeField] private string movementActionName;
+    [SerializeField] private Vector2[] characterStartPositions; // RENAME TO CHARACTERSTARTPOSITIONS
 
     [HideInInspector] public InputAction movementAction;
     
     private Animator characterAnimator;
-    private bool started = false;
     private CharacterManager characterManager;
     
     public class TempMovementMod
@@ -26,29 +26,26 @@ public class CharacterControls : NetworkBehaviour
     public List<TempMovementMod> tempMovementMods = new();
 
     // Methods
+    private void Awake()
+    {
+        characterAnimator = GetComponent<Animator>();
+        characterManager = GetComponent<CharacterManager>();
+    }
     private void Start()
     {
         Debug.Log($"interpolation is currently removed! probably should re-add, delete me later.");
         
-        // Set references
-        characterAnimator = GetComponent<Animator>();
-        characterManager = GetComponent<CharacterManager>();
-
         // Enable movement
         InputActionMap controlsMap = ControlsManager.GetActionMap(characterManager.InputMapName);
         movementAction = controlsMap.FindAction(movementActionName, true);
         movementAction.Enable();
 
-        //Starting position
-        transform.position = characterManager.OwnerInfo.CharacterStartLocation;
+        // Starting position
+        transform.position = characterStartPositions[characterManager.CharacterIndex];
         if (IsServer) LocationUpdateClientRpc(transform.position);
-
-        started = true;
     }
     private void FixedUpdate()
     {
-        if (started == false) return;
-
         MovementTick();
         if (IsServer && IsOwner)
         {

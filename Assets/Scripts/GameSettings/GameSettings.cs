@@ -15,7 +15,7 @@ public class GameSettings : ScriptableObject
     public float BattleSquareWidth;
 
     [Header("Characters")]
-    public CharacterInfo[] Characters;
+    public byte MaxCharacters;
     public float CharacterMovementSpeed;
     //Health
     public float MaxHealth;

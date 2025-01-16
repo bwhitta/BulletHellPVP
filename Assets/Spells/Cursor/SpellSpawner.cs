@@ -11,20 +11,6 @@ public class SpellSpawner : NetworkBehaviour
     [SerializeField] private GameObject modulePrefab;
     [SerializeField] private string castingActionName;
 
-    public static SpellData GetSpellData(byte setIndex, byte spellIndex)
-    {
-        SpellSetInfo set = GameSettings.Used.SpellSets[setIndex];
-        if(spellIndex >= set.spellsInSet.Length)
-        {
-            Debug.LogWarning($"Set {set.name} does not have a spell at index {spellIndex}.");
-        }
-        return set.spellsInSet[spellIndex];
-    }
-    public static SpellData GetSpellData(Spellbook currentBook, byte slot)
-    {
-        return GetSpellData(currentBook.SetIndexes[slot], currentBook.SpellIndexes[slot]);
-    }
-
     private void Start()
     {
         InputActionMap controlsMap = ControlsManager.GetActionMap(characterManager.InputMapName);
@@ -43,7 +29,7 @@ public class SpellSpawner : NetworkBehaviour
             }
 
             // potentially first check max mana here, and then deduct mana from here for the client-side if the player isn't the host
-            SpellData spellData = GetSpellData(spellbookLogic.CurrentBook, spellbookSlotIndex);
+            SpellData spellData = spellbookLogic.CurrentBook.SpellInSlot(spellbookSlotIndex);
             bool canCastSpell = CooldownAndManaAvailable(spellData, spellbookSlotIndex, true);
 
             if (canCastSpell)
@@ -63,14 +49,14 @@ public class SpellSpawner : NetworkBehaviour
     public void AttemptSpell(byte slot)
     {
         // Check slot validity
-        if (GetSpellData(spellbookLogic.CurrentBook, slot) == null)
+        if (spellbookLogic.CurrentBook.SpellInSlot(slot) == null)
         {
             Debug.Log($"No spell in slot {slot}");
             return;
         }
 
         // Gets the spell in the slot
-        SpellData spellData = GetSpellData(spellbookLogic.CurrentBook, slot);
+        SpellData spellData = spellbookLogic.CurrentBook.SpellInSlot(slot);
 
         // Check cooldown and mana
         bool canCastSpell = CooldownAndManaAvailable(spellData, slot, false);
@@ -101,7 +87,7 @@ public class SpellSpawner : NetworkBehaviour
             }
         }
     }
-    public bool CooldownAndManaAvailable(SpellData spellData, byte slot, bool modifyOnlyAsClient)
+    public bool CooldownAndManaAvailable(SpellData spellData, byte slot, bool modifyOnlyAsClient)   
     {
         if (spellbookLogic.spellCooldowns[slot] > 0)
         {

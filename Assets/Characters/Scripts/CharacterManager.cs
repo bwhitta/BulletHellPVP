@@ -6,15 +6,17 @@ public class CharacterManager : NetworkBehaviour
     // probably should rename this script, especially once I finalize its functionality
 
     // Fields
-    public string[] SortingLayers;
+    public string[] SortingLayers; // Maybe add as part of another script?
+
     [SerializeField] private GameObject healthBar;
+    [SerializeField] private Vector2[] healthBarPositions;
     [SerializeField] private GameObject manaBar;
+    [SerializeField] private Vector2[] manaBarPositions;
+
     [SerializeField] private string[] inputMapNames;
+    [SerializeField] private string[] characterParentObjectName;
 
     [HideInInspector] public byte CharacterIndex;
-    [HideInInspector] public CharacterInfo OwnerInfo;
-    [HideInInspector] public CharacterInfo OpponentInfo;
-    [HideInInspector] public GameObject CharacterObject;
 
     // Properties
     public string InputMapName => inputMapNames[CharacterIndex];
@@ -30,7 +32,7 @@ public class CharacterManager : NetworkBehaviour
     // Methods
     public override void OnNetworkSpawn()
     {
-        SetCharacterInfo((byte)OwnerClientId);
+        CharacterIndex = (byte)OwnerClientId;
         if (!IsOwnedByServer)
         {
             MultiplayerManager.NonHostClientJoined = true;
@@ -38,17 +40,10 @@ public class CharacterManager : NetworkBehaviour
     }
     private void Start()
     {
-        transform.parent.name = OwnerInfo.name;
+        transform.parent.name = characterParentObjectName[CharacterIndex];
 
         // Position stat bars
-        healthBar.GetComponent<RectTransform>().localPosition = OwnerInfo.HealthBarPosition;
-        manaBar.GetComponent<RectTransform>().localPosition = OwnerInfo.ManaBarPosition;
-    }
-    public void SetCharacterInfo(byte index)
-    {
-        CharacterIndex = index;
-        OwnerInfo = GameSettings.Used.Characters[index];
-
-        
+        healthBar.GetComponent<RectTransform>().localPosition = healthBarPositions[CharacterIndex];
+        manaBar.GetComponent<RectTransform>().localPosition = manaBarPositions[CharacterIndex];
     }
 }

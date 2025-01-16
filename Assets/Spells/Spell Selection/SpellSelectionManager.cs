@@ -68,10 +68,10 @@ public class SpellSelectionManager : MonoBehaviour
         }
 
         // what happens if I start the game when in the battle scene? how does this get started?
-        SpellbookLogic.EquippedBooks = new Spellbook[GameSettings.Used.Characters.Length][];
-        for (int i = 0; i < GameSettings.Used.Characters.Length; i++)
+        SpellbookLogic.EquippedBooks = new Spellbook[GameSettings.Used.MaxCharacters][];
+        for (int i = 0; i < GameSettings.Used.MaxCharacters; i++)
         {
-            SpellbookLogic.EquippedBooks[i] = Spellbook.CreateBooks(GameSettings.Used.SpellSlots);
+            SpellbookLogic.EquippedBooks[i] = Spellbook.CreateBooks(GameSettings.Used.TotalBooks, GameSettings.Used.SpellSlots);
         }
 
         slotPositions = CalculateSlotPositions();
@@ -109,12 +109,12 @@ public class SpellSelectionManager : MonoBehaviour
             Destroy(child.gameObject);
         }
 
-        for (int i = 0; i < GameSettings.Used.SpellSlots; i++)
+        for (byte i = 0; i < GameSettings.Used.SpellSlots; i++)
         {
             GameObject instantiatedDisplay = Instantiate(equippedSpellPrefab, equippedSpellsParent.transform);
 
             Spellbook book = SpellbookLogic.EquippedBooks[CurrentCharacterIndex][currentBookIndex];
-            Sprite icon = SpellSpawner.GetSpellData(book, (byte)i).Icon;
+            Sprite icon = book.SpellInSlot(i).Icon;
 
             instantiatedDisplay.GetComponent<SpriteRenderer>().sprite = icon;
             instantiatedDisplay.transform.position = slotPositions[i];

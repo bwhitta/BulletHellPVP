@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "Spell Sets")]
+[CreateAssetMenu(menuName = "Spell Set")]
 public class SpellSetInfo : ScriptableObject
 {
     public Sprite SetSprite;

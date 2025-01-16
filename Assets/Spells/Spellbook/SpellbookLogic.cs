@@ -8,10 +8,13 @@ public class SpellbookLogic : NetworkBehaviour
     // Fields
     public static Spellbook[][] EquippedBooks;
 
-    [SerializeField] private string nextBookActionName;
     [SerializeField] private Image[] spellDisplays;
     [SerializeField] private Text bookNumber;
     [SerializeField] private CharacterManager characterManager;
+    [SerializeField] private string nextBookActionName;
+    [SerializeField] private Vector2[] spellbookPositions;
+    [SerializeField] private bool overrideFirstBook;
+    [SerializeField] private Spellbook overrideBook;
 
     [HideInInspector] public float[] spellCooldowns;
 
@@ -31,10 +34,12 @@ public class SpellbookLogic : NetworkBehaviour
         }
         
         // Starting position
-        GetComponent<RectTransform>().localPosition = characterManager.OwnerInfo.SpellbookPosition;
+        GetComponent<RectTransform>().localPosition = spellbookPositions[characterManager.CharacterIndex];
 
         // Set up the equipped books if spell selection was skipped (e.g. if the game is run in unity starting in the battle scene)
-        EquippedBooks[characterManager.CharacterIndex] ??= Spellbook.CreateBooks(GameSettings.Used.SpellSlots);
+        EquippedBooks ??= new Spellbook[GameSettings.Used.MaxCharacters][];
+        EquippedBooks[characterManager.CharacterIndex] ??= Spellbook.CreateBooks(GameSettings.Used.TotalBooks, GameSettings.Used.SpellSlots, overrideBook);
+
         RefreshBookUi();
         SetupCooldownUi();
         EnableControls();
@@ -65,6 +70,7 @@ public class SpellbookLogic : NetworkBehaviour
     {
         CooldownTick();
     }
+
     private void CooldownTick()
     {
         for (byte i = 0; i < spellCooldowns.Length; i++)
@@ -72,7 +78,7 @@ public class SpellbookLogic : NetworkBehaviour
             if (spellCooldowns[i] > 0)
             {
                 spellCooldowns[i] -= Mathf.Max(Time.fixedDeltaTime, 0);
-                DisplayCooldown(i, spellCooldowns[i] / SpellDataInSlot(i).SpellCooldown);
+                DisplayCooldown(i, spellCooldowns[i] / CurrentBook.SpellInSlot(i).SpellCooldown);
             }
         }
     }
@@ -82,23 +88,7 @@ public class SpellbookLogic : NetworkBehaviour
         GameObject topBar = bottomBar.transform.GetChild(0).gameObject;
         topBar.GetComponent<Image>().fillAmount = percentFilled;
     }
-    private void RefreshBookUi()
-    {
-        bookNumber.text = (currentBookIndex + 1).ToString();
-        
-        for (byte i = 0; i < spellDisplays.Length; i++)
-        {
-            spellDisplays[i].sprite = SpellDataInSlot(i).Icon;
-        }
-    }
-    private SpellData SpellDataInSlot(byte slotIndex)
-    {
-        byte setIndex = CurrentBook.SetIndexes[slotIndex];
-        byte spellIndex = CurrentBook.SpellIndexes[slotIndex];
-
-        SpellSetInfo setInfo = GameSettings.Used.SpellSets[setIndex];
-        return setInfo.spellsInSet[spellIndex];
-    }
+    
     private void NextBookInputPerformed()
     {
         if (!MultiplayerManager.IsOnline || IsServer)
@@ -121,6 +111,15 @@ public class SpellbookLogic : NetworkBehaviour
             currentBookIndex = (byte)Mathf.Min(currentBookIndex + 1, GameSettings.Used.TotalBooks - 1);
         }
         RefreshBookUi();
+    }
+    private void RefreshBookUi()
+    {
+        bookNumber.text = (currentBookIndex + 1).ToString();
+        
+        for (byte i = 0; i < spellDisplays.Length; i++)
+        {
+            spellDisplays[i].sprite = CurrentBook.SpellInSlot(i).Icon;
+        }
     }
 
     [ServerRpc]
