@@ -4,15 +4,15 @@ using Unity.Netcode;
 
 public class SpellSpawner : NetworkBehaviour
 {
-    // very likely that I'll want to split up this script
-    [SerializeField] private SpellbookLogic spellbookLogic;
     [SerializeField] private CharacterManager characterManager;
+    [SerializeField] private SpellbookLogic spellbookLogic;
     [SerializeField] private CharacterStats characterStats;
     [SerializeField] private GameObject modulePrefab;
     [SerializeField] private string castingActionName;
 
     private void Start()
     {
+        // Set up controls
         InputActionMap controlsMap = ControlsManager.GetActionMap(characterManager.InputMapName);
         InputAction castingAction = controlsMap.FindAction(castingActionName, true);
         castingAction.Enable();
@@ -28,17 +28,14 @@ public class SpellSpawner : NetworkBehaviour
                 return;
             }
 
-            // potentially first check max mana here, and then deduct mana from here for the client-side if the player isn't the host
             SpellData spellData = spellbookLogic.CurrentBook.SpellInSlot(spellbookSlotIndex);
-            bool canCastSpell = CooldownAndManaAvailable(spellData, spellbookSlotIndex, true);
-
-            if (canCastSpell)
+            if (CooldownAndManaAvailable(spellData, spellbookSlotIndex))
             {
                 AttemptSpellServerRpc(spellbookSlotIndex);
             }
             else
             {
-                Debug.Log("Skipped casting spell - there is not enough mana or the spell is on cooldown.");
+                Debug.Log($"Skipped casting spell - there is not enough mana or the spell is on cooldown.");
             }
         }
         else
@@ -48,25 +45,34 @@ public class SpellSpawner : NetworkBehaviour
     }
     public void AttemptSpell(byte slot)
     {
-        // Check slot validity
-        if (spellbookLogic.CurrentBook.SpellInSlot(slot) == null)
-        {
-            Debug.Log($"No spell in slot {slot}");
-            return;
-        }
-
-        // Gets the spell in the slot
         SpellData spellData = spellbookLogic.CurrentBook.SpellInSlot(slot);
 
         // Check cooldown and mana
-        bool canCastSpell = CooldownAndManaAvailable(spellData, slot, false);
-        if (canCastSpell == false)
+        if (!CooldownAndManaAvailable(spellData, slot))
+        {
+            Debug.Log($"Skipped casting spell - there is not enough mana or the spell is on cooldown.");
             return;
-        
+        }
+
+        // not entirely sure what this does. I think its for if you cast when you are the non-host client?  
+        if (MultiplayerManager.IsOnline && !IsServer)
+        {
+            Debug.Log("Deducting mana!");
+            spellbookLogic.spellCooldowns[slot] = spellData.SpellCooldown;
+            characterStats.CurrentMana -= spellData.ManaCost;
+            if (!IsServer)
+            {
+                characterStats.ManaAwaiting += spellData.ManaCost;
+                characterStats.ManaAwaitingCountdown = GameSettings.Used.ManaAwaitingTimeLimit;
+            }
+        }
+
+        // Summon each module
         for (byte i = 0; i < spellData.UsedModules.Length; i++)
         {
             SpellData.Module module = spellData.UsedModules[i];
 
+            // Returns an array because some modules will spawn more than one object
             SpellModuleBehavior[] moduleBehaviors = InstantiateModule(module);
 
             for (byte j = 0; j < moduleBehaviors.Length; j++)
@@ -75,7 +81,7 @@ public class SpellSpawner : NetworkBehaviour
                 behavior.setIndex = spellbookLogic.CurrentBook.SetIndexes[slot];
                 behavior.spellIndex = spellbookLogic.CurrentBook.SpellIndexes[slot];
                 behavior.moduleIndex = i;
-                behavior.behaviorId = j;
+                behavior.behaviorIndex = j;
                 behavior.ownerId = (byte)OwnerClientId;
                 
                 if (IsServer)
@@ -87,34 +93,10 @@ public class SpellSpawner : NetworkBehaviour
             }
         }
     }
-    public bool CooldownAndManaAvailable(SpellData spellData, byte slot, bool modifyOnlyAsClient)   
+    // modifyOnlyAsClient should be seperated out
+    public bool CooldownAndManaAvailable(SpellData spellData, byte spellbookSlot)
     {
-        if (spellbookLogic.spellCooldowns[slot] > 0)
-        {
-            Debug.Log("Spell on cooldown.");
-            return false;
-        }
-        else if (spellData.ManaCost > characterStats.CurrentMana)
-        {
-            Debug.Log("Not enough mana.");
-            return false;
-        }
-        else
-        {
-            if ((modifyOnlyAsClient && IsServer) == false)
-            {
-                Debug.Log("Deducting mana!");
-                spellbookLogic.spellCooldowns[slot] = spellData.SpellCooldown;
-                characterStats.CurrentMana -= spellData.ManaCost;
-                if (!IsServer)
-                {
-                    characterStats.ManaAwaiting += spellData.ManaCost;
-                    characterStats.ManaAwaitingCountdown = GameSettings.Used.ManaAwaitingTimeLimit;
-                }
-            }
-            
-            return true;
-        }
+        return spellbookLogic.spellCooldowns[spellbookSlot] > 0 || spellData.ManaCost > characterStats.CurrentMana;
     }
     private SpellModuleBehavior[] InstantiateModule(SpellData.Module module)
     {

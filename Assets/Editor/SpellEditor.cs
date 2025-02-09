@@ -10,11 +10,9 @@ public class SpellEditor : Editor
     // Variables by group they are displayed in
     private readonly string[] SpellInfoGroup = new[]
     {
-        "SpellName",
         "ManaCost",
         "SpellCooldown",
         "Icon",
-        "Description"
     };
     #region Projectile
     private readonly string[] ProjectileGroup = new[]
@@ -95,7 +93,7 @@ public class SpellEditor : Editor
                 }
                 break;
             case SpellData.ModuleTypes.PlayerAttached:
-                DisplayGroupFromModule(module, PlayerAttachedGroup);
+                /* DisplayGroupFromModule(module, PlayerAttachedGroup);
 
                 if (DisplayToggleFromModule(module, "PushesPlayer", 1))
                 {
@@ -109,7 +107,7 @@ public class SpellEditor : Editor
                 if (DisplayToggleFromModule(module, "AffectsPlayerMovement", 1))
                 {
                     DisplayGroupFromModule(module, AffectsPlayerMovementGroup, 2);
-                }
+                } DISABLED FOR RESTRUCTURING */
                 break;
         }
 
@@ -343,4 +341,4 @@ public class SpellEditor : Editor
 
         EditorGUILayout.Space(spaceWidth);
     }*/
-}
+        }

@@ -15,15 +15,6 @@ public class CharacterControls : NetworkBehaviour
     
     private Animator characterAnimator;
     private CharacterManager characterManager;
-    
-    public class TempMovementMod
-    {
-        public Vector2 tempPush = Vector2.zero;
-        public float tempMovementMod = 1f;
-        public bool removeEffect = false;
-        // public ushort lifetime; Not using for now, should instead change removeEffect from the SpellModuleBehavior
-    }
-    public List<TempMovementMod> tempMovementMods = new();
 
     // Methods
     private void Awake()
@@ -65,8 +56,6 @@ public class CharacterControls : NetworkBehaviour
             OwnerMovementTick();
         }
 
-        // Counts down the remaining time on temporary movement effects
-        TempMovementTick();
 
         // Local Methods
         void OwnerMovementTick()
@@ -81,46 +70,16 @@ public class CharacterControls : NetworkBehaviour
                 MoveCharacterServerRpc(movementInput, transform.position);
             }
         }
-        void TempMovementTick()
-        {
-            foreach (TempMovementMod tempMod in tempMovementMods)
-            {
-                if (tempMod.removeEffect)
-                {
-                    Debug.Log($"this seems to be set up in the dumbest possible way, why does the tempMod not just have a built in timer?? delete me later.");
-                    tempMovementMods.Remove(tempMod);
-                }
-            }
-        }
     }
     private void MoveCharacter(Vector2 movementInput)
     {
-        Vector3 movement = GameSettings.Used.CharacterMovementSpeed * CalculateTempMovementMod() * movementInput.normalized;
+        Vector3 movement = GameSettings.Used.CharacterMovementSpeed * movementInput.normalized;
 
-        transform.position += (movement + (Vector3)CalculateTempPush()) * Time.fixedDeltaTime;
+        transform.position += movement * Time.fixedDeltaTime;
 
         characterAnimator.SetFloat(animatorTreeParameterX, movementInput.x);
         characterAnimator.SetFloat(animatorTreeParameterY, movementInput.y);
 
-        // Local Methods
-        float CalculateTempMovementMod()
-        {
-            float movementMod = 1f;
-            foreach (TempMovementMod tempMod in tempMovementMods)
-            {
-                movementMod *= tempMod.tempMovementMod;
-            }
-            return movementMod;
-        }
-        Vector2 CalculateTempPush()
-        {
-            Vector2 movementMod = Vector2.zero;
-            foreach (TempMovementMod tempMod in tempMovementMods)
-            {
-                movementMod += tempMod.tempPush;
-            }
-            return movementMod;
-        }
     }
 
     // Rpcs
