@@ -151,9 +151,9 @@ public class CharacterStats : NetworkBehaviour
             return;
         }
 
-        if (collision.GetComponent<SpellModuleBehavior>() != null)
+        if (collision.GetComponent<SpellInfoLogic>() != null)
         {
-            SpellModuleBehavior collisionSpellBehavior = collision.GetComponent<SpellModuleBehavior>();
+            SpellInfoLogic collisionSpellBehavior = collision.GetComponent<SpellInfoLogic>();
             if (remainingInvincibilityTime <= 0 && collisionSpellBehavior.Module.AbilityDealsDamage)
             {
                 DamageDealt(collisionSpellBehavior);
@@ -161,7 +161,7 @@ public class CharacterStats : NetworkBehaviour
         }
 
         // Local Methods
-        void DamageDealt(SpellModuleBehavior collisionSpellBehavior)
+        void DamageDealt(SpellInfoLogic collisionSpellBehavior)
         {
             remainingInvincibilityTime = GameSettings.Used.InvincibilityTime;
             SetChildAlpha(GameSettings.Used.InvincibilityAlphaMod);

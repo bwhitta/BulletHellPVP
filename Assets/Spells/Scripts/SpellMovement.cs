@@ -3,17 +3,28 @@ using Unity.Netcode;
 
 public class SpellMovement : NetworkBehaviour
 {
-    private float distanceMoved; //used for 
-    private readonly NetworkVariable<Vector2> serverSidePosition = new();
+    // Fields
+    private readonly float outOfBoundsDistance = 15f;
+    private float distanceMoved;
     private int ticksSincePositionUpdate;
+
+    private SpellInfoLogic spellModuleBehavior; // rename as soon as I rename the spellModuleBehavior script;
     
-    private SpellModuleBehavior spellModuleBehavior; // rename as soon as I rename the spellModuleBehavior script;
-    SpellData.Module Module => spellModuleBehavior.Module; // probably remove this property and just access the other script once I rename it
+    private readonly NetworkVariable<Vector2> serverSidePosition = new();
+
+    // Properties
+    SpellModule Module => spellModuleBehavior.Module; // probably remove this property and just access the other script once I rename it
     
     // Methods
     private void Start()
     {
-        spellModuleBehavior = GetComponent<SpellModuleBehavior>();
+        /*if (!MultiplayerManager.IsOnline || IsServer)
+        {
+            // probably should rework this anyways so that it only tracks the cursor's position on cast if it matters (if it tracks it at all)
+            cursorPositionOnCast = OwnerCharacterInfo.CursorLogicScript.location;
+        } REMOVED FOR RESTRUCTURING, this also will probably have to go somewhere else */
+
+        spellModuleBehavior = GetComponent<SpellInfoLogic>();
 
         transform.position = StartingPosition();
         
@@ -30,10 +41,10 @@ public class SpellMovement : NetworkBehaviour
     {
         switch (Module.ProjectileSpawningArea)
         {
-            case SpellData.SpawningArea.Point:
+            case SpellModule.SpawningArea.Point:
                 // transform.position = CursorMovement.CalculateCursorTransform(cursorPositionOnCast, OwnerCharacterInfo.OpponentAreaCenter); 
                 return new(); // TEMPORARY DURING RESTRUCTURING;
-            case SpellData.SpawningArea.AdjacentCorners:
+            case SpellModule.SpawningArea.AdjacentCorners:
                 // Turns the float position of the cursor into a rotation.
                 //int side = CursorMovement.SquareSideAtPosition(GameSettings.Used.BattleSquareWidth, cursorLocationOnCast); REMOVED FOR RESTRUCTURING
                 // Quaternion cursorAngleOnCast = Quaternion.Euler(0, 0, (-90 * side) - 90); // no clue why I use -90 and not 90 here, but that's what I did for other parts of the code so I won't question it. REMOVED FOR RESTRUCTURING                
@@ -65,15 +76,60 @@ public class SpellMovement : NetworkBehaviour
     {
         if (IsServer) ServerPositionTick();
         
+        // okay bit weird how most module types aren't moving, I'll have to look at possibly rearranging this more. maybe it's fine tho
         switch (Module.ModuleType)
         {
-            case SpellData.ModuleTypes.Projectile:
-                MoveSpell();
+            case SpellModule.ModuleTypes.Projectile:
+                MoveProjectileSpell();
                 break;
+        }
+
+        // Delete if too far away
+        CheckBounds();
+
+        // Local Methods 
+        void CheckBounds()
+        {
+            float distanceFromCenter = Vector2.Distance(transform.position, Vector2.zero);
+            if (distanceFromCenter >= outOfBoundsDistance)
+            {
+                Debug.Log($"Deleted spell - out of bounds");
+                spellModuleBehavior.DestroySelfNetworkSafe();
+            }
         }
     }
 
-    private void MoveSpell()
+    /*private void UpdateScaling()
+    {
+        float distanceToMove = GameSettings.Used.BattleSquareWidth / 2;
+        float distanceForScaling = distanceToMove * Module.ScalingStartPercent;
+
+        if (distanceMoved >= distanceForScaling)
+        {
+            float currentScale = Scaling(distanceToMove, Module.ScalingStartPercent, distanceMoved, Module.MaxScaleMultiplier - 1);
+            transform.localScale = new Vector3(Module.InstantiationScale * currentScale, Module.InstantiationScale * currentScale, 1);
+        }
+
+        if (distanceMoved >= distanceToMove && Module.DestroyOnScalingCompleted)
+        {
+            Debug.Log($"Fully moved, destroying {name}. Distance moved: {distanceMoved}. Distance to move: {distanceToMove}");
+            DestroySelfNetworkSafe();
+        }
+
+    }
+    private float Scaling(float totalMove, float totalMoveScalingStartPercent, float currentlyMoved, float scaleTargetPercentage)
+    {
+        // The position along totalMove at which scaling starts
+        float scalingStart = totalMove * totalMoveScalingStartPercent;
+        // The percentage (0.0 to 1.0) of scaling completed
+        float scalingCompletionPercentage = (currentlyMoved - scalingStart) / (totalMove - scalingStart);
+        // Cap at 1.0 (100%)
+        scalingCompletionPercentage = Mathf.Min(scalingCompletionPercentage, 1f);
+
+        return (scaleTargetPercentage * scalingCompletionPercentage) + 1f;
+    } REMOVED FOR RESTRUCTURING, this stuff probably doesn't really fit in SpellMovement*/
+
+    private void MoveProjectileSpell()
     {
         // Move the spell
         /*if (Module.MovementType == SpellData.MovementTypes.Linear)
@@ -101,7 +157,7 @@ public class SpellMovement : NetworkBehaviour
         /*if (Module.ScalesOverTime)
             UpdateScaling(); REMOVED FOR RESTRUCTURING */
     }
-    private void PointTowardsTarget()
+    /*private void PointTowardsTarget()
     {
         // If TargetingType is CharacterStats, point towards the character
         switch (Module.TargetingType)
@@ -117,7 +173,7 @@ public class SpellMovement : NetworkBehaviour
                 Debug.LogWarning("Targeting type is not yet implemented.");
                 break;
         }
-    }
+    }*/
     private void ServerPositionTick()
     {
         // Discrepancy checks

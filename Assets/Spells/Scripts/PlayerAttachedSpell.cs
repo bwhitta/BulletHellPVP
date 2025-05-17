@@ -3,25 +3,25 @@ using UnityEngine;
 public class PlayerAttachedSpell : MonoBehaviour
 {
     // Fields
-    private SpellModuleBehavior spellModuleBehavior; // rename as soon as I rename the spellModuleBehavior script;
+    private SpellInfoLogic spellModuleBehavior; // rename as soon as I rename the spellModuleBehavior script;
 
     // Properties
-    SpellData.Module Module => spellModuleBehavior.Module;
+    SpellModule Module => spellModuleBehavior.Module;
     
     private void Start()
     {
-        spellModuleBehavior = GetComponent<SpellModuleBehavior>();
+        spellModuleBehavior = GetComponent<SpellInfoLogic>();
 
         // Attach module (if applicable)
-        if (Module.ModuleType == SpellData.ModuleTypes.PlayerAttached)
+        /*if (Module.ModuleType == SpellData.ModuleTypes.PlayerAttached)
         {
             // Set up parenting
-            //transform.parent = OwnerCharacterInfo.CharacterObject.transform; REMOVED FOR RESTRUCTURING
-            //transform.localPosition = Vector2.zero; REMOVED FOR RESTRUCTURING
+            transform.parent = OwnerCharacterInfo.CharacterObject.transform;
+            transform.localPosition = Vector2.zero;
 
             // Set how long the spell should last
-            // attachmentTime = Module.AttachmentTime; REMOVED FOR RESTRUCTURING
-        }
+            attachmentTime = Module.AttachmentTime;
+        } DISABLED FOR RESTRUCTURING */
     }
 
     private void FixedUpdate()

@@ -16,7 +16,7 @@ public class SpellbookLogic : NetworkBehaviour
     [SerializeField] private bool overrideFirstBook;
     [SerializeField] private Spellbook overrideBook;
 
-    [HideInInspector] public float[] spellCooldowns;
+    [HideInInspector] public float[] SpellCooldowns;
 
     private byte currentBookIndex;
     private readonly NetworkVariable<byte> ServerBookIndex = new();
@@ -52,7 +52,7 @@ public class SpellbookLogic : NetworkBehaviour
         }
         void SetupCooldownUi()
         {
-            spellCooldowns = new float[GameSettings.Used.SpellSlots];
+            SpellCooldowns = new float[GameSettings.Used.SpellSlots];
             for (byte i = 0; i < GameSettings.Used.SpellSlots; i++)
             {
                 DisplayCooldown(i, 0);
@@ -73,12 +73,12 @@ public class SpellbookLogic : NetworkBehaviour
 
     private void CooldownTick()
     {
-        for (byte i = 0; i < spellCooldowns.Length; i++)
+        for (byte i = 0; i < SpellCooldowns.Length; i++)
         {
-            if (spellCooldowns[i] > 0)
+            if (SpellCooldowns[i] > 0)
             {
-                spellCooldowns[i] -= Mathf.Max(Time.fixedDeltaTime, 0);
-                DisplayCooldown(i, spellCooldowns[i] / CurrentBook.SpellInSlot(i).SpellCooldown);
+                SpellCooldowns[i] -= Mathf.Max(Time.fixedDeltaTime, 0);
+                DisplayCooldown(i, SpellCooldowns[i] / CurrentBook.SpellInSlot(i).SpellCooldown);
             }
         }
     }

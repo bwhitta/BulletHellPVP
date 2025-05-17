@@ -2,8 +2,9 @@ using UnityEngine;
 
 public class SpellCollisions : MonoBehaviour
 {
+    /*
     // Fields
-    private SpellModuleBehavior spellModuleBehavior; // rename as soon as I rename the spellModuleBehavior script;
+    private SpellInfoLogic spellModuleBehavior; // rename as soon as I rename the spellModuleBehavior script;
 
     // Properties
     SpellData.Module Module => spellModuleBehavior.Module;
@@ -11,7 +12,7 @@ public class SpellCollisions : MonoBehaviour
     // Methods
     private void Start()
     {
-        spellModuleBehavior = GetComponent<SpellModuleBehavior>();
+        spellModuleBehavior = GetComponent<SpellInfoLogic>();
 
         if (Module.UsesCollider)
         {
@@ -23,5 +24,5 @@ public class SpellCollisions : MonoBehaviour
         PolygonCollider2D collider = GetComponent<PolygonCollider2D>();
         collider.enabled = true;
         collider.points = Module.ColliderPath;
-    }
+    } DISABLED FOR RESTRUCTURING*/
 }

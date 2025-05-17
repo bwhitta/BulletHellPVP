@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a372dad88a8f2da4ba639dfa175c1f10, type: 3}
+  m_Name: Test Module
+  m_EditorClassIdentifier: 
+  FoldoutOpen: 0
+  ModuleType: 0
+  ProjectileSpawningArea: 0
+  TargetingType: 0
+  MovementType: 0
+  MovementSpeed: 0
+  AbilityDealsDamage: 0
+  Damage: 0
+  InstantiationQuantity: 0
+  InstantiationScale: 0
+  UsesCollider: 0
+  ColliderPath: []
+  SpellUsesSprite: 0
+  UsedSprite: {fileID: 0}
+  Animated: 0
+  AnimatorController: {fileID: 0}
+  MultipartAnimationPrefabs: []
+  AnimationScaleMultiplier: 0
+  GeneratesParticles: 0
+  ParticleSystemPrefab: {fileID: 0}
+  ParticleSystemZ: 0
+  ScalesOverTime: 0
+  ScalingStartPercent: 0
+  MaxScaleMultiplier: 0
+  DestroyOnScalingCompleted: 0

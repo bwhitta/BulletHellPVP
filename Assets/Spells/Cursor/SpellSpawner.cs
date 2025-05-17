@@ -29,13 +29,11 @@ public class SpellSpawner : NetworkBehaviour
             }
 
             SpellData spellData = spellbookLogic.CurrentBook.SpellInSlot(spellbookSlotIndex);
+
+            // Checks mana and cooldown on client first before sending attempt to server
             if (CooldownAndManaAvailable(spellData, spellbookSlotIndex))
             {
                 AttemptSpellServerRpc(spellbookSlotIndex);
-            }
-            else
-            {
-                Debug.Log($"Skipped casting spell - there is not enough mana or the spell is on cooldown.");
             }
         }
         else
@@ -53,60 +51,54 @@ public class SpellSpawner : NetworkBehaviour
             Debug.Log($"Skipped casting spell - there is not enough mana or the spell is on cooldown.");
             return;
         }
-
+        
         // not entirely sure what this does. I think its for if you cast when you are the non-host client?  
         if (MultiplayerManager.IsOnline && !IsServer)
         {
             Debug.Log("Deducting mana!");
-            spellbookLogic.spellCooldowns[slot] = spellData.SpellCooldown;
+            spellbookLogic.SpellCooldowns[slot] = spellData.SpellCooldown;
             characterStats.CurrentMana -= spellData.ManaCost;
-            if (!IsServer)
-            {
-                characterStats.ManaAwaiting += spellData.ManaCost;
-                characterStats.ManaAwaitingCountdown = GameSettings.Used.ManaAwaitingTimeLimit;
-            }
+            
+            characterStats.ManaAwaiting += spellData.ManaCost;
+            characterStats.ManaAwaitingCountdown = GameSettings.Used.ManaAwaitingTimeLimit;
         }
 
         // Summon each module
         for (byte i = 0; i < spellData.UsedModules.Length; i++)
         {
-            SpellData.Module module = spellData.UsedModules[i];
+            InstantiateModule(spellData.UsedModules[i], slot, i);
+        }
+    }
+    private void InstantiateModule(SpellModule module, byte slot, byte moduleIndex)
+    {
+        SpellInfoLogic[] spellObjects = new SpellInfoLogic[module.InstantiationQuantity];
 
-            // Returns an array because some modules will spawn more than one object
-            SpellModuleBehavior[] moduleBehaviors = InstantiateModule(module);
+        for (byte i = 0; i < module.InstantiationQuantity; i++)
+        {
+            SpellInfoLogic spellObject = Instantiate(modulePrefab).GetComponent<SpellInfoLogic>();
+            
+            // Give any necessary info to the spell object
+            spellObject.SetIndex = spellbookLogic.CurrentBook.SetIndexes[slot];
+            spellObject.SpellIndex = spellbookLogic.CurrentBook.SpellIndexes[slot];
+            spellObject.ModuleIndex = moduleIndex;
+            spellObject.ModuleObjectIndex = i;
+            spellObject.OwnerId = (byte)OwnerClientId;
+            spellObjects[i] = spellObject;
 
-            for (byte j = 0; j < moduleBehaviors.Length; j++)
+            if (IsServer)
             {
-                SpellModuleBehavior behavior = moduleBehaviors[j]; 
-                behavior.setIndex = spellbookLogic.CurrentBook.SetIndexes[slot];
-                behavior.spellIndex = spellbookLogic.CurrentBook.SpellIndexes[slot];
-                behavior.moduleIndex = i;
-                behavior.behaviorIndex = j;
-                behavior.ownerId = (byte)OwnerClientId;
-                
-                if (IsServer)
-                {
-                    NetworkObject moduleObject = behavior.gameObject.GetComponent<NetworkObject>();
-                    moduleObject.Spawn(true);
-                    Debug.Log($"Spawned behavior {behavior} online");
-                }
+                NetworkObject spellNetworkObject = spellObject.GetComponent<NetworkObject>();
+                spellNetworkObject.Spawn(true);
+                Debug.Log($"Spawned behavior {spellObjects} online");
             }
         }
     }
-    // modifyOnlyAsClient should be seperated out
     public bool CooldownAndManaAvailable(SpellData spellData, byte spellbookSlot)
     {
-        return spellbookLogic.spellCooldowns[spellbookSlot] > 0 || spellData.ManaCost > characterStats.CurrentMana;
-    }
-    private SpellModuleBehavior[] InstantiateModule(SpellData.Module module)
-    {
-        SpellModuleBehavior[] spellBehaviors = new SpellModuleBehavior[module.InstantiationQuantity];
-
-        for (var i = 0; i < module.InstantiationQuantity; i++)
-        {
-            spellBehaviors[i] = Instantiate(modulePrefab).GetComponent<SpellModuleBehavior>();
-        }
-        return spellBehaviors;
+        Debug.Log($"spellData: {spellData.name}, spellbookSlot: {spellbookSlot}, spellData.ManaCost: {spellData.ManaCost}, spellbookLogic.spellCooldowns[spellbookSlot]: {spellbookLogic.SpellCooldowns[spellbookSlot]}");
+        bool cooldownAvailable = spellbookLogic.SpellCooldowns[spellbookSlot] == 0;
+        bool manaAvailable = spellData.ManaCost < characterStats.CurrentMana;
+        return cooldownAvailable && manaAvailable;
     }
 
     [ServerRpc]

@@ -18,10 +18,58 @@ MonoBehaviour:
   SpellSets:
   - {fileID: 11400000, guid: 2254d440d774c7045a553d3c6a640f6e, type: 2}
   - {fileID: 11400000, guid: 696f88c2f7e58bb44b74c4601b71fd84, type: 2}
+  TempModulesTest:
+  - FoldoutOpen: 0
+    ModuleType: 0
+    ProjectileSpawningArea: 0
+    TargetingType: 0
+    MovementType: 0
+    MovementSpeed: 0
+    AbilityDealsDamage: 0
+    Damage: 0
+    InstantiationQuantity: 0
+    InstantiationScale: 0
+    UsesCollider: 0
+    ColliderPath: []
+    SpellUsesSprite: 0
+    UsedSprite: {fileID: 0}
+    Animated: 0
+    AnimatorController: {fileID: 0}
+    MultipartAnimationPrefabs: []
+    AnimationScaleMultiplier: 0
+    GeneratesParticles: 0
+    ParticleSystemPrefab: {fileID: 0}
+    ParticleSystemZ: 0
+    ScalesOverTime: 0
+    ScalingStartPercent: 0
+    MaxScaleMultiplier: 0
+    DestroyOnScalingCompleted: 0
+  - FoldoutOpen: 0
+    ModuleType: 0
+    ProjectileSpawningArea: 0
+    TargetingType: 0
+    MovementType: 0
+    MovementSpeed: 0
+    AbilityDealsDamage: 0
+    Damage: 0
+    InstantiationQuantity: 0
+    InstantiationScale: 0
+    UsesCollider: 0
+    ColliderPath: []
+    SpellUsesSprite: 0
+    UsedSprite: {fileID: 0}
+    Animated: 0
+    AnimatorController: {fileID: 0}
+    MultipartAnimationPrefabs: []
+    AnimationScaleMultiplier: 0
+    GeneratesParticles: 0
+    ParticleSystemPrefab: {fileID: 0}
+    ParticleSystemZ: 0
+    ScalesOverTime: 0
+    ScalingStartPercent: 0
+    MaxScaleMultiplier: 0
+    DestroyOnScalingCompleted: 0
   BattleSquareWidth: 7.5
-  Characters:
-  - {fileID: 11400000, guid: 78760bb3a3bdc6f40a42de23b6e09442, type: 2}
-  - {fileID: 11400000, guid: 54331a60389e0df4a9a8faa6f1473c05, type: 2}
   MaxCharacters: 2
   CharacterMovementSpeed: 3.5
   MaxHealth: 100
