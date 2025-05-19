@@ -1,18 +1,13 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "Spell Module")]
-public class SpellModule : ScriptableObject
+[System.Serializable]
+public class SpellModule
 {
     public enum SpawningArea { Point, AdjacentCorners }
     public enum TargetTypes { Opponent, Center, Opposing, InvertedOpposing, NotApplicable }
     public enum MovementTypes { Linear, Wall }
     public enum ModuleTypes { Projectile, PlayerAttached }
-    
-    /*Hidden*/
-    public bool FoldoutOpen;
-
+        
     public ModuleTypes ModuleType;
     /* -- ModuleType: Projectile -- */
     public SpawningArea ProjectileSpawningArea;
@@ -22,8 +17,8 @@ public class SpellModule : ScriptableObject
     public bool AbilityDealsDamage;
     public float Damage;
     /* -- ModuleType: PlayerAttached -- */
-    /* public float AttachmentTime;
-    public bool PushesPlayer;
+    public float AttachmentTime;
+    /*public bool PushesPlayer;
     public float PlayerPushSpeed;
     public bool SpriteFacingPush;
     public bool AngleAfterStart;

@@ -10,13 +10,13 @@ public class LoadBattle : MonoBehaviour
         // When online, only show the start button to the host
         if (MultiplayerManager.IsOnline)
         {
-            LobbyManager lobbyManager = FindObjectsOfType<LobbyManager>()[0];
+            LobbyManager lobbyManager = FindFirstObjectByType<LobbyManager>();
             if (lobbyManager == null)
             {
                 Debug.LogError("lobby null!");
             }
-
             gameObject.SetActive(lobbyManager.IsLobbyHost);
+            
         }
     }
 
@@ -25,7 +25,7 @@ public class LoadBattle : MonoBehaviour
         // Uses the LobbyManager to start the game when playing online, otherwise just loads the scene.
         if (MultiplayerManager.IsOnline)
         {
-            LobbyManager lobbyManager = FindObjectsOfType<LobbyManager>()[0];
+            LobbyManager lobbyManager = FindFirstObjectByType<LobbyManager>();
             
             Debug.Log($"Starting game online");
             lobbyManager.HostStartGame();

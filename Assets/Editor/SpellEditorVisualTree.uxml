@@ -1,9 +1,19 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
     <Style src="project://database/Assets/Editor/SpellDataEditorStyle.uss?fileID=7433441132597879392&amp;guid=68f4f6728a1b91a42871248fa4e8dcde&amp;type=3#SpellDataEditorStyle" />
-    <ui:Label text="Spell Info" display-tooltip-when-elided="true" style="-unity-font-style: bold;" />
-    <uie:PropertyField name="ManaCost" binding-path="ManaCost" />
-    <uie:PropertyField binding-path="SpellCooldown" name="SpellCooldown" />
-    <uie:PropertyField name="Icon" binding-path="Icon" />
-    <ui:Toggle label="Toggle" name="TestBool" />
-    <ui:ListView binding-path="UsedModules" virtualization-method="DynamicHeight" header-title="Test" name="UsedModules" selection-type="None" show-border="true" />
+    <ui:Label text="Spell Info" style="-unity-font-style: bold;" />
+    <uie:PropertyField binding-path="ShowMana" name="ShowMana" />
+    <ui:VisualElement name="ShowManaHides" class="indented">
+        <uie:PropertyField name="ManaCost" binding-path="ManaCost" />
+    </ui:VisualElement>
+    <uie:PropertyField binding-path="ShowCooldown" name="ShowCooldown" />
+    <ui:VisualElement name="ShowCooldownHides" class="indented">
+        <uie:PropertyField binding-path="SpellCooldown" name="SpellCooldown" />
+    </ui:VisualElement>
+    <uie:PropertyField name="ShowIcon" binding-path="ShowIcon" />
+    <ui:VisualElement name="ShowIconHides" class="indented">
+        <uie:PropertyField name="Icon" binding-path="Icon" />
+    </ui:VisualElement>
+    <ui:VisualElement name="Spacer" class="spacer" />
+    <ui:Label text="Modules" style="-unity-font-style: bold;" />
+    <ui:ListView binding-path="UsedModules" name="UsedModules" show-border="true" selection-type="None" virtualization-method="DynamicHeight" />
 </ui:UXML>

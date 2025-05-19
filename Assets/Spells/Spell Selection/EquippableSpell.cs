@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -24,7 +25,7 @@ public class EquippableSpell : MonoBehaviour
             transform.position = mouseWorldPos;
         }
     }
-    
+
     // Methods
     private void OnMouseDown()
     {

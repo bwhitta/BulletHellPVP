@@ -12,9 +12,57 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8a08710c6bdc2c44da560834e93877dd, type: 3}
   m_Name: TestSpell
   m_EditorClassIdentifier: 
-  ManaCost: 0
-  SpellCooldown: 0
+  ManaCost: 4
+  SpellCooldown: 5
   Icon: {fileID: 0}
   UsedModules:
-  - {fileID: 0}
-  - {fileID: 0}
+  - ModuleType: 0
+    ProjectileSpawningArea: 0
+    TargetingType: 0
+    MovementType: 0
+    MovementSpeed: 0
+    AbilityDealsDamage: 0
+    Damage: 0
+    AttachmentTime: 0
+    InstantiationQuantity: 0
+    InstantiationScale: 0
+    UsesCollider: 0
+    ColliderPath: []
+    SpellUsesSprite: 0
+    UsedSprite: {fileID: 0}
+    Animated: 0
+    AnimatorController: {fileID: 0}
+    MultipartAnimationPrefabs: []
+    AnimationScaleMultiplier: 0
+    GeneratesParticles: 0
+    ParticleSystemPrefab: {fileID: 0}
+    ParticleSystemZ: 0
+    ScalesOverTime: 0
+    ScalingStartPercent: 0
+    MaxScaleMultiplier: 0
+    DestroyOnScalingCompleted: 0
+  - ModuleType: 0
+    ProjectileSpawningArea: 0
+    TargetingType: 0
+    MovementType: 0
+    MovementSpeed: 0
+    AbilityDealsDamage: 0
+    Damage: 0
+    AttachmentTime: 0
+    InstantiationQuantity: 0
+    InstantiationScale: 0
+    UsesCollider: 0
+    ColliderPath: []
+    SpellUsesSprite: 0
+    UsedSprite: {fileID: 0}
+    Animated: 0
+    AnimatorController: {fileID: 0}
+    MultipartAnimationPrefabs: []
+    AnimationScaleMultiplier: 0
+    GeneratesParticles: 0
+    ParticleSystemPrefab: {fileID: 0}
+    ParticleSystemZ: 0
+    ScalesOverTime: 0
+    ScalingStartPercent: 0
+    MaxScaleMultiplier: 0
+    DestroyOnScalingCompleted: 0

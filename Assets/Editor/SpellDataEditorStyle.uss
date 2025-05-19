@@ -1,0 +1,7 @@
+.indented {
+    margin-left: 15px;
+}
+
+.spacer {
+    height: 12px;
+}

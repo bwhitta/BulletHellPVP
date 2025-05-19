@@ -64,7 +64,7 @@ public class SpellSelectionManager : MonoBehaviour
     {
         if (MultiplayerManager.IsOnline)
         {
-            lobbyManager = FindObjectOfType<LobbyManager>();
+            lobbyManager = FindFirstObjectByType<LobbyManager>();
         }
 
         // what happens if I start the game when in the battle scene? how does this get started?
