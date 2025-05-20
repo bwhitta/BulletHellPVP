@@ -154,7 +154,7 @@ public class CharacterStats : NetworkBehaviour
         if (collision.GetComponent<SpellInfoLogic>() != null)
         {
             SpellInfoLogic collisionSpellBehavior = collision.GetComponent<SpellInfoLogic>();
-            if (remainingInvincibilityTime <= 0 && collisionSpellBehavior.Module.AbilityDealsDamage)
+            if (remainingInvincibilityTime <= 0 && collisionSpellBehavior.Module.DealsDamage)
             {
                 DamageDealt(collisionSpellBehavior);
             }

@@ -1,70 +1,75 @@
-using System.Threading.Tasks;
+using System.Collections.Generic;
 using UnityEditor;
-using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
+using static EditorUtilities;
 
-[CustomPropertyDrawer(typeof(SpellModule))]
+[CustomPropertyDrawer(typeof(SpellModule), true)]
 public class SpellModuleEditor : PropertyDrawer
 {
-    private readonly string[] hiderBoolNames = { };
-    private readonly string[] hiddenElementsNames = { };
-    private readonly string[] hiderBoolPropertyNames = { };
+    private readonly HiderBoolInfo[] hiderBoolInfos = 
+    {
+        new() { BoolFieldName = "DealsDamage", BoolPropertyName = "DealsDamage", HiddenElementName = "DealsDamageHides" },
+        new() { BoolFieldName = "UsesCollider", BoolPropertyName = "UsesCollider", HiddenElementName = "UsesColliderHides" },
+        new() { BoolFieldName = "SpellUsesSprite", BoolPropertyName = "SpellUsesSprite", HiddenElementName = "SpellUsesSpriteHides" },
+        new() { BoolFieldName = "UsesAnimation", BoolPropertyName = "UsesAnimation", HiddenElementName = "UsesAnimationHides" },
+        new() { BoolFieldName = "GeneratesParticles", BoolPropertyName = "GeneratesParticles", HiddenElementName = "GeneratesParticlesHides" },
+        new() { BoolFieldName = "ScalesOverTime", BoolPropertyName = "ScalesOverTime", HiddenElementName = "ScalesOverTimeHides" }
+    };
 
-    private PropertyField[] hiderBools; // maybe these will just be locals, idk
-    private VisualElement[] hiddenElements;
-    private SerializedProperty[] hiderBoolProperties;
-    
+    private readonly SwitcherEnumInfo[] switcherEnumInfos =
+    {
+        new() { EnumFieldName = "ModuleType", EnumPropertyName = "ModuleType", HiddenElementNames = new string[]{"TypeProjectile", "TypePlayerAttached"} }
+    };
+
     [SerializeField] private VisualTreeAsset UsedVisualTree;
-
     public override VisualElement CreatePropertyGUI(SerializedProperty property)
     {
         // Add in the stuff from ui builder
         VisualElement container = new();
         UsedVisualTree.CloneTree(container);
 
-        // Setup events for bools that hide elements when off
+        // Setup events for bools that hide elements when false
         HiderBoolEvents(property, container);
-        
+        SwitcherEnumEvents(property, container);
+
         // Return the finished ui
         return container;
     }
-
+    
     private void HiderBoolEvents(SerializedProperty property, VisualElement container)
     {
-        hiderBoolProperties = new SerializedProperty[hiderBoolPropertyNames.Length];
-        hiderBools = new PropertyField[hiderBoolNames.Length];
-        hiddenElements = new VisualElement[hiddenElementsNames.Length];
-
-        for (int i = 0; i < hiderBoolNames.Length; i++)
+        foreach (HiderBoolInfo hiderBoolInfo in hiderBoolInfos)
         {
-            hiderBoolProperties[i] = property.serializedObject.FindProperty(hiderBoolPropertyNames[i]);
-            hiderBools[i] = container.Q<PropertyField>(hiderBoolNames[i]);
-            hiddenElements[i] = container.Q<VisualElement>(hiddenElementsNames[i]);
+            HiderBool hiderBool = new();
 
-            // Set up events for when a toggle is changed
-            hiderBools[i].RegisterCallback<ChangeEvent<bool>>(BoolChanged);
+            // Find things
+            hiderBool.SetAllFields(container, property, hiderBoolInfo);
+
+            // Create event
+            hiderBool.BoolField.RegisterCallback<ChangeEvent<bool>, HiderBool>(OnBoolChanged, hiderBool);
         }
     }
-
-    private void BoolChanged(ChangeEvent<bool> changeEvent)
+    private void OnBoolChanged(ChangeEvent<bool> changeEvent, HiderBool hiderBool)
     {
-        // Update all hideable elements' visibility
-        for (int i = 0; i < hiderBoolNames.Length; i++)
-        {
-            ChangeElementVisibility(hiddenElements[i], hiderBoolProperties[i].boolValue);
-        }
+        hiderBool.UpdateVisibility();
     }
 
-    private void ChangeElementVisibility(VisualElement visualElement, bool showElement)
+    private void SwitcherEnumEvents(SerializedProperty property, VisualElement container)
     {
-        if (showElement)
+        foreach (SwitcherEnumInfo switcherEnumInfo in switcherEnumInfos)
         {
-            visualElement.style.display = DisplayStyle.Flex;
+            SwitcherEnum switcherEnum = new();
+
+            // Find things
+            switcherEnum.SetAllFields(container, property, switcherEnumInfo);
+
+            // Create event
+            switcherEnum.EnumField.RegisterCallback<ChangeEvent<string>, SwitcherEnum>(OnEnumChanged, switcherEnum);
         }
-        else
-        {
-            visualElement.style.display = DisplayStyle.None;
-        }
+    }
+    private void OnEnumChanged(ChangeEvent<string> changeEvent, SwitcherEnum switcherEnum)
+    {
+        switcherEnum.UpdateVisibility();
     }
 }

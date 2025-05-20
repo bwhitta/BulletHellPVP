@@ -21,7 +21,7 @@ public class SpellVisuals : MonoBehaviour
         {
             EnableSprite();
         }
-        if (Module.Animated)
+        if (Module.UsesAnimation)
         {
             EnableAnimator();
         }
@@ -81,7 +81,7 @@ public class SpellVisuals : MonoBehaviour
         }
 
         // Enables the animator if Animated is set to true
-        animator.enabled = Module.Animated;
+        animator.enabled = Module.UsesAnimation;
 
         // Sets the animation
         animator.runtimeAnimatorController = Module.AnimatorController;

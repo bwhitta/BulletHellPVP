@@ -1,7 +1,54 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
     <Style src="project://database/Assets/Editor/SpellDataEditorStyle.uss?fileID=7433441132597879392&amp;guid=68f4f6728a1b91a42871248fa4e8dcde&amp;type=3#SpellDataEditorStyle" />
-    <ui:VisualElement style="background-color: rgba(49, 49, 49, 0); border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px; border-left-width: 1px; border-top-left-radius: 3px; border-top-right-radius: 3px; border-bottom-right-radius: 3px; border-bottom-left-radius: 3px; border-left-color: rgb(0, 0, 0); border-right-color: rgb(0, 0, 0); border-top-color: rgb(0, 0, 0); border-bottom-color: rgb(0, 0, 0); margin-top: 2px; margin-right: 4px; margin-bottom: 2px; margin-left: 4px; padding-top: 3px; padding-right: 5px; padding-bottom: 3px; padding-left: 5px;">
-        <ui:Label text="Label" name="Label" />
-        <uie:PropertyField name="MovementSpeed" binding-path="MovementSpeed" />
-    </ui:VisualElement>
+    <ui:Foldout text="Module" name="ModuleFoldout" class="container" style="margin-top: 2px; margin-right: 5px; margin-bottom: 2px; margin-left: 5px; padding-top: 5px; padding-right: 5px; padding-bottom: 5px; padding-left: 16px; -unity-font-style: bold;">
+        <ui:VisualElement name="ModuleContainer" style="-unity-font-style: normal; margin-left: -30px;">
+            <uie:PropertyField binding-path="ModuleType" name="ModuleType" />
+            <ui:VisualElement name="TypeProjectile" class="indented">
+                <uie:PropertyField binding-path="ProjectileSpawningArea" name="ProjectileSpawningArea" />
+                <uie:PropertyField name="TargetingType" binding-path="TargetingType" />
+                <uie:PropertyField name="MovementType" binding-path="MovementType" />
+                <uie:PropertyField name="MovementSpeed" binding-path="MovementSpeed" />
+                <uie:PropertyField name="DealsDamage" binding-path="DealsDamage" />
+                <ui:VisualElement name="DealsDamageHides" class="indented">
+                    <uie:PropertyField binding-path="Damage" name="Damage" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement name="TypePlayerAttached" class="indented">
+                <uie:PropertyField binding-path="AttachmentTime" name="AttachmentTime" />
+            </ui:VisualElement>
+            <ui:VisualElement name="Spacer" class="spacer" />
+            <uie:PropertyField binding-path="InstantiationQuantity" name="InstantiationQuantity" />
+            <uie:PropertyField binding-path="InstantiationScale" name="InstantiationScale" />
+            <ui:VisualElement name="Spacer" class="spacer" />
+            <uie:PropertyField binding-path="UsesCollider" name="UsesCollider" />
+            <ui:VisualElement name="UsesColliderHides" class="indented">
+                <uie:PropertyField binding-path="ColliderPath" name="ColliderPath" />
+            </ui:VisualElement>
+            <ui:VisualElement name="Spacer" class="spacer" />
+            <uie:PropertyField binding-path="SpellUsesSprite" name="SpellUsesSprite" />
+            <ui:VisualElement name="SpellUsesSpriteHides" class="indented">
+                <uie:PropertyField binding-path="UsedSprite" name="UsedSprite" />
+            </ui:VisualElement>
+            <ui:VisualElement name="Spacer" class="spacer" />
+            <uie:PropertyField binding-path="UsesAnimation" name="UsesAnimation" />
+            <ui:VisualElement name="UsesAnimationHides" class="indented">
+                <uie:PropertyField binding-path="AnimatorController" name="AnimatorController" />
+                <uie:PropertyField binding-path="MultipartAnimationPrefabs" name="MultipartAnimationPrefabs" />
+                <uie:PropertyField binding-path="AnimationScaleMultiplier" name="AnimationScaleMultiplier" />
+            </ui:VisualElement>
+            <ui:VisualElement name="Spacer" class="spacer" />
+            <uie:PropertyField binding-path="GeneratesParticles" name="GeneratesParticles" />
+            <ui:VisualElement name="GeneratesParticlesHides" class="indented">
+                <uie:PropertyField binding-path="ParticleSystemPrefab" name="ParticleSystemPrefab" />
+                <uie:PropertyField binding-path="ParticleSystemZ" name="ParticleSystemZ" />
+            </ui:VisualElement>
+            <ui:VisualElement name="Spacer" class="spacer" />
+            <uie:PropertyField binding-path="ScalesOverTime" name="ScalesOverTime" />
+            <ui:VisualElement name="ScalesOverTimeHides" class="indented">
+                <uie:PropertyField binding-path="ScalingStartMultiplier" name="ScalingStartMultiplier" />
+                <uie:PropertyField binding-path="MaxScaleMultiplier" name="MaxScaleMultiplier" />
+                <uie:PropertyField binding-path="DestroyOnScalingCompleted" name="DestroyOnScalingCompleted" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:Foldout>
 </ui:UXML>

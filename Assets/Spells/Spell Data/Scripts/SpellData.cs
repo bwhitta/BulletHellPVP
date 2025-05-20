@@ -8,5 +8,7 @@ public class SpellData : ScriptableObject
     public float SpellCooldown;
     public Sprite Icon;
 
+    public SpellModule TestModule;
+
     public SpellModule[] UsedModules;
 }

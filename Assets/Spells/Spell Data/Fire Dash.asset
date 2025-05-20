@@ -12,10 +12,86 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8a08710c6bdc2c44da560834e93877dd, type: 3}
   m_Name: Fire Dash
   m_EditorClassIdentifier: 
-  TestBool: 1
   ManaCost: 10
   SpellCooldown: 5
   Icon: {fileID: 21300000, guid: 31b3fef382c915b40a26e1dd067fd219, type: 3}
+  TestModule:
+    FoldoutOpen: 0
+    ModuleType: 0
+    ProjectileSpawningArea: 0
+    TargetingType: 0
+    MovementType: 0
+    MovementSpeed: 0
+    DealsDamage: 0
+    Damage: 0
+    AttachmentTime: 0
+    InstantiationQuantity: 0
+    InstantiationScale: 0
+    UsesCollider: 0
+    ColliderPath: []
+    SpellUsesSprite: 0
+    UsedSprite: {fileID: 0}
+    UsesAnimation: 0
+    AnimatorController: {fileID: 0}
+    MultipartAnimationPrefabs: []
+    AnimationScaleMultiplier: 0
+    GeneratesParticles: 0
+    ParticleSystemPrefab: {fileID: 0}
+    ParticleSystemZ: 0
+    ScalesOverTime: 0
+    ScalingStartMultiplier: 0
+    MaxScaleMultiplier: 0
+    DestroyOnScalingCompleted: 0
   UsedModules:
-  - {fileID: 0}
-  - {fileID: 0}
+  - FoldoutOpen: 0
+    ModuleType: 1
+    ProjectileSpawningArea: 0
+    TargetingType: 0
+    MovementType: 0
+    MovementSpeed: 0
+    DealsDamage: 0
+    Damage: 0
+    AttachmentTime: 12
+    InstantiationQuantity: 1
+    InstantiationScale: 0.07
+    UsesCollider: 0
+    ColliderPath: []
+    SpellUsesSprite: 1
+    UsedSprite: {fileID: 21300000, guid: 2ff53b2763b0ef0439592ec321fc9a83, type: 3}
+    UsesAnimation: 0
+    AnimatorController: {fileID: 0}
+    MultipartAnimationPrefabs: []
+    AnimationScaleMultiplier: 0
+    GeneratesParticles: 0
+    ParticleSystemPrefab: {fileID: 0}
+    ParticleSystemZ: 0
+    ScalesOverTime: 0
+    ScalingStartMultiplier: 0
+    MaxScaleMultiplier: 0
+    DestroyOnScalingCompleted: 0
+  - FoldoutOpen: 0
+    ModuleType: 1
+    ProjectileSpawningArea: 0
+    TargetingType: 0
+    MovementType: 0
+    MovementSpeed: 0
+    DealsDamage: 0
+    Damage: 0
+    AttachmentTime: 50
+    InstantiationQuantity: 1
+    InstantiationScale: 0.07
+    UsesCollider: 0
+    ColliderPath: []
+    SpellUsesSprite: 0
+    UsedSprite: {fileID: 0}
+    UsesAnimation: 0
+    AnimatorController: {fileID: 0}
+    MultipartAnimationPrefabs: []
+    AnimationScaleMultiplier: 0
+    GeneratesParticles: 1
+    ParticleSystemPrefab: {fileID: 3023061968540518342, guid: 40065156cfa0f0b4eb4b261de24ea888, type: 3}
+    ParticleSystemZ: -2
+    ScalesOverTime: 0
+    ScalingStartMultiplier: 0
+    MaxScaleMultiplier: 0
+    DestroyOnScalingCompleted: 0
