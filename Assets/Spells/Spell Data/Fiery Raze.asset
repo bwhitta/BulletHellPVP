@@ -15,45 +15,19 @@ MonoBehaviour:
   ManaCost: 50
   SpellCooldown: 2
   Icon: {fileID: 21300000, guid: 83cc1d2946ff95749ba42a2a9417668d, type: 3}
-  TestModule:
-    FoldoutOpen: 0
-    ModuleType: 0
-    ProjectileSpawningArea: 0
-    TargetingType: 0
-    MovementType: 0
-    MovementSpeed: 0
-    DealsDamage: 0
-    Damage: 0
-    AttachmentTime: 0
-    InstantiationQuantity: 0
-    InstantiationScale: 0
-    UsesCollider: 0
-    ColliderPath: []
-    SpellUsesSprite: 0
-    UsedSprite: {fileID: 0}
-    UsesAnimation: 0
-    AnimatorController: {fileID: 0}
-    MultipartAnimationPrefabs: []
-    AnimationScaleMultiplier: 0
-    GeneratesParticles: 0
-    ParticleSystemPrefab: {fileID: 0}
-    ParticleSystemZ: 0
-    ScalesOverTime: 0
-    ScalingStartMultiplier: 0
-    MaxScaleMultiplier: 0
-    DestroyOnScalingCompleted: 0
   UsedModules:
-  - FoldoutOpen: 0
-    ModuleType: 0
-    ProjectileSpawningArea: 1
-    TargetingType: 3
-    MovementType: 1
-    MovementSpeed: 5
-    DealsDamage: 1
-    Damage: 50
-    AttachmentTime: 0
+  - StartingPosition:
+      PositionType: 2
+      Offset: {x: 0, y: 0}
+    StartingRotation:
+      PositionType: 2
+      Offset: -90
     InstantiationQuantity: 2
     InstantiationScale: 0.07
+    SpellMovements: []
+    SpellTarget: 0
+    PlayerAttached: 0
+    AttachmentTime: 0
     UsesCollider: 1
     ColliderPath:
     - {x: 0, y: 3}
@@ -63,6 +37,8 @@ MonoBehaviour:
     - {x: 20, y: -1}
     - {x: 10, y: -6}
     - {x: 0, y: -3}
+    DealsDamage: 1
+    Damage: 50
     SpellUsesSprite: 1
     UsedSprite: {fileID: 21300000, guid: 44a5aa0d5434a1b44ac0256937e6dfce, type: 3}
     UsesAnimation: 0

@@ -3,23 +3,16 @@ using Unity.Netcode;
 
 public class CharacterManager : NetworkBehaviour
 {
-    // probably should rename this script, especially once I finalize its functionality
-
     // Fields
-    public string[] SortingLayers; // Maybe add as part of another script?
-
     [SerializeField] private GameObject healthBar;
-    [SerializeField] private Vector2[] healthBarPositions;
     [SerializeField] private GameObject manaBar;
-    [SerializeField] private Vector2[] manaBarPositions;
-
-    [SerializeField] private string[] inputMapNames;
     [SerializeField] private string[] characterParentObjectName;
 
     [HideInInspector] public byte CharacterIndex;
-
+    public static Transform[] CharacterTransforms = new Transform[2];
+    
     // Properties
-    public string InputMapName => inputMapNames[CharacterIndex];
+    public string InputMapName => GameSettings.InputNames.InputMapNames[CharacterIndex];
     public byte OpponentCharacterIndex
     {
         get
@@ -28,22 +21,26 @@ public class CharacterManager : NetworkBehaviour
             else return 2;
         }
     }
-    
+
     // Methods
     public override void OnNetworkSpawn()
     {
         CharacterIndex = (byte)OwnerClientId;
+        
         if (!IsOwnedByServer)
         {
             MultiplayerManager.NonHostClientJoined = true;
         }
     }
+
     private void Start()
     {
+        CharacterTransforms[CharacterIndex] = transform;
+        
         transform.parent.name = characterParentObjectName[CharacterIndex];
 
         // Position stat bars
-        healthBar.GetComponent<RectTransform>().localPosition = healthBarPositions[CharacterIndex];
-        manaBar.GetComponent<RectTransform>().localPosition = manaBarPositions[CharacterIndex];
+        healthBar.GetComponent<RectTransform>().localPosition = GameSettings.UIPositioning.HealthBars[CharacterIndex];
+        manaBar.GetComponent<RectTransform>().localPosition = GameSettings.UIPositioning.ManaBars[CharacterIndex];
     }
 }

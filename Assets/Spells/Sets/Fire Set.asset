@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3e9079fd1d393e847848c276c554c1fe, type: 3}
+  m_Script: {fileID: 11500000, guid: e9df5e1e7ad6cfd45b5cc53c631128c8, type: 3}
   m_Name: Fire Set
   m_EditorClassIdentifier: 
   SetSprite: {fileID: 21300000, guid: 4a795f1e1ab7bb34588e8f6bc2d16922, type: 3}

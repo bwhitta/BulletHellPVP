@@ -8,8 +8,6 @@ public class CharacterControls : NetworkBehaviour
     // Fields
     [SerializeField] private string animatorTreeParameterX;
     [SerializeField] private string animatorTreeParameterY;
-    [SerializeField] private string movementActionName;
-    [SerializeField] private Vector2[] characterStartPositions; // RENAME TO CHARACTERSTARTPOSITIONS
 
     [HideInInspector] public InputAction movementAction;
     
@@ -28,11 +26,11 @@ public class CharacterControls : NetworkBehaviour
         
         // Enable movement
         InputActionMap controlsMap = ControlsManager.GetActionMap(characterManager.InputMapName);
-        movementAction = controlsMap.FindAction(movementActionName, true);
+        movementAction = controlsMap.FindAction(GameSettings.InputNames.Movement, true);
         movementAction.Enable();
 
         // Starting position
-        transform.position = characterStartPositions[characterManager.CharacterIndex];
+        transform.position = GameSettings.Used.CharacterStartPositions[characterManager.CharacterIndex];
         if (IsServer) LocationUpdateClientRpc(transform.position);
     }
     private void FixedUpdate()

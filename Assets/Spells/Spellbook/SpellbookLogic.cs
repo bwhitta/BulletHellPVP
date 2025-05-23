@@ -8,9 +8,9 @@ public class SpellbookLogic : NetworkBehaviour
     // Fields
     public static Spellbook[][] EquippedBooks;
 
+    [SerializeField] private CharacterManager characterManager;
     [SerializeField] private Image[] spellDisplays;
     [SerializeField] private Text bookNumber;
-    [SerializeField] private CharacterManager characterManager;
     [SerializeField] private string nextBookActionName;
     [SerializeField] private Vector2[] spellbookPositions;
     [SerializeField] private bool overrideFirstBook;

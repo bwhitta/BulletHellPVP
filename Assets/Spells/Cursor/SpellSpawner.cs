@@ -1,6 +1,8 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Unity.Netcode;
+using System.Reflection;
+using System;
 
 public class SpellSpawner : NetworkBehaviour
 {
@@ -8,103 +10,123 @@ public class SpellSpawner : NetworkBehaviour
     [SerializeField] private SpellbookLogic spellbookLogic;
     [SerializeField] private CharacterStats characterStats;
     [SerializeField] private GameObject modulePrefab;
-    [SerializeField] private string castingActionName;
+    [SerializeField] private CursorMovement cursorMovement;
 
     private void Start()
     {
         // Set up controls
         InputActionMap controlsMap = ControlsManager.GetActionMap(characterManager.InputMapName);
-        InputAction castingAction = controlsMap.FindAction(castingActionName, true);
+        InputAction castingAction = controlsMap.FindAction(GameSettings.InputNames.CastingAction, true);
         castingAction.Enable();
         castingAction.performed += context => CastingInputPerformed((byte)(castingAction.ReadValue<float>() - 1f));
     }
-    private void CastingInputPerformed(byte spellbookSlotIndex)
+
+    private void CastingInputPerformed(byte spellbookSlot)
     {
         if (MultiplayerManager.IsOnline)
         {
             if (!IsOwner)
             {
-                Debug.Log($"Can't cast spells, not owner.");
+                Debug.Log($"Can't cast spell, not owner.");
                 return;
             }
 
-            SpellData spellData = spellbookLogic.CurrentBook.SpellInSlot(spellbookSlotIndex);
+            SpellData spellData = spellbookLogic.CurrentBook.SpellInSlot(spellbookSlot);
 
             // Checks mana and cooldown on client first before sending attempt to server
-            if (CooldownAndManaAvailable(spellData, spellbookSlotIndex))
+            if (CooldownAndManaAvailable(spellData, spellbookSlot))
             {
-                AttemptSpellServerRpc(spellbookSlotIndex);
+                Debug.Log($"should attempt spell here, deleteme.");
+                // AttemptSpellServerRpc(spellbookSlotIndex);
             }
         }
         else
         {
-            AttemptSpell(spellbookSlotIndex);
+            AttemptSpell(spellbookSlot);
         }
     }
-    public void AttemptSpell(byte slot)
+    public void AttemptSpell(byte spellbookSlot)
     {
-        SpellData spellData = spellbookLogic.CurrentBook.SpellInSlot(slot);
-
+        SpellData spellData = spellbookLogic.CurrentBook.SpellInSlot(spellbookSlot);
+        
         // Check cooldown and mana
-        if (!CooldownAndManaAvailable(spellData, slot))
+        if (!CooldownAndManaAvailable(spellData, spellbookSlot))
         {
             Debug.Log($"Skipped casting spell - there is not enough mana or the spell is on cooldown.");
             return;
         }
-        
-        // not entirely sure what this does. I think its for if you cast when you are the non-host client?  
+
+        // not entirely sure what this does. I think its for if you cast when you are the non-host client?
+        /* REMOVED FOR RESTRUCTURING
         if (MultiplayerManager.IsOnline && !IsServer)
         {
             Debug.Log("Deducting mana!");
             spellbookLogic.SpellCooldowns[slot] = spellData.SpellCooldown;
             characterStats.CurrentMana -= spellData.ManaCost;
-            
+
             characterStats.ManaAwaiting += spellData.ManaCost;
             characterStats.ManaAwaitingCountdown = GameSettings.Used.ManaAwaitingTimeLimit;
+        } */
+        
+        CastSpell(spellData);
+    }
+    public void CastSpell(SpellData spellData)
+    {
+        // Summon each module
+        foreach (SpellModule module in spellData.UsedModules)
+        {
+            byte spellTargetId = GetModuleTargetId(module);
+            ExecuteModule(module, spellTargetId);
         }
 
-        // Summon each module
-        for (byte i = 0; i < spellData.UsedModules.Length; i++)
+        // Local Methods
+        byte GetModuleTargetId(SpellModule module)
         {
-            InstantiateModule(spellData.UsedModules[i], slot, i);
+            return module.SpellTarget switch
+            {
+                SpellModule.SpellTargets.Owner => characterManager.CharacterIndex,
+                SpellModule.SpellTargets.Opponent => characterManager.OpponentCharacterIndex,
+                _ => throw new ArgumentException("Invalid spell target!")
+            };
         }
     }
-    private void InstantiateModule(SpellModule module, byte slot, byte moduleIndex)
+    public void ExecuteModule(SpellModule module, byte targetId)
     {
-        SpellInfoLogic[] spellObjects = new SpellInfoLogic[module.InstantiationQuantity];
-
         for (byte i = 0; i < module.InstantiationQuantity; i++)
         {
-            SpellInfoLogic spellObject = Instantiate(modulePrefab).GetComponent<SpellInfoLogic>();
+            Spell spellObject = Instantiate(modulePrefab).GetComponent<Spell>();
             
             // Give any necessary info to the spell object
-            spellObject.SetIndex = spellbookLogic.CurrentBook.SetIndexes[slot];
-            spellObject.SpellIndex = spellbookLogic.CurrentBook.SpellIndexes[slot];
-            spellObject.ModuleIndex = moduleIndex;
+            spellObject.Module = module;
             spellObject.ModuleObjectIndex = i;
-            spellObject.OwnerId = (byte)OwnerClientId;
-            spellObjects[i] = spellObject;
+            spellObject.TargetId = targetId;
 
+            Vector2 startingPosition = module.StartingPosition.GetPosition(i, cursorMovement.location, targetId);
+            Quaternion startingRotation = module.StartingRotation.GetRotation(startingPosition, cursorMovement.location, targetId);
+            spellObject.transform.SetPositionAndRotation(startingPosition, startingRotation);
+
+            /* REMOVED FOR RESTRUCTURING
             if (IsServer)
             {
                 NetworkObject spellNetworkObject = spellObject.GetComponent<NetworkObject>();
                 spellNetworkObject.Spawn(true);
-                Debug.Log($"Spawned behavior {spellObjects} online");
-            }
+            }*/
         }
     }
+    
+
+    // could remove spellData as a paremeter and have this method find the spellData itself
     public bool CooldownAndManaAvailable(SpellData spellData, byte spellbookSlot)
     {
-        Debug.Log($"spellData: {spellData.name}, spellbookSlot: {spellbookSlot}, spellData.ManaCost: {spellData.ManaCost}, spellbookLogic.spellCooldowns[spellbookSlot]: {spellbookLogic.SpellCooldowns[spellbookSlot]}");
         bool cooldownAvailable = spellbookLogic.SpellCooldowns[spellbookSlot] == 0;
         bool manaAvailable = spellData.ManaCost < characterStats.CurrentMana;
         return cooldownAvailable && manaAvailable;
     }
 
-    [ServerRpc]
+    /*[ServerRpc]
     public void AttemptSpellServerRpc(byte slotIndex)
     {
         Debug.Log($"ServerRpc recieved, attempting spell in slot {slotIndex} server-side");
         AttemptSpell(slotIndex);
-    }
+    }*/
 }

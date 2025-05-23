@@ -3,42 +3,18 @@ using UnityEngine;
 
 public class SpellInfoLogic : NetworkBehaviour
 {
-    // Fields
-    [HideInInspector] public byte SetIndex;
-    [HideInInspector] public byte SpellIndex;
-    [HideInInspector] public byte ModuleIndex;
-    [HideInInspector] public byte ModuleObjectIndex;
-    [HideInInspector] public byte OwnerId;
-    // public float cursorLocationOnCast; REMOVED FOR RESTRUCTURING
-    
-    // Properties
-    public SpellModule Module
-    {
-        get
-        {
-            SpellSetInfo set = GameSettings.Used.SpellSets[SetIndex];
-            SpellData spell = set.spellsInSet[SpellIndex];
-            return spell.UsedModules[ModuleIndex];
-        }
-    }
-    public byte OpponentId
-    {
-        get
-        {
-            if (OwnerId == 0) return 1;
-            else return 0;
-        }
-    }
+    // going to delete this class soon
 
     // Methods
-    private void Start()
+    /*private void Start()
     {
         if (IsServer)
         {
-            ModuleDataClientRpc(SetIndex, SpellIndex, ModuleIndex, ModuleObjectIndex, OwnerId/*, cursorLocationOnCast REMOVED FOR RESTRUCTURING*/);
+            ModuleDataClientRpc(SetIndex, SpellIndex, ModuleIndex, ModuleObjectIndex, OwnerId, CursorLocationOnCast);
         }
-    }
+    }*/
 
+    // probably move to another script. maybe turn into a static called just DestroyNetworkSafe that takes a GameObject as input
     public void DestroySelfNetworkSafe()
     {
         if (!MultiplayerManager.IsOnline)
@@ -55,8 +31,9 @@ public class SpellInfoLogic : NetworkBehaviour
         }
     }
 
+    /* REMOVED FOR RESTRUCTURING
     [ClientRpc]
-    private void ModuleDataClientRpc(byte serverSetIndex, byte serverSpellIndex, byte serverModuleIndex, byte serverBehaviorIndex, byte ownerId/*, float serverCursorPositionOnCast REMOVED FOR RESTRUCTURING*/)
+    private void ModuleDataClientRpc(byte serverSetIndex, byte serverSpellIndex, byte serverModuleIndex, byte serverBehaviorIndex, byte ownerId, float serverCursorPositionOnCast)
     {
         if (IsHost)
         {
@@ -67,12 +44,12 @@ public class SpellInfoLogic : NetworkBehaviour
         ModuleIndex = serverModuleIndex;
         ModuleObjectIndex = serverBehaviorIndex;
         OwnerId = ownerId;
-        // cursorLocationOnCast = serverCursorPositionOnCast; REMOVED FOR RESTRUCTURING
+        CursorLocationOnCast = serverCursorPositionOnCast;
 
         // Only deduct Mana Awaiting if this is the first SpellModuleBehavior
-        /*if (BehaviorIndex == 0)
-        {
-            OwnerCharacterInfo.Stats.ManaAwaiting -= ModuleSpellData.ManaCost;
-        } REMOVED FOR RESTRUCTURING, also I don't get how this even works. Is the spawned spell seriously responsible for deducting the mana? */
-    }
+        //if (BehaviorIndex == 0)
+        //{
+        //    OwnerCharacterInfo.Stats.ManaAwaiting -= ModuleSpellData.ManaCost;
+        //} REMOVED FOR RESTRUCTURING, also I don't get how this even works. Is the spawned spell seriously responsible for deducting the mana?
+    }*/
 }

@@ -3,23 +3,20 @@ using UnityEngine;
 [System.Serializable]
 public class SpellModule
 {
-    public bool FoldoutOpen;
-
-    public enum ModuleTypes { Projectile, PlayerAttached }
-    public enum SpawningArea { Point, AdjacentCorners }
-    public enum TargetTypes { Opponent, Center, Opposing, InvertedOpposing, NotApplicable }
-    public enum MovementTypes { Linear, Wall }
+    // could adjust AdjacentCorners to work with any number of spells (or at least up to four)
+    public enum SpellTargets { Owner, Opponent }
     
-    public ModuleTypes ModuleType;
-    /* -- ModuleType: Projectile -- */
-    public SpawningArea ProjectileSpawningArea; // currently unimplemented
-    public TargetTypes TargetingType; // currently unimplemented
-    public MovementTypes MovementType; // currently unimplemented
-    public float MovementSpeed; // currently unimplemented
-    public bool DealsDamage;
-    public float Damage;
-    /* -- ModuleType: PlayerAttached -- */
-    public float AttachmentTime; // currently unimplemented
+    // Fields
+    public SpellStartingPosition StartingPosition;
+    public SpellStartingRotation StartingRotation;
+    public int InstantiationQuantity;
+    public float InstantiationScale;
+
+    public SpellMovement[] SpellMovements;
+    public SpellTargets SpellTarget;
+
+    public bool PlayerAttached;
+    public float AttachmentTime;
     /*public bool PushesPlayer;
     public float PlayerPushSpeed;
     public bool SpriteFacingPush;
@@ -27,12 +24,12 @@ public class SpellModule
     public float AngleChangeSpeed;
     public bool AffectsPlayerMovement;
     public float PlayerMovementMod;*/
+    
+    public bool UsesCollider;
+    public Vector2[] ColliderPath;
 
-    public int InstantiationQuantity;
-    public float InstantiationScale;
-
-    public bool UsesCollider; // currently unimplemented
-    public Vector2[] ColliderPath; // currently unimplemented
+    public bool DealsDamage; // maybe change out for something like a scriptableObject called EffectsOnCollision? could have inheretied SOs like DealsDamage and MovesCharacter and such. the SOs could also just be called Effects, with EffectsOnCollision being a list of effects.
+    public float Damage;
 
     public bool SpellUsesSprite;
     public Sprite UsedSprite;
@@ -46,8 +43,8 @@ public class SpellModule
     public GameObject ParticleSystemPrefab;
     public float ParticleSystemZ;
 
-    public bool ScalesOverTime; // currently unimplemented
-    public float ScalingStartMultiplier; // currently unimplemented
-    public float MaxScaleMultiplier; // currently unimplemented
+    public bool ScalesOverTime;
+    public float ScalingStartMultiplier;
+    public float MaxScaleMultiplier;
     public bool DestroyOnScalingCompleted; // currently unimplemented - shouldn't this only exist if there is something that sets up the duration for how long the scaling should take?
 }

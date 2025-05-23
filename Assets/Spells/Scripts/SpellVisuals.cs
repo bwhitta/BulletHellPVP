@@ -1,38 +1,8 @@
 using UnityEngine;
 
-public class SpellVisuals : MonoBehaviour
+public static class SpellVisuals
 {
-    // Fields
-    [SerializeField] private string[] spellMaskLayers;
-
-    private Animator animator;
-
-    private SpellInfoLogic spellModuleBehavior; // rename as soon as I rename the spellModuleBehavior script;
-
-    // Properties
-    SpellModule Module => spellModuleBehavior.Module;
-
-    // Methods
-    private void Start()
-    {
-        spellModuleBehavior = GetComponent<SpellInfoLogic>();
-
-        if (Module.SpellUsesSprite)
-        {
-            EnableSprite();
-        }
-        if (Module.UsesAnimation)
-        {
-            EnableAnimator();
-        }
-        if (Module.GeneratesParticles)
-        {
-            EnableParticleSystem();
-        }
-
-        StartingScale();
-    }
-
+    /* REMOVED FOR RESTRUCTURING
     private void EnableSprite()
     {
         Debug.Log($"enabling sprite! sprite is null: {Module.UsedSprite == null}");
@@ -45,13 +15,14 @@ public class SpellVisuals : MonoBehaviour
         // Set the mask layer
         if (Module.ModuleType == SpellModule.ModuleTypes.PlayerAttached)
         {
-            spriteRenderer.sortingLayerName = spellMaskLayers[spellModuleBehavior.OwnerId];
+            spriteRenderer.sortingLayerName = GameSettings.Used.spellMaskLayers[spellInfoLogic.OwnerId];
         }
         else
         {
-            spriteRenderer.sortingLayerName = spellMaskLayers[spellModuleBehavior.OpponentId];
+            spriteRenderer.sortingLayerName = GameSettings.Used.spellMaskLayers[spellInfoLogic.OpponentId];
         }
-    }
+    }*/
+    /* REMOVED FOR RESTRUCTURING
     private void EnableAnimator()
     {
         animator = GetComponent<Animator>();
@@ -66,18 +37,18 @@ public class SpellVisuals : MonoBehaviour
             animationObject.name = animationPrefab.name;
 
             // Make sure the sprite shows up on your own side of the play area when it is attached to yourself 
-            // string spellMaskLayer; REMOVED FOR RESTRUCTURING
+            string spellMaskLayer;
             if (Module.ModuleType == SpellModule.ModuleTypes.PlayerAttached)
             {
-                // spellMaskLayer = OwnerCharacterInfo.SortingLayer; REMOVED FOR RESTRUCTURING
+                spellMaskLayer = GameSettings.Used.spellMaskLayers[spellInfoLogic.OwnerId];
             }
             else
             {
-                // spellMaskLayer = OwnerCharacterInfo.OpponentCharacterInfo.CharacterAndSortingTag; REMOVED FOR RESTRUCTURING
+                spellMaskLayer = GameSettings.Used.spellMaskLayers[spellInfoLogic.OpponentId];
             }
 
             // Set the mask layer
-            animationObject.GetComponent<SpriteRenderer>().sortingLayerName = spellMaskLayers[spellModuleBehavior.OwnerId];
+            animationObject.GetComponent<SpriteRenderer>().sortingLayerName = spellMaskLayer;
         }
 
         // Enables the animator if Animated is set to true
@@ -85,15 +56,16 @@ public class SpellVisuals : MonoBehaviour
 
         // Sets the animation
         animator.runtimeAnimatorController = Module.AnimatorController;
-    }
+    } */
+    /* REMOVED FOR RESTRUCTURING
     private void EnableParticleSystem()
     {
         GameObject particleObject = Instantiate(Module.ParticleSystemPrefab, transform);
         particleObject.transform.localPosition = new Vector3(0, 0, Module.ParticleSystemZ);
-    }
-
+    }*/
+    /* REMOVED FOR RESTRUCTURING
     private void StartingScale()
     {
         transform.localScale = new Vector3(Module.InstantiationScale, Module.InstantiationScale, 1);
-    }
+    }*/
 }

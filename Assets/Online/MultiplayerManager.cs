@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 using Unity.Networking.Transport.Relay;
@@ -8,6 +9,7 @@ public class MultiplayerManager : MonoBehaviour
 {
     [SerializeField] private GameObject characterPrefab;
     [SerializeField] private GameSettings defaultGameSettings;
+
     public static bool IsOnline = false;
 
     // Since relay always has one player as a host, this variable is true as long as the non-host client has joined
@@ -35,13 +37,15 @@ public class MultiplayerManager : MonoBehaviour
         }
         else
         {
-            SpawnCharacter(0);
-            SpawnCharacter(1);
+            for (byte i = 0; i < GameSettings.Used.MaxCharacters; i++)
+            {
+                SpawnCharacter(i);
+            }
         }
 
+        // Local Methods
         void SpawnCharacter(byte index)
         {
-            Debug.Log($"spawning character {index}", this);
             GameObject character = Instantiate(characterPrefab);
             character.GetComponentInChildren<CharacterManager>().CharacterIndex = index;
         }

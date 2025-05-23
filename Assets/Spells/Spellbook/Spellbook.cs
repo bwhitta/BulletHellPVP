@@ -32,7 +32,7 @@ public class Spellbook
 
     public static SpellData GetSpellData(byte setIndex, byte spellIndex)
     {
-        SpellSetInfo set = GameSettings.Used.SpellSets[setIndex];
+        SpellSet set = GameSettings.Used.SpellSets[setIndex];
         return set.spellsInSet[spellIndex];
     }
     public SpellData SpellInSlot(byte slotIndex)
@@ -40,7 +40,7 @@ public class Spellbook
         byte setIndex = SetIndexes[slotIndex];
         byte spellIndex = SpellIndexes[slotIndex];
 
-        SpellSetInfo set = GameSettings.Used.SpellSets[setIndex];
+        SpellSet set = GameSettings.Used.SpellSets[setIndex];
         return set.spellsInSet[spellIndex];
     }
 }

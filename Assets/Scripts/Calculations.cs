@@ -72,15 +72,27 @@ public static class Calculations
     /// <returns>The positions of the corners, starting from the top left and continuing clockwise</returns>
     public static Vector2[] GetSquareCorners(float sideLength, Vector2 centerPoint)
     {
-        float offset = sideLength;
+        float offset = sideLength/2;
 
         Vector2[] corners = new Vector2[4];
-        corners[0] = centerPoint + new Vector2(-offset, -offset);
-        corners[1] = centerPoint + new Vector2(offset, -offset);
-        corners[2] = centerPoint + new Vector2(offset, offset);
-        corners[3] = centerPoint + new Vector2(-offset, offset);
+        corners[0] = centerPoint + new Vector2(-offset, offset);
+        corners[1] = centerPoint + new Vector2(offset, offset);
+        corners[2] = centerPoint + new Vector2(offset, -offset);
+        corners[3] = centerPoint + new Vector2(-offset, -offset);
 
         return corners;
     }
 
+    /// <summary>
+    /// Gets which side a point is on the edge of a square, starting from the top left and continuing clockwise.
+    /// </summary>
+    public static int SquareSideAtPosition(float squareWidth, float locationAroundSquare)
+    {
+        int sideNumber = (int)Mathf.Floor(Calculations.Modulo(locationAroundSquare, squareWidth * 4f) / squareWidth);
+
+        // Floating points can create a bug when the value is a really small negative number (e.g. -1e^-8). If that happens, this will fix it.
+        if (sideNumber >= 4) sideNumber = 0;
+
+        return sideNumber;
+    }
 }

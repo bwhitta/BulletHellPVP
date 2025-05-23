@@ -1,14 +1,12 @@
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "Scriptable Spell")]
+[CreateAssetMenu(menuName = "Scriptable Objects/Scriptable Spell")]
 public class SpellData : ScriptableObject
 {
     // Spell Info
     public float ManaCost;
     public float SpellCooldown;
     public Sprite Icon;
-
-    public SpellModule TestModule;
 
     public SpellModule[] UsedModules;
 }

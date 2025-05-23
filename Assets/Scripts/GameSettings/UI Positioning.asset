@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd6095b794eba0f46a7fe21e44d33115, type: 3}
+  m_Name: UI Positioning
+  m_EditorClassIdentifier: 
+  HealthBars:
+  - {x: -430, y: 486}
+  - {x: 430, y: 486}
+  ManaBars:
+  - {x: -890, y: 31}
+  - {x: 890, y: 31}

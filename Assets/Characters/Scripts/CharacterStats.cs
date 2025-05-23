@@ -147,10 +147,11 @@ public class CharacterStats : NetworkBehaviour
     {
         if (gameObject.activeSelf == false)
         {
-            Debug.Log($"Self is not active"); // temp log
+            Debug.Log($"gameObject is not active"); // temp log
             return;
         }
-
+        Debug.LogWarning("spell collission currently disabled for restructuring");
+        /*REMOVED FOR RESTRUCTURING
         if (collision.GetComponent<SpellInfoLogic>() != null)
         {
             SpellInfoLogic collisionSpellBehavior = collision.GetComponent<SpellInfoLogic>();
@@ -168,7 +169,7 @@ public class CharacterStats : NetworkBehaviour
 
             GetComponent<CharacterStats>().CurrentHealth -= collisionSpellBehavior.Module.Damage;
             Debug.Log($"Damage dealt - total of {collisionSpellBehavior.Module.Damage} health lost.");
-        }
+        }*/
     }
     private void ManaScalingTick()
     {

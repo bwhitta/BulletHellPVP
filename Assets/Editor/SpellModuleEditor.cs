@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -9,8 +8,9 @@ public class SpellModuleEditor : PropertyDrawer
 {
     private readonly HiderBoolInfo[] hiderBoolInfos = 
     {
-        new() { BoolFieldName = "DealsDamage", BoolPropertyName = "DealsDamage", HiddenElementName = "DealsDamageHides" },
+        new() { BoolFieldName = "PlayerAttached", BoolPropertyName = "PlayerAttached", HiddenElementName = "PlayerAttachedHides" },
         new() { BoolFieldName = "UsesCollider", BoolPropertyName = "UsesCollider", HiddenElementName = "UsesColliderHides" },
+        new() { BoolFieldName = "DealsDamage", BoolPropertyName = "DealsDamage", HiddenElementName = "DealsDamageHides" },
         new() { BoolFieldName = "SpellUsesSprite", BoolPropertyName = "SpellUsesSprite", HiddenElementName = "SpellUsesSpriteHides" },
         new() { BoolFieldName = "UsesAnimation", BoolPropertyName = "UsesAnimation", HiddenElementName = "UsesAnimationHides" },
         new() { BoolFieldName = "GeneratesParticles", BoolPropertyName = "GeneratesParticles", HiddenElementName = "GeneratesParticlesHides" },
@@ -19,7 +19,7 @@ public class SpellModuleEditor : PropertyDrawer
 
     private readonly SwitcherEnumInfo[] switcherEnumInfos =
     {
-        new() { EnumFieldName = "ModuleType", EnumPropertyName = "ModuleType", HiddenElementNames = new string[]{"TypeProjectile", "TypePlayerAttached"} }
+        //new() { EnumFieldName = "ModuleType", EnumPropertyName = "ModuleType", HiddenElementNames = new string[]{"TypeProjectile", "TypePlayerAttached"} }
     };
 
     [SerializeField] private VisualTreeAsset UsedVisualTree;

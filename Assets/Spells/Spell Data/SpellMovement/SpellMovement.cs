@@ -1,78 +1,25 @@
 using UnityEngine;
-using Unity.Netcode;
 
-public class SpellMovement : NetworkBehaviour
+public abstract class SpellMovement : ScriptableObject
 {
-    // Fields
-    private readonly float outOfBoundsDistance = 15f;
-    private float distanceMoved;
-    private int ticksSincePositionUpdate;
+    public float movementSpeed;
 
-    private SpellInfoLogic spellModuleBehavior; // rename as soon as I rename the spellModuleBehavior script;
-    
-    private readonly NetworkVariable<Vector2> serverSidePosition = new();
+    public abstract void Move(/* add parameters maybe? */);
+
+    // private readonly float outOfBoundsDistance = 15f; REMOVED FOR RESTRUCTURING
+    // private float distanceMoved; REMOVED FOR RESTRUCTURING
+    // private int ticksSincePositionUpdate; REMOVED FOR RESTRUCTURING
+    // private readonly NetworkVariable<Vector2> serverSidePosition = new(); REMOVED FOR RESTRUCTURING
 
     // Properties
-    SpellModule Module => spellModuleBehavior.Module; // probably remove this property and just access the other script once I rename it
-    
+    //SpellModule Module => spellInfoLogic.Module;
+
     // Methods
-    private void Start()
+    /*private void Start()
     {
-        /*if (!MultiplayerManager.IsOnline || IsServer)
-        {
-            // probably should rework this anyways so that it only tracks the cursor's position on cast if it matters (if it tracks it at all)
-            cursorPositionOnCast = OwnerCharacterInfo.CursorLogicScript.location;
-        } REMOVED FOR RESTRUCTURING, this also will probably have to go somewhere else */
-
-        spellModuleBehavior = GetComponent<SpellInfoLogic>();
-
-        transform.position = StartingPosition();
-        
-        // Keep server-side position synced for clients
-        if (MultiplayerManager.IsOnline && !IsServer) serverSidePosition.OnValueChanged += ServerPositionUpdate;
-
-        // Local Methods
-        void ServerPositionUpdate(Vector2 oldValue, Vector2 newValue)
-        {
-            transform.position = Calculations.DiscrepancyCheck(transform.position, newValue, GameSettings.Used.NetworkLocationDiscrepancyLimit);
-        }
-    }
-    private Vector2 StartingPosition()
-    {
-        switch (Module.ProjectileSpawningArea)
-        {
-            case SpellModule.SpawningArea.Point:
-                // transform.position = CursorMovement.CalculateCursorTransform(cursorPositionOnCast, OwnerCharacterInfo.OpponentAreaCenter); 
-                return new(); // TEMPORARY DURING RESTRUCTURING;
-            case SpellModule.SpawningArea.AdjacentCorners:
-                // Turns the float position of the cursor into a rotation.
-                //int side = CursorMovement.SquareSideAtPosition(GameSettings.Used.BattleSquareWidth, cursorLocationOnCast); REMOVED FOR RESTRUCTURING
-                // Quaternion cursorAngleOnCast = Quaternion.Euler(0, 0, (-90 * side) - 90); // no clue why I use -90 and not 90 here, but that's what I did for other parts of the code so I won't question it. REMOVED FOR RESTRUCTURING                
-                // Sets the position and rotation
-                // transform.SetPositionAndRotation(AdjacentCornersPos(), cursorAngleOnCast);  REMOVED FOR RESTRUCTURING, rotation should be set somewhere else
-                return new(); // TEMPORARY DURING RESTRUCTURING
-            default:
-                Debug.LogWarning("Not yet implemented spawning area!");
-                return new();
-        }
-
-        /* // Local Methods
-        Vector2 AdjacentCornersPos()
-        {
-            int side = CursorMovement.SquareSideAtPosition(GameSettings.Used.BattleSquareWidth, cursorLocationOnCast);
-            Vector2[] corners = Calculations.GetSquareCorners(GameSettings.Used.BattleSquareWidth, OwnerCharacterInfo.OpponentAreaCenter);
-
-            // Points to instantiate at
-            Vector2[] spawnPoints = new Vector2[]
-            {
-                    corners[side],
-                    corners[(side + 1) % 4]
-            };
-            return spawnPoints[behaviorId];
-        } REMOVED FOR RESTRUCTURING */
-    }
-
-    private void FixedUpdate()
+        if (MultiplayerManager.IsOnline && !IsServer) serverSidePosition.OnValueChanged += ServerPositionChanged;
+    }*/
+    /*private void FixedUpdate()
     {
         if (IsServer) ServerPositionTick();
         
@@ -94,12 +41,13 @@ public class SpellMovement : NetworkBehaviour
             if (distanceFromCenter >= outOfBoundsDistance)
             {
                 Debug.Log($"Deleted spell - out of bounds");
-                spellModuleBehavior.DestroySelfNetworkSafe();
+                spellInfoLogic.DestroySelfNetworkSafe();
             }
         }
-    }
+    }*/
 
-    /*private void UpdateScaling()
+    /* REMOVED FOR RESTRUCTURING
+    private void UpdateScaling()
     {
         float distanceToMove = GameSettings.Used.BattleSquareWidth / 2;
         float distanceForScaling = distanceToMove * Module.ScalingStartPercent;
@@ -127,16 +75,16 @@ public class SpellMovement : NetworkBehaviour
         scalingCompletionPercentage = Mathf.Min(scalingCompletionPercentage, 1f);
 
         return (scaleTargetPercentage * scalingCompletionPercentage) + 1f;
-    } REMOVED FOR RESTRUCTURING, this stuff probably doesn't really fit in SpellMovement*/
+    }*/
 
-    private void MoveProjectileSpell()
+    /*private void MoveProjectileSpell()
     {
         // Move the spell
-        /*if (Module.MovementType == SpellData.MovementTypes.Linear)
+        if (Module.MovementType == SpellData.MovementTypes.Linear)
         {
             transform.position += Module.MovementSpeed * Time.fixedDeltaTime * transform.right;
             distanceMoved += Module.MovementSpeed * Time.fixedDeltaTime;
-        }*/
+        }
         /*else if (Module.MovementType == SpellData.MovementTypes.Wall)
         {
             switch (behaviorIndex)
@@ -152,11 +100,11 @@ public class SpellMovement : NetworkBehaviour
                     break;
             }
             distanceMoved += Time.fixedDeltaTime * Module.MovementSpeed;
-        } REMOVED FOR RESTRUCTURING */
+        } REMOVED FOR RESTRUCTURING 
         // Scaling
-        /*if (Module.ScalesOverTime)
-            UpdateScaling(); REMOVED FOR RESTRUCTURING */
-    }
+        if (Module.ScalesOverTime)
+            UpdateScaling(); REMOVED FOR RESTRUCTURING
+    }*/
     /*private void PointTowardsTarget()
     {
         // If TargetingType is CharacterStats, point towards the character
@@ -174,6 +122,13 @@ public class SpellMovement : NetworkBehaviour
                 break;
         }
     }*/
+
+    //Online
+    /*void ServerPositionChanged(Vector2 oldValue, Vector2 newValue)
+    {
+        transform.position = Calculations.DiscrepancyCheck(transform.position, newValue, GameSettings.Used.NetworkLocationDiscrepancyLimit);
+    }*/
+    /* REMOVED FOR RESTRUCTURING
     private void ServerPositionTick()
     {
         // Discrepancy checks
@@ -183,5 +138,5 @@ public class SpellMovement : NetworkBehaviour
             serverSidePosition.Value = transform.position;
             ticksSincePositionUpdate = 0;
         }
-    }
+    }*/
 }

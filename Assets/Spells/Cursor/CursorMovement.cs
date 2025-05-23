@@ -6,9 +6,8 @@ public class CursorMovement : NetworkBehaviour
 {
     // Fields
     [SerializeField] private CharacterManager characterManager;
-    [SerializeField] private Vector2[] battleAreaCenters;
 
-    private float location = 0;
+    [HideInInspector] public float location = 0;
     private InputAction cursorMovementInput;
     private InputAction cursorAccelerationInput;
 
@@ -17,8 +16,8 @@ public class CursorMovement : NetworkBehaviour
     {
         InputActionMap controlsMap = ControlsManager.GetActionMap(characterManager.InputMapName);
         
-        cursorMovementInput = controlsMap.FindAction(GameSettings.Used.CursorMovementInputName, true);
-        cursorAccelerationInput = controlsMap.FindAction(GameSettings.Used.AccelerateCursorInputName, true);
+        cursorMovementInput = controlsMap.FindAction(GameSettings.InputNames.CursorMovement, true);
+        cursorAccelerationInput = controlsMap.FindAction(GameSettings.InputNames.AccelerateCursor, true);
         cursorMovementInput.Enable();
         cursorAccelerationInput.Enable();
     }
@@ -51,8 +50,8 @@ public class CursorMovement : NetworkBehaviour
         }
 
         // Calculate and set the position and rotation based on location
-        Vector2 position = CalculateCursorTransform(location, battleAreaCenters[characterManager.CharacterIndex]);
-        Quaternion angle = Quaternion.Euler(0, 0, -90 * SquareSideAtPosition(GameSettings.Used.BattleSquareWidth, location));
+        Vector2 position = CalculateCursorPosition(location, GameSettings.Used.BattleAreaCenters[characterManager.CharacterIndex]);
+        Quaternion angle = Quaternion.Euler(0, 0, -90 * Calculations.SquareSideAtPosition(GameSettings.Used.BattleSquareWidth, location));
         transform.SetPositionAndRotation(position, angle);
     }
     private void MoveCursor(float input, bool acceleratorPressed)
@@ -66,9 +65,9 @@ public class CursorMovement : NetworkBehaviour
         location += velocity;
     }
 
-    public static Vector2 CalculateCursorTransform(float location, Vector2 opponentAreaCenter)
+    public static Vector2 CalculateCursorPosition(float location, Vector2 opponentAreaCenter)
     {
-        int sideNumber = SquareSideAtPosition(GameSettings.Used.BattleSquareWidth, location);
+        int sideNumber = Calculations.SquareSideAtPosition(GameSettings.Used.BattleSquareWidth, location);
         if (sideNumber < 0 || sideNumber >= 4)
         {
             Debug.LogWarning($"side number of {sideNumber} does not make sense. deleteme");
@@ -79,19 +78,10 @@ public class CursorMovement : NetworkBehaviour
 
         // Starts in top left, continues clockwise
         Vector2[] corners = Calculations.GetSquareCorners(GameSettings.Used.BattleSquareWidth, opponentAreaCenter);
-        Vector2[] cornerOffsetDirection = { new(1, 0), new(0, -1), new(-1, 0), new(0, 1) };
-        Vector2 offsetFromCorner = locationAlongSide * cornerOffsetDirection[sideNumber];
+        Vector2[] cornerOffsetDirections = { new(1, 0), new(0, -1), new(-1, 0), new(0, 1) };
+        Vector2 offsetFromCorner = locationAlongSide * cornerOffsetDirections[sideNumber];
 
         return corners[sideNumber] + offsetFromCorner;
-    }
-    public static int SquareSideAtPosition(float squareWidth, float locationAroundSquare)
-    {
-        int sideNumber = (int)Mathf.Floor(Calculations.Modulo(locationAroundSquare, squareWidth * 4f) / squareWidth);
-
-        // Floating points can create a bug when the value is a really small negative number (e.g. -1e^-8). If that happens, this will fix it.
-        if (sideNumber >= 4) sideNumber = 0;
-
-        return sideNumber;
     }
 
     [ClientRpc]

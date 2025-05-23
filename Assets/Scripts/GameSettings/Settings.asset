@@ -18,59 +18,17 @@ MonoBehaviour:
   SpellSets:
   - {fileID: 11400000, guid: 2254d440d774c7045a553d3c6a640f6e, type: 2}
   - {fileID: 11400000, guid: 696f88c2f7e58bb44b74c4601b71fd84, type: 2}
-  TempModulesTest:
-  - FoldoutOpen: 0
-    ModuleType: 0
-    ProjectileSpawningArea: 0
-    TargetingType: 0
-    MovementType: 0
-    MovementSpeed: 0
-    AbilityDealsDamage: 0
-    Damage: 0
-    InstantiationQuantity: 0
-    InstantiationScale: 0
-    UsesCollider: 0
-    ColliderPath: []
-    SpellUsesSprite: 0
-    UsedSprite: {fileID: 0}
-    Animated: 0
-    AnimatorController: {fileID: 0}
-    MultipartAnimationPrefabs: []
-    AnimationScaleMultiplier: 0
-    GeneratesParticles: 0
-    ParticleSystemPrefab: {fileID: 0}
-    ParticleSystemZ: 0
-    ScalesOverTime: 0
-    ScalingStartPercent: 0
-    MaxScaleMultiplier: 0
-    DestroyOnScalingCompleted: 0
-  - FoldoutOpen: 0
-    ModuleType: 0
-    ProjectileSpawningArea: 0
-    TargetingType: 0
-    MovementType: 0
-    MovementSpeed: 0
-    AbilityDealsDamage: 0
-    Damage: 0
-    InstantiationQuantity: 0
-    InstantiationScale: 0
-    UsesCollider: 0
-    ColliderPath: []
-    SpellUsesSprite: 0
-    UsedSprite: {fileID: 0}
-    Animated: 0
-    AnimatorController: {fileID: 0}
-    MultipartAnimationPrefabs: []
-    AnimationScaleMultiplier: 0
-    GeneratesParticles: 0
-    ParticleSystemPrefab: {fileID: 0}
-    ParticleSystemZ: 0
-    ScalesOverTime: 0
-    ScalingStartPercent: 0
-    MaxScaleMultiplier: 0
-    DestroyOnScalingCompleted: 0
   BattleSquareWidth: 7.5
+  BattleAreaCenters:
+  - {x: -4, y: 0.25}
+  - {x: 4, y: 0.25}
+  spellMaskLayers:
+  - Left Character
+  - Right Character
   MaxCharacters: 2
+  CharacterStartPositions:
+  - {x: -4, y: 0.25}
+  - {x: 4, y: 0.25}
   CharacterMovementSpeed: 3.5
   MaxHealth: 100
   StartingMaxMana: 50
@@ -80,13 +38,13 @@ MonoBehaviour:
   ManaScalingTime: 60
   InvincibilityTime: 1
   InvincibilityAlphaMod: 0.25
+  inputActions: {fileID: 11400000, guid: 2e5c84867fe3de248b56aad7e8670f44, type: 2}
   NetworkDiscrepancyCheckHz: 10
   NetworkTickRateHz: 50
   NetworkLocationDiscrepancyLimit: 0.25
   NetworkStatBarDiscrepancyLimit: 1
   ManaAwaitingTimeLimit: 50
+  uiPositioning: {fileID: 11400000, guid: 157d9cf26d737bf48914879064bc44d6, type: 2}
   StatLostVelocity: 1
   CursorMovementSpeed: 5
   CursorAcceleratedMovementMod: 3
-  CursorMovementInputName: CursorMovement
-  AccelerateCursorInputName: AccelerateCursorMovement
