@@ -11,7 +11,6 @@ public class SpellSelectionManager : MonoBehaviour
     [SerializeField] private GameObject spellbookIndexText;
 
     [Header("Equipped Spell Slot Locations")]
-    [SerializeField] private Vector2 spellSlotStart;
     [SerializeField] private float spellSlotSpread;
     [SerializeField] private float slotSnapDistance;
     [HideInInspector] public Vector2[] slotPositions;
@@ -83,7 +82,7 @@ public class SpellSelectionManager : MonoBehaviour
             Vector2[] locations = new Vector2[GameSettings.Used.SpellSlots];
             for (var i = 0; i < locations.Length; i++)
             {
-                locations[i] = spellSlotStart + (i * spellSlotSpread * Vector2.right);
+                locations[i] = (i * spellSlotSpread * Vector2.right);
             }
             return locations;
         }
@@ -116,8 +115,9 @@ public class SpellSelectionManager : MonoBehaviour
             Spellbook book = SpellbookLogic.EquippedBooks[CurrentCharacterIndex][currentBookIndex];
             Sprite icon = book.SpellInSlot(i).Icon;
 
-            instantiatedDisplay.GetComponent<SpriteRenderer>().sprite = icon;
-            instantiatedDisplay.transform.position = slotPositions[i];
+            instantiatedDisplay.GetComponent<Image>().sprite = icon;
+            instantiatedDisplay.transform.localPosition = slotPositions[i];
+            //instantiatedDisplay.transform.position = slotPositions[i];
         }
     }
     public void PlaceInSlot(EquippableSpell spell)
@@ -125,7 +125,9 @@ public class SpellSelectionManager : MonoBehaviour
         // Figure out which slot the spell fits in
         for (byte i = 0; i < GameSettings.Used.SpellSlots; i++)
         {
-            if (Vector2.Distance(spell.transform.position, slotPositions[i]) <= slotSnapDistance)
+            Vector2 offsetSlotPosition = slotPositions[i] + (Vector2)equippedSpellsParent.transform.position;
+            Debug.Log($"offsetSlotPosition: {offsetSlotPosition}, spellPosition: {spell.transform.position}");
+            if (Vector2.Distance(spell.transform.position, offsetSlotPosition) <= slotSnapDistance)
             {
                 CurrentEditedBook.SetIndexes[i] = spell.setIndex;
                 CurrentEditedBook.SpellIndexes[i] = spell.spellIndex;

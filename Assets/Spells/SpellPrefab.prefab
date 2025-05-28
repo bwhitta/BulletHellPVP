@@ -30,7 +30,7 @@ Transform:
   m_GameObject: {fileID: 1062348163457161292}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -103,7 +103,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 4231172199
+  GlobalObjectIdHash: 1184791089
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -125,12 +125,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Module:
-    TargetingType: 0
     InstantiationQuantity: 0
-    InstantiationScale: 0
-    ProjectileSpawningArea: 0
-    MovementSpeed: 0
-    MovementType: 0
+    StartingPosition:
+      PositionType: 0
+      Offset: {x: 0, y: 0}
+    StartingRotation:
+      PositionType: 0
+      Offset: 0
+    StartingScale: 0
+    SpellMovements: []
+    SpellTarget: 0
     PlayerAttached: 0
     AttachmentTime: 0
     UsesCollider: 0
@@ -141,7 +145,7 @@ MonoBehaviour:
     UsedSprite: {fileID: 0}
     UsesAnimation: 0
     AnimatorController: {fileID: 0}
-    MultipartAnimationPrefabs: []
+    AnimationPrefabs: []
     AnimationScaleMultiplier: 0
     GeneratesParticles: 0
     ParticleSystemPrefab: {fileID: 0}
@@ -151,6 +155,7 @@ MonoBehaviour:
     MaxScaleMultiplier: 0
     DestroyOnScalingCompleted: 0
   ModuleObjectIndex: 0
+  TargetId: 0
 --- !u!95 &5693598059765770263
 Animator:
   serializedVersion: 7

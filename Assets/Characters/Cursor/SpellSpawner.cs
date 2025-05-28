@@ -1,0 +1,148 @@
+using System;
+using Unity.Netcode;
+using UnityEngine;
+using UnityEngine.InputSystem;
+
+public class SpellSpawner : NetworkBehaviour
+{
+    [SerializeField] private CharacterManager characterManager;
+    [SerializeField] private SpellbookLogic spellbookLogic;
+    [SerializeField] private CharacterStats characterStats;
+    [SerializeField] private GameObject modulePrefab;
+    [SerializeField] private CursorMovement cursorMovement;
+
+    private void Start()
+    {
+        // Set up controls
+        InputActionMap controlsMap = ControlsManager.GetActionMap(characterManager.InputMapName);
+        InputAction castingAction = controlsMap.FindAction(GameSettings.InputNames.CastingAction, true);
+        castingAction.Enable();
+        castingAction.performed += context => CastingInputPerformed((byte)(castingAction.ReadValue<float>() - 1f));
+    }
+    
+    private void CastingInputPerformed(byte spellbookSlot)
+    {
+        if (MultiplayerManager.IsOnline)
+        {
+            if (!IsOwner)
+            {
+                Debug.Log($"Can't cast spell, not owner.");
+                return;
+            }
+
+            SpellData spellData = spellbookLogic.CurrentBook.SpellInSlot(spellbookSlot);
+
+            // Checks mana and cooldown on client first before sending attempt to server
+            if (CooldownAndManaAvailable(spellData, spellbookSlot))
+            {
+                AttemptSpellServerRpc(spellbookSlot);
+            }
+        }
+        else
+        {
+            AttemptSpell(spellbookSlot);
+        }
+    }
+    public void AttemptSpell(byte slot)
+    {
+        //SpellData spellData = spellbookLogic.CurrentBook.SpellInSlot(spellbookSlot);
+        byte setIndex = spellbookLogic.CurrentBook.SetIndexes[slot];
+        byte spellIndex = spellbookLogic.CurrentBook.SpellIndexes[slot];
+        SpellData.SpellInfo spellInfo = new(setIndex, spellIndex);
+
+        // Check cooldown and mana
+        if (!CooldownAndManaAvailable(spellInfo.Spell, slot))
+        {
+            Debug.Log($"Skipped casting spell - there is not enough mana or the spell is on cooldown.");
+            return;
+        }
+
+        // not entirely sure what this does. I think its for if you cast when you are the non-host client?
+        /* REMOVED FOR RESTRUCTURING
+        if (MultiplayerManager.IsOnline && !IsServer)
+        {
+            Debug.Log("Deducting mana!");
+            spellbookLogic.SpellCooldowns[slot] = spellData.SpellCooldown;
+            characterStats.CurrentMana -= spellData.ManaCost;
+
+            characterStats.ManaAwaiting += spellData.ManaCost;
+            characterStats.ManaAwaitingCountdown = GameSettings.Used.ManaAwaitingTimeLimit;
+        } */
+
+        CastSpell(spellInfo);
+    }
+    
+    public void CastSpell(SpellData.SpellInfo spellInfo)
+    {
+        // Summon each module
+        for (byte i = 0; i < spellInfo.Spell.UsedModules.Length; i++)
+        {
+            SpellModule.ModuleInfo moduleInfo = new(spellInfo, i);
+
+            byte targetId = GetModuleTargetId(moduleInfo.Module);
+            for (byte j = 0; j < moduleInfo.Module.InstantiationQuantity; j++)
+            {
+                CreateSpellObject(moduleInfo, targetId, j);
+            }
+        }
+
+        // Local Methods
+        byte GetModuleTargetId(SpellModule module)
+        {
+            return module.SpellTarget switch
+            {
+                SpellModule.SpellTargets.Owner => characterManager.CharacterIndex,
+                SpellModule.SpellTargets.Opponent => characterManager.OpponentCharacterIndex,
+                _ => throw new ArgumentException("Invalid spell target!")
+            };
+        }
+    }
+    public void CreateSpellObject(SpellModule.ModuleInfo moduleInfo, byte targetId, byte moduleObjectIndex)
+    {
+        SpellModule module = moduleInfo.Module;
+        Spell spellObject = Instantiate(modulePrefab, ModuleParent()).GetComponent<Spell>();
+
+        // Starting location
+        Vector2 startingPosition = module.StartingPosition.GetPosition(moduleObjectIndex, cursorMovement.Location, targetId);
+        Quaternion startingRotation = module.StartingRotation.GetRotation(startingPosition, cursorMovement.Location, targetId);
+        spellObject.transform.SetLocalPositionAndRotation(startingPosition, startingRotation);
+
+        // Send info
+        spellObject.SetModuleData(moduleInfo, moduleObjectIndex, targetId);
+
+        // Spawn online
+        if (MultiplayerManager.IsOnline)
+        {
+            NetworkObject spellNetworkObject = spellObject.GetComponent<NetworkObject>();
+            spellNetworkObject.Spawn(true);
+            spellObject.ModuleDataClientRpc(moduleInfo, moduleObjectIndex, targetId);
+        }
+
+        // Local Methods
+        Transform ModuleParent()
+        {
+            if (module.PlayerAttached)
+            {
+                return CharacterManager.CharacterTransforms[targetId];
+            }
+            else
+            {
+                return null;
+            }
+        }
+    }
+    public bool CooldownAndManaAvailable(SpellData spellData, byte spellbookSlot)
+    {
+        bool cooldownAvailable = spellbookLogic.SpellCooldowns[spellbookSlot] == 0;
+        bool manaAvailable = spellData.ManaCost < characterStats.CurrentMana;
+        return cooldownAvailable && manaAvailable;
+    }
+
+    // Networking
+    [ServerRpc]
+    public void AttemptSpellServerRpc(byte slotIndex)
+    {
+        Debug.Log($"ServerRpc recieved, attempting spell in slot {slotIndex} server-side");
+        AttemptSpell(slotIndex);
+    }
+}

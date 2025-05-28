@@ -2,37 +2,8 @@ using UnityEngine;
 
 public class PlayerAttachedSpell : MonoBehaviour
 {
-    // Fields
-    private SpellInfoLogic spellModuleBehavior; // rename as soon as I rename the spellModuleBehavior script;
-    private float attachmentTime;
-
-    // Properties
-    //SpellModule Module => spellModuleBehavior.Module;
-
-    /*private void Start()
-    {
-        spellModuleBehavior = GetComponent<SpellInfoLogic>();
-
-        // Attach module (if applicable)
-        if (Module.ModuleType == SpellModule.ModuleTypes.PlayerAttached)
-        {
-            // Set up parenting
-            // transform.parent = OwnerCharacterInfo.CharacterObject.transform; REMOVED FOR RESTRUCTURING
-            transform.localPosition = Vector2.zero;
-
-            // Set how long the spell should last
-            attachmentTime = Module.AttachmentTime;
-        }
-    }*/
-
     /*private void FixedUpdate()
     {
-        attachmentTime--;
-        if (attachmentTime <= 0)
-        {
-            DestroySelfNetworkSafe();
-        }
-
         // Make sprite face towards where the character is being pushed
         if (Module.SpriteFacingPush)
         {

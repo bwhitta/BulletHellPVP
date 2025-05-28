@@ -9,6 +9,7 @@ public class SpellModuleEditor : PropertyDrawer
     private readonly HiderBoolInfo[] hiderBoolInfos = 
     {
         new() { BoolFieldName = "PlayerAttached", BoolPropertyName = "PlayerAttached", HiddenElementName = "PlayerAttachedHides" },
+        new() { BoolFieldName = "LimitedLifespan", BoolPropertyName = "LimitedLifespan", HiddenElementName = "LimitedLifespanHides" },
         new() { BoolFieldName = "UsesCollider", BoolPropertyName = "UsesCollider", HiddenElementName = "UsesColliderHides" },
         new() { BoolFieldName = "DealsDamage", BoolPropertyName = "DealsDamage", HiddenElementName = "DealsDamageHides" },
         new() { BoolFieldName = "SpellUsesSprite", BoolPropertyName = "SpellUsesSprite", HiddenElementName = "SpellUsesSpriteHides" },

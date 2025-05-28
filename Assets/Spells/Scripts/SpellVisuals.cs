@@ -2,70 +2,49 @@ using UnityEngine;
 
 public static class SpellVisuals
 {
-    /* REMOVED FOR RESTRUCTURING
-    private void EnableSprite()
+    public static void EnableSprite(SpriteRenderer spriteRenderer, Sprite sprite, string maskLayer)
     {
-        Debug.Log($"enabling sprite! sprite is null: {Module.UsedSprite == null}");
+        if (sprite == null)
+        {
+            Debug.LogWarning($"Sprite is null, cannot enable!");
+            return;
+        }
 
-        SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
-
-        spriteRenderer.enabled = Module.SpellUsesSprite;
-        spriteRenderer.sprite = Module.UsedSprite;
+        // Display the sprite
+        spriteRenderer.enabled = true;
+        spriteRenderer.sprite = sprite;
 
         // Set the mask layer
-        if (Module.ModuleType == SpellModule.ModuleTypes.PlayerAttached)
-        {
-            spriteRenderer.sortingLayerName = GameSettings.Used.spellMaskLayers[spellInfoLogic.OwnerId];
-        }
-        else
-        {
-            spriteRenderer.sortingLayerName = GameSettings.Used.spellMaskLayers[spellInfoLogic.OpponentId];
-        }
-    }*/
-    /* REMOVED FOR RESTRUCTURING
-    private void EnableAnimator()
+        spriteRenderer.sortingLayerName = maskLayer;
+    }
+    public static void EnableAnimator(Animator animator, Transform transform, RuntimeAnimatorController animatorController, GameObject[] animationPrefabs, float animationScaleMultiplier, string maskLayer)
     {
-        animator = GetComponent<Animator>();
-        foreach (GameObject animationPrefab in Module.MultipartAnimationPrefabs)
+        foreach (GameObject animationPrefab in animationPrefabs)
         {
-            // Spawn in the animator
-            GameObject animationObject = Instantiate(animationPrefab, transform);
-            animationObject.transform.SetPositionAndRotation(transform.position, transform.rotation);
-            animationObject.transform.localScale = new Vector2(Module.AnimationScaleMultiplier, Module.AnimationScaleMultiplier);
+            // Create the object to be animated
+            GameObject animationObject = Object.Instantiate(animationPrefab, transform);
+            animationObject.transform.localScale = new Vector2(animationScaleMultiplier, animationScaleMultiplier);
 
-            // Animator does not work with changed name, so this line resets the name.
+            // Animator does not work with changed names, so this line resets them.
             animationObject.name = animationPrefab.name;
 
-            // Make sure the sprite shows up on your own side of the play area when it is attached to yourself 
-            string spellMaskLayer;
-            if (Module.ModuleType == SpellModule.ModuleTypes.PlayerAttached)
-            {
-                spellMaskLayer = GameSettings.Used.spellMaskLayers[spellInfoLogic.OwnerId];
-            }
-            else
-            {
-                spellMaskLayer = GameSettings.Used.spellMaskLayers[spellInfoLogic.OpponentId];
-            }
-
             // Set the mask layer
-            animationObject.GetComponent<SpriteRenderer>().sortingLayerName = spellMaskLayer;
+            animationObject.GetComponent<SpriteRenderer>().sortingLayerName = maskLayer;
         }
-
-        // Enables the animator if Animated is set to true
-        animator.enabled = Module.UsesAnimation;
-
-        // Sets the animation
-        animator.runtimeAnimatorController = Module.AnimatorController;
-    } */
-    /* REMOVED FOR RESTRUCTURING
-    private void EnableParticleSystem()
+        
+        // Displays the animations
+        animator.enabled = true;
+        animator.runtimeAnimatorController = animatorController;
+    }
+    public static void EnableParticleSystem(Transform transform, GameObject particleSystemPrefab, string maskLayer)
     {
-        GameObject particleObject = Instantiate(Module.ParticleSystemPrefab, transform);
-        particleObject.transform.localPosition = new Vector3(0, 0, Module.ParticleSystemZ);
-    }*/
-    /* REMOVED FOR RESTRUCTURING
-    private void StartingScale()
+        GameObject particleObject = Object.Instantiate(particleSystemPrefab, transform);
+
+        // Set the mask layer
+        particleObject.GetComponent<ParticleSystem>().GetComponent<Renderer>().sortingLayerName = maskLayer;
+    }
+    public static void StartingScale(Transform transform, float scale)
     {
-        transform.localScale = new Vector3(Module.InstantiationScale, Module.InstantiationScale, 1);
-    }*/
+        transform.localScale = new Vector3(scale, scale, 1);
+    }
 }

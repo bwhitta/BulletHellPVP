@@ -2,17 +2,20 @@
     <Style src="project://database/Assets/Editor/SpellDataEditorStyle.uss?fileID=7433441132597879392&amp;guid=68f4f6728a1b91a42871248fa4e8dcde&amp;type=3#SpellDataEditorStyle" />
     <ui:Foldout text="Module" name="ModuleFoldout" class="container" style="margin-top: 2px; margin-right: 5px; margin-bottom: 2px; margin-left: 5px; padding-top: 5px; padding-right: 5px; padding-bottom: 5px; padding-left: 16px; -unity-font-style: bold;">
         <ui:VisualElement name="ModuleContainer" style="-unity-font-style: normal; margin-left: -30px;">
+            <uie:PropertyField binding-path="InstantiationQuantity" name="InstantiationQuantity" />
             <uie:PropertyField binding-path="StartingPosition" name="StartingPosition" class="indented" />
             <uie:PropertyField binding-path="StartingRotation" name="StartingRotation" class="indented" />
-            <uie:PropertyField binding-path="InstantiationQuantity" name="InstantiationQuantity" />
-            <uie:PropertyField binding-path="InstantiationScale" name="InstantiationScale" />
+            <uie:PropertyField binding-path="StartingScale" name="StartingScale" />
             <ui:VisualElement name="Spacer" class="spacer" />
             <uie:PropertyField binding-path="SpellMovements" name="SpellMovements" />
             <uie:PropertyField binding-path="SpellTarget" name="SpellTarget" />
             <ui:VisualElement name="Spacer" class="spacer" />
             <uie:PropertyField name="PlayerAttached" binding-path="PlayerAttached" />
-            <ui:VisualElement name="PlayerAttachedHides" class="indented">
-                <uie:PropertyField binding-path="AttachmentTime" name="AttachmentTime" />
+            <ui:VisualElement name="PlayerAttachedHides" class="indented" />
+            <ui:VisualElement name="Spacer" class="spacer" />
+            <uie:PropertyField binding-path="LimitedLifespan" name="LimitedLifespan" />
+            <ui:VisualElement name="LimitedLifespanHides" class="indented">
+                <uie:PropertyField binding-path="Lifespan" name="Lifespan" />
             </ui:VisualElement>
             <ui:VisualElement name="Spacer" class="spacer" />
             <uie:PropertyField binding-path="UsesCollider" name="UsesCollider" />
@@ -33,14 +36,13 @@
             <uie:PropertyField binding-path="UsesAnimation" name="UsesAnimation" />
             <ui:VisualElement name="UsesAnimationHides" class="indented">
                 <uie:PropertyField binding-path="AnimatorController" name="AnimatorController" />
-                <uie:PropertyField binding-path="MultipartAnimationPrefabs" name="MultipartAnimationPrefabs" />
+                <uie:PropertyField binding-path="AnimationPrefabs" name="AnimationPrefabs" />
                 <uie:PropertyField binding-path="AnimationScaleMultiplier" name="AnimationScaleMultiplier" />
             </ui:VisualElement>
             <ui:VisualElement name="Spacer" class="spacer" />
             <uie:PropertyField binding-path="GeneratesParticles" name="GeneratesParticles" />
             <ui:VisualElement name="GeneratesParticlesHides" class="indented">
                 <uie:PropertyField binding-path="ParticleSystemPrefab" name="ParticleSystemPrefab" />
-                <uie:PropertyField binding-path="ParticleSystemZ" name="ParticleSystemZ" />
             </ui:VisualElement>
             <ui:VisualElement name="Spacer" class="spacer" />
             <uie:PropertyField binding-path="ScalesOverTime" name="ScalesOverTime" />

@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a08710c6bdc2c44da560834e93877dd, type: 3}
+  m_Name: Fiery Raze
+  m_EditorClassIdentifier: 
+  ManaCost: 50
+  SpellCooldown: 2
+  Icon: {fileID: 21300000, guid: 83cc1d2946ff95749ba42a2a9417668d, type: 3}
+  UsedModules:
+  - InstantiationQuantity: 2
+    StartingPosition:
+      PositionType: 2
+      Offset: {x: 0, y: 0.06}
+    StartingRotation:
+      PositionType: 2
+      Offset: 0
+    StartingScale: 1
+    SpellMovements:
+    - {fileID: 11400000, guid: ccd5e2cca2c470f448797a6d58047db5, type: 2}
+    SpellTarget: 1
+    PlayerAttached: 0
+    LimitedLifespan: 0
+    Lifespan: 0
+    UsesCollider: 1
+    ColliderPath:
+    - {x: 0.2, y: 0}
+    - {x: 0.4, y: 0.7}
+    - {x: 0.1, y: 1.4}
+    - {x: 0, y: 1.9}
+    - {x: -0.1, y: 1.4}
+    - {x: -0.4, y: 0.7}
+    - {x: -0.2, y: 0}
+    DealsDamage: 1
+    Damage: 50
+    SpellUsesSprite: 1
+    UsedSprite: {fileID: 21300000, guid: ab1e21c43f3e0e64f9819cd9acd434a4, type: 3}
+    UsesAnimation: 0
+    AnimatorController: {fileID: 0}
+    AnimationPrefabs: []
+    AnimationScaleMultiplier: 0
+    GeneratesParticles: 0
+    ParticleSystemPrefab: {fileID: 0}
+    ScalesOverTime: 1
+    ScalingStartMultiplier: 0.75
+    MaxScaleMultiplier: 1.5
+    DestroyOnScalingCompleted: 1

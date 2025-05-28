@@ -13,7 +13,7 @@ Font:
   m_FontSize: 0
   m_Texture: {fileID: 0}
   m_AsciiStartOffset: 0
-  m_Tracking: 1
+  m_Tracking: 25
   m_CharacterSpacing: 0
   m_CharacterPadding: 1
   m_ConvertCase: 0

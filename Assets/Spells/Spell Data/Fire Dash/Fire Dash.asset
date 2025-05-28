@@ -1,0 +1,76 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a08710c6bdc2c44da560834e93877dd, type: 3}
+  m_Name: Fire Dash
+  m_EditorClassIdentifier: 
+  ManaCost: 10
+  SpellCooldown: 5
+  Icon: {fileID: 21300000, guid: 31b3fef382c915b40a26e1dd067fd219, type: 3}
+  UsedModules:
+  - InstantiationQuantity: 1
+    StartingPosition:
+      PositionType: 0
+      Offset: {x: 0, y: 0}
+    StartingRotation:
+      PositionType: 0
+      Offset: 0
+    StartingScale: 28
+    SpellMovements: []
+    SpellTarget: 0
+    PlayerAttached: 1
+    LimitedLifespan: 1
+    Lifespan: 12
+    UsesCollider: 0
+    ColliderPath: []
+    DealsDamage: 0
+    Damage: 0
+    SpellUsesSprite: 1
+    UsedSprite: {fileID: 21300000, guid: 2ff53b2763b0ef0439592ec321fc9a83, type: 3}
+    UsesAnimation: 0
+    AnimatorController: {fileID: 0}
+    AnimationPrefabs: []
+    AnimationScaleMultiplier: 0
+    GeneratesParticles: 0
+    ParticleSystemPrefab: {fileID: 0}
+    ScalesOverTime: 0
+    ScalingStartMultiplier: 0
+    MaxScaleMultiplier: 0
+    DestroyOnScalingCompleted: 0
+  - InstantiationQuantity: 1
+    StartingPosition:
+      PositionType: 0
+      Offset: {x: 0, y: 0}
+    StartingRotation:
+      PositionType: 0
+      Offset: 0
+    StartingScale: 0
+    SpellMovements: []
+    SpellTarget: 0
+    PlayerAttached: 1
+    LimitedLifespan: 1
+    Lifespan: 50
+    UsesCollider: 0
+    ColliderPath: []
+    DealsDamage: 0
+    Damage: 0
+    SpellUsesSprite: 0
+    UsedSprite: {fileID: 0}
+    UsesAnimation: 0
+    AnimatorController: {fileID: 0}
+    AnimationPrefabs: []
+    AnimationScaleMultiplier: 0
+    GeneratesParticles: 1
+    ParticleSystemPrefab: {fileID: 3023061968540518342, guid: 40065156cfa0f0b4eb4b261de24ea888, type: 3}
+    ScalesOverTime: 0
+    ScalingStartMultiplier: 0
+    MaxScaleMultiplier: 0
+    DestroyOnScalingCompleted: 0

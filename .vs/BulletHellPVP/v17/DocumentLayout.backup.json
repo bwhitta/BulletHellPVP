@@ -3,20 +3,20 @@
   "WorkspaceRootPath": "C:\\Users\\hotdo\\Documents\\Unity Projects\\BulletHellPVP\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{EDBA41E5-982B-ECD1-F4CD-8DE2A1328FA1}|Assembly-CSharp.csproj|c:\\users\\hotdo\\documents\\unity projects\\bullethellpvp\\assets\\spells\\spell data\\scripts\\spellstartingrotation.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{EDBA41E5-982B-ECD1-F4CD-8DE2A1328FA1}|Assembly-CSharp.csproj|solutionrelative:assets\\spells\\spell data\\scripts\\spellstartingrotation.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{EDBA41E5-982B-ECD1-F4CD-8DE2A1328FA1}|Assembly-CSharp.csproj|c:\\users\\hotdo\\documents\\unity projects\\bullethellpvp\\assets\\spells\\spell selection\\equippablespell.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{EDBA41E5-982B-ECD1-F4CD-8DE2A1328FA1}|Assembly-CSharp.csproj|solutionrelative:assets\\spells\\spell selection\\equippablespell.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{EDBA41E5-982B-ECD1-F4CD-8DE2A1328FA1}|Assembly-CSharp.csproj|c:\\users\\hotdo\\documents\\unity projects\\bullethellpvp\\assets\\spells\\spell data\\scripts\\spellstartingposition.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{EDBA41E5-982B-ECD1-F4CD-8DE2A1328FA1}|Assembly-CSharp.csproj|solutionrelative:assets\\spells\\spell data\\scripts\\spellstartingposition.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{EDBA41E5-982B-ECD1-F4CD-8DE2A1328FA1}|Assembly-CSharp.csproj|c:\\users\\hotdo\\documents\\unity projects\\bullethellpvp\\assets\\spells\\spell selection\\spellselectionmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{EDBA41E5-982B-ECD1-F4CD-8DE2A1328FA1}|Assembly-CSharp.csproj|solutionrelative:assets\\spells\\spell selection\\spellselectionmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{EDBA41E5-982B-ECD1-F4CD-8DE2A1328FA1}|Assembly-CSharp.csproj|c:\\users\\hotdo\\documents\\unity projects\\bullethellpvp\\assets\\spells\\cursor\\spellspawner.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{EDBA41E5-982B-ECD1-F4CD-8DE2A1328FA1}|Assembly-CSharp.csproj|solutionrelative:assets\\spells\\cursor\\spellspawner.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{EDBA41E5-982B-ECD1-F4CD-8DE2A1328FA1}|Assembly-CSharp.csproj|c:\\users\\hotdo\\documents\\unity projects\\bullethellpvp\\assets\\spells\\spell selection\\setmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{EDBA41E5-982B-ECD1-F4CD-8DE2A1328FA1}|Assembly-CSharp.csproj|solutionrelative:assets\\spells\\spell selection\\setmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{C5F65399-658D-8407-FC35-7A710F7013FC}|Assembly-CSharp-Editor.csproj|c:\\users\\hotdo\\documents\\unity projects\\bullethellpvp\\assets\\editor\\spellmoduleeditor.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C5F65399-658D-8407-FC35-7A710F7013FC}|Assembly-CSharp-Editor.csproj|solutionrelative:assets\\editor\\spellmoduleeditor.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{EDBA41E5-982B-ECD1-F4CD-8DE2A1328FA1}|Assembly-CSharp.csproj|c:\\users\\hotdo\\documents\\unity projects\\bullethellpvp\\assets\\scripts\\sceneloader.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{EDBA41E5-982B-ECD1-F4CD-8DE2A1328FA1}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\sceneloader.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -26,58 +26,58 @@
       "DocumentGroups": [
         {
           "DockedHeight": 200,
-          "SelectedChildIndex": 3,
+          "SelectedChildIndex": 0,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "SpellSpawner.cs",
-              "DocumentMoniker": "C:\\Users\\hotdo\\Documents\\Unity Projects\\BulletHellPVP\\Assets\\Spells\\Cursor\\SpellSpawner.cs",
-              "RelativeDocumentMoniker": "Assets\\Spells\\Cursor\\SpellSpawner.cs",
-              "ToolTip": "C:\\Users\\hotdo\\Documents\\Unity Projects\\BulletHellPVP\\Assets\\Spells\\Cursor\\SpellSpawner.cs",
-              "RelativeToolTip": "Assets\\Spells\\Cursor\\SpellSpawner.cs",
-              "ViewState": "AgIAAFYAAAAAAAAAAAAcwGsAAAAoAAAAAAAAAA==",
+              "DocumentIndex": 0,
+              "Title": "EquippableSpell.cs",
+              "DocumentMoniker": "C:\\Users\\hotdo\\Documents\\Unity Projects\\BulletHellPVP\\Assets\\Spells\\Spell Selection\\EquippableSpell.cs",
+              "RelativeDocumentMoniker": "Assets\\Spells\\Spell Selection\\EquippableSpell.cs",
+              "ToolTip": "C:\\Users\\hotdo\\Documents\\Unity Projects\\BulletHellPVP\\Assets\\Spells\\Spell Selection\\EquippableSpell.cs",
+              "RelativeToolTip": "Assets\\Spells\\Spell Selection\\EquippableSpell.cs",
+              "ViewState": "AgIAAA8AAAAAAAAAAAApwBIAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-23T21:20:45.254Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "SpellModuleEditor.cs",
-              "DocumentMoniker": "C:\\Users\\hotdo\\Documents\\Unity Projects\\BulletHellPVP\\Assets\\Editor\\SpellModuleEditor.cs",
-              "RelativeDocumentMoniker": "Assets\\Editor\\SpellModuleEditor.cs",
-              "ToolTip": "C:\\Users\\hotdo\\Documents\\Unity Projects\\BulletHellPVP\\Assets\\Editor\\SpellModuleEditor.cs",
-              "RelativeToolTip": "Assets\\Editor\\SpellModuleEditor.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-23T21:10:28.767Z",
+              "WhenOpened": "2025-05-28T15:46:22.845Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 1,
-              "Title": "SpellStartingPosition.cs",
-              "DocumentMoniker": "C:\\Users\\hotdo\\Documents\\Unity Projects\\BulletHellPVP\\Assets\\Spells\\Spell Data\\Scripts\\SpellStartingPosition.cs",
-              "RelativeDocumentMoniker": "Assets\\Spells\\Spell Data\\Scripts\\SpellStartingPosition.cs",
-              "ToolTip": "C:\\Users\\hotdo\\Documents\\Unity Projects\\BulletHellPVP\\Assets\\Spells\\Spell Data\\Scripts\\SpellStartingPosition.cs",
-              "RelativeToolTip": "Assets\\Spells\\Spell Data\\Scripts\\SpellStartingPosition.cs",
-              "ViewState": "AgIAAAUAAAAAAAAAAAAAwAAAAAAAAAAAAAAAAA==",
+              "Title": "SpellSelectionManager.cs",
+              "DocumentMoniker": "C:\\Users\\hotdo\\Documents\\Unity Projects\\BulletHellPVP\\Assets\\Spells\\Spell Selection\\SpellSelectionManager.cs",
+              "RelativeDocumentMoniker": "Assets\\Spells\\Spell Selection\\SpellSelectionManager.cs",
+              "ToolTip": "C:\\Users\\hotdo\\Documents\\Unity Projects\\BulletHellPVP\\Assets\\Spells\\Spell Selection\\SpellSelectionManager.cs",
+              "RelativeToolTip": "Assets\\Spells\\Spell Selection\\SpellSelectionManager.cs",
+              "ViewState": "AgIAAFgAAAAAAAAAAAAuwHEAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-23T21:20:42.742Z",
+              "WhenOpened": "2025-05-28T15:17:06.215Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "SpellStartingRotation.cs",
-              "DocumentMoniker": "C:\\Users\\hotdo\\Documents\\Unity Projects\\BulletHellPVP\\Assets\\Spells\\Spell Data\\Scripts\\SpellStartingRotation.cs",
-              "RelativeDocumentMoniker": "Assets\\Spells\\Spell Data\\Scripts\\SpellStartingRotation.cs",
-              "ToolTip": "C:\\Users\\hotdo\\Documents\\Unity Projects\\BulletHellPVP\\Assets\\Spells\\Spell Data\\Scripts\\SpellStartingRotation.cs",
-              "RelativeToolTip": "Assets\\Spells\\Spell Data\\Scripts\\SpellStartingRotation.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAACUAAABqAAAAAAAAAA==",
+              "DocumentIndex": 2,
+              "Title": "SetManager.cs",
+              "DocumentMoniker": "C:\\Users\\hotdo\\Documents\\Unity Projects\\BulletHellPVP\\Assets\\Spells\\Spell Selection\\SetManager.cs",
+              "RelativeDocumentMoniker": "Assets\\Spells\\Spell Selection\\SetManager.cs",
+              "ToolTip": "C:\\Users\\hotdo\\Documents\\Unity Projects\\BulletHellPVP\\Assets\\Spells\\Spell Selection\\SetManager.cs",
+              "RelativeToolTip": "Assets\\Spells\\Spell Selection\\SetManager.cs",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAtwBkAAAA0AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-23T21:20:37.875Z",
+              "WhenOpened": "2025-05-28T15:35:31.782Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "SceneLoader.cs",
+              "DocumentMoniker": "C:\\Users\\hotdo\\Documents\\Unity Projects\\BulletHellPVP\\Assets\\Scripts\\SceneLoader.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\SceneLoader.cs",
+              "ToolTip": "C:\\Users\\hotdo\\Documents\\Unity Projects\\BulletHellPVP\\Assets\\Scripts\\SceneLoader.cs",
+              "RelativeToolTip": "Assets\\Scripts\\SceneLoader.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAMAAAAoAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-28T15:35:33.813Z",
               "EditorCaption": ""
             }
           ]

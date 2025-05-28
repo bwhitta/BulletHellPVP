@@ -44,7 +44,7 @@ public class SetManager : MonoBehaviour
             // Instaniates the set, then set its location and icon
             GameObject spellSetDisplay = Instantiate(spellSetPrefab, spellSetParent.transform);
             spellSetDisplay.transform.position = spellSetParent.transform.position + distanceBetweenIcons * i * Vector3.down;
-            spellSetDisplay.GetComponent<SpriteRenderer>().sprite = GameSettings.Used.SpellSets[i].SetSprite;
+            spellSetDisplay.GetComponent<Image>().sprite = GameSettings.Used.SpellSets[i].SetSprite;
 
             // Clicking the set will select it
             byte setIndex = i; // i is not considered local to the loop, so when SelectSet is called it uses the highest value of i (which is 1 higher than the last set)

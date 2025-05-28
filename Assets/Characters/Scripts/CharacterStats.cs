@@ -3,9 +3,10 @@ using UnityEngine;
 
 public class CharacterStats : NetworkBehaviour
 {
-    private float remainingInvincibilityTime = 0;
+    // Fields
     [SerializeField] private BarLogic healthBar;
     [SerializeField] private BarLogic manaBar;
+    private float remainingInvincibilityTime = 0;
 
     // Health
     private float _currentHealth;
@@ -143,6 +144,7 @@ public class CharacterStats : NetworkBehaviour
             }
         }
     }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (gameObject.activeSelf == false)
@@ -150,26 +152,23 @@ public class CharacterStats : NetworkBehaviour
             Debug.Log($"gameObject is not active"); // temp log
             return;
         }
-        Debug.LogWarning("spell collission currently disabled for restructuring");
-        /*REMOVED FOR RESTRUCTURING
-        if (collision.GetComponent<SpellInfoLogic>() != null)
+        if (collision.TryGetComponent<Spell>(out var spell))
         {
-            SpellInfoLogic collisionSpellBehavior = collision.GetComponent<SpellInfoLogic>();
-            if (remainingInvincibilityTime <= 0 && collisionSpellBehavior.Module.DealsDamage)
+            if (remainingInvincibilityTime <= 0 && spell.Module.DealsDamage)
             {
-                DamageDealt(collisionSpellBehavior);
+                DamageDealt(spell);
             }
         }
 
         // Local Methods
-        void DamageDealt(SpellInfoLogic collisionSpellBehavior)
+        void DamageDealt(Spell spell)
         {
             remainingInvincibilityTime = GameSettings.Used.InvincibilityTime;
             SetChildAlpha(GameSettings.Used.InvincibilityAlphaMod);
 
-            GetComponent<CharacterStats>().CurrentHealth -= collisionSpellBehavior.Module.Damage;
-            Debug.Log($"Damage dealt - total of {collisionSpellBehavior.Module.Damage} health lost.");
-        }*/
+            CurrentHealth -= spell.Module.Damage;
+            Debug.Log($"Damage dealt - total of {spell.Module.Damage} health lost.");
+        }
     }
     private void ManaScalingTick()
     {

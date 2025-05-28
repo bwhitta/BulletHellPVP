@@ -29,7 +29,7 @@ public class Spellbook
 
         return books;
     }
-
+     
     public static SpellData GetSpellData(byte setIndex, byte spellIndex)
     {
         SpellSet set = GameSettings.Used.SpellSets[setIndex];
