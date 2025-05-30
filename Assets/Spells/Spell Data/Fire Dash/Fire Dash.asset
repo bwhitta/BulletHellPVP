@@ -41,10 +41,7 @@ MonoBehaviour:
     AnimationScaleMultiplier: 0
     GeneratesParticles: 0
     ParticleSystemPrefab: {fileID: 0}
-    ScalesOverTime: 0
-    ScalingStartMultiplier: 0
-    MaxScaleMultiplier: 0
-    DestroyOnScalingCompleted: 0
+    Scaling: {fileID: 0}
   - InstantiationQuantity: 1
     StartingPosition:
       PositionType: 0
@@ -70,7 +67,4 @@ MonoBehaviour:
     AnimationScaleMultiplier: 0
     GeneratesParticles: 1
     ParticleSystemPrefab: {fileID: 3023061968540518342, guid: 40065156cfa0f0b4eb4b261de24ea888, type: 3}
-    ScalesOverTime: 0
-    ScalingStartMultiplier: 0
-    MaxScaleMultiplier: 0
-    DestroyOnScalingCompleted: 0
+    Scaling: {fileID: 0}

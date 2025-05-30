@@ -19,17 +19,21 @@ MonoBehaviour:
   - InstantiationQuantity: 2
     StartingPosition:
       PositionType: 2
-      Offset: {x: 0, y: 0.06}
+      Offset: {x: 0, y: 0}
     StartingRotation:
       PositionType: 2
       Offset: 0
-    StartingScale: 1
+    StartingScale: 0.75
     SpellMovements:
     - {fileID: 11400000, guid: ccd5e2cca2c470f448797a6d58047db5, type: 2}
     SpellTarget: 1
+    SpellScalings:
+    - {fileID: 11400000, guid: 97650a683d5693141b9f4477cd61254e, type: 2}
     PlayerAttached: 0
     LimitedLifespan: 0
     Lifespan: 0
+    DestroyAfterDistanceMoved: 1
+    DestroyDistance: 3.75
     UsesCollider: 1
     ColliderPath:
     - {x: 0.2, y: 0}
@@ -49,7 +53,3 @@ MonoBehaviour:
     AnimationScaleMultiplier: 0
     GeneratesParticles: 0
     ParticleSystemPrefab: {fileID: 0}
-    ScalesOverTime: 1
-    ScalingStartMultiplier: 0.75
-    MaxScaleMultiplier: 1.5
-    DestroyOnScalingCompleted: 1

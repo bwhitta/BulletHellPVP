@@ -10,12 +10,12 @@ public class SpellModuleEditor : PropertyDrawer
     {
         new() { BoolFieldName = "PlayerAttached", BoolPropertyName = "PlayerAttached", HiddenElementName = "PlayerAttachedHides" },
         new() { BoolFieldName = "LimitedLifespan", BoolPropertyName = "LimitedLifespan", HiddenElementName = "LimitedLifespanHides" },
+        new() { BoolFieldName = "DestroyAfterDistanceMoved", BoolPropertyName = "DestroyAfterDistanceMoved", HiddenElementName = "DestroyAfterDistanceMovedHides" },
         new() { BoolFieldName = "UsesCollider", BoolPropertyName = "UsesCollider", HiddenElementName = "UsesColliderHides" },
         new() { BoolFieldName = "DealsDamage", BoolPropertyName = "DealsDamage", HiddenElementName = "DealsDamageHides" },
         new() { BoolFieldName = "SpellUsesSprite", BoolPropertyName = "SpellUsesSprite", HiddenElementName = "SpellUsesSpriteHides" },
         new() { BoolFieldName = "UsesAnimation", BoolPropertyName = "UsesAnimation", HiddenElementName = "UsesAnimationHides" },
-        new() { BoolFieldName = "GeneratesParticles", BoolPropertyName = "GeneratesParticles", HiddenElementName = "GeneratesParticlesHides" },
-        new() { BoolFieldName = "ScalesOverTime", BoolPropertyName = "ScalesOverTime", HiddenElementName = "ScalesOverTimeHides" }
+        new() { BoolFieldName = "GeneratesParticles", BoolPropertyName = "GeneratesParticles", HiddenElementName = "GeneratesParticlesHides" }
     };
 
     private readonly SwitcherEnumInfo[] switcherEnumInfos =

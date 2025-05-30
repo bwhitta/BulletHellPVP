@@ -10,12 +10,19 @@
             <uie:PropertyField binding-path="SpellMovements" name="SpellMovements" />
             <uie:PropertyField binding-path="SpellTarget" name="SpellTarget" />
             <ui:VisualElement name="Spacer" class="spacer" />
+            <uie:PropertyField binding-path="SpellScalings" name="SpellScalings" />
+            <ui:VisualElement name="Spacer" class="spacer" />
             <uie:PropertyField name="PlayerAttached" binding-path="PlayerAttached" />
             <ui:VisualElement name="PlayerAttachedHides" class="indented" />
             <ui:VisualElement name="Spacer" class="spacer" />
             <uie:PropertyField binding-path="LimitedLifespan" name="LimitedLifespan" />
             <ui:VisualElement name="LimitedLifespanHides" class="indented">
                 <uie:PropertyField binding-path="Lifespan" name="Lifespan" />
+            </ui:VisualElement>
+            <ui:VisualElement name="Spacer" class="spacer" />
+            <uie:PropertyField binding-path="DestroyAfterDistanceMoved" name="DestroyAfterDistanceMoved" />
+            <ui:VisualElement name="DestroyAfterDistanceMovedHides" class="indented">
+                <uie:PropertyField binding-path="DestroyDistance" name="DestroyDistance" />
             </ui:VisualElement>
             <ui:VisualElement name="Spacer" class="spacer" />
             <uie:PropertyField binding-path="UsesCollider" name="UsesCollider" />
@@ -43,13 +50,6 @@
             <uie:PropertyField binding-path="GeneratesParticles" name="GeneratesParticles" />
             <ui:VisualElement name="GeneratesParticlesHides" class="indented">
                 <uie:PropertyField binding-path="ParticleSystemPrefab" name="ParticleSystemPrefab" />
-            </ui:VisualElement>
-            <ui:VisualElement name="Spacer" class="spacer" />
-            <uie:PropertyField binding-path="ScalesOverTime" name="ScalesOverTime" />
-            <ui:VisualElement name="ScalesOverTimeHides" class="indented">
-                <uie:PropertyField binding-path="ScalingStartMultiplier" name="ScalingStartMultiplier" />
-                <uie:PropertyField binding-path="MaxScaleMultiplier" name="MaxScaleMultiplier" />
-                <uie:PropertyField binding-path="DestroyOnScalingCompleted" name="DestroyOnScalingCompleted" />
             </ui:VisualElement>
         </ui:VisualElement>
     </ui:Foldout>

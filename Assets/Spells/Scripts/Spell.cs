@@ -1,5 +1,4 @@
 using Unity.Netcode;
-using UnityEditor;
 using UnityEngine;
 
 public class Spell : NetworkBehaviour
@@ -10,9 +9,13 @@ public class Spell : NetworkBehaviour
     public byte TargetId;
     
     private float lifespan;
+    private float distanceMoved;
 
     private int ticksSincePositionUpdate;
     private readonly NetworkVariable<Vector2> serverSidePosition = new();
+
+    // probably should be set in a different way at some point, but this works for now
+    private const float outOfBoundsDistance = 15f;
 
     // Methods
     void Start()
@@ -74,11 +77,14 @@ public class Spell : NetworkBehaviour
         }
 
         MoveSpell();
-        // check for out of bounds
+        ScaleSpell();
+        CheckBounds();
+        if (Module.DestroyAfterDistanceMoved)
+        {
+            CheckDistanceMoved();
+        }
         TickLifespan();
     }
-
-    
 
     private void MoveSpell()
     {
@@ -87,7 +93,33 @@ public class Spell : NetworkBehaviour
         {
             movement += spellMovement.Move(transform.eulerAngles.z, ModuleObjectIndex);
         }
-        transform.localPosition += (Vector3)movement * Time.deltaTime;
+        distanceMoved += movement.magnitude * Time.fixedDeltaTime;
+        transform.localPosition += (Vector3)movement * Time.fixedDeltaTime;
+    }
+    private void ScaleSpell()
+    {
+        float scale = Module.StartingScale;
+        foreach (var spellScale in Module.SpellScalings)
+        {
+            scale *= spellScale.Scale(distanceMoved, lifespan);
+        }
+        transform.localScale = new Vector3(scale, scale, 1);
+    }
+    private void CheckBounds()
+    {
+        float distanceFromCenter = Vector2.Distance(transform.position, Vector2.zero);
+        if (distanceFromCenter >= outOfBoundsDistance)
+        {
+            Debug.Log($"Deleted spell - out of bounds");
+            DestroySelfNetworkSafe();
+        }
+    }
+    private void CheckDistanceMoved()
+    {
+        if (distanceMoved >= Module.DestroyDistance)
+        {
+            DestroySelfNetworkSafe();
+        }
     }
     private void TickLifespan()
     {
@@ -152,4 +184,41 @@ public class Spell : NetworkBehaviour
         ModuleObjectIndex = moduleObjectIndex;
         TargetId = targetId;
     }
+
+    // Old PlayerAttached stuff
+    /*private void FixedUpdate()
+    {
+        // Make sprite face towards where the character is being pushed
+        if (Module.SpriteFacingPush)
+        {
+            var angle = Vector2.SignedAngle(Vector2.up, tempPlayerMovementMod);
+            transform.rotation = Quaternion.Euler(0, 0, 180 + angle);
+        }
+        
+        // Local Methods
+        if (Module.AngleAfterStart)
+        {
+            TryAnglingPush();
+        }
+        
+        // what does this even do:
+        float GetAngle(Vector2 vector)
+        {
+            // Returns angle from top, counterclockwise
+            return Vector2.SignedAngle(Vector2.up, vector);
+        }
+    }*/
+    /* REMOVED FOR RESTRUCTURING, when re-implementing this will need some extra work done to make the inputs sync with the server
+    private void TryAnglingPush()
+    {
+        Vector2 inputVector = characterControls.movementAction.ReadValue<Vector2>();
+        float movingDirection = GetAngle(tempPlayerMovementMod.tempPush);
+        float inputDirection = GetAngle(inputVector);
+        if (inputVector == Vector2.zero)
+            return;
+        float movementCap = Module.AngleChangeSpeed * Time.fixedDeltaTime;
+        float rotationAngle = Mathf.MoveTowardsAngle(movingDirection, inputDirection, movementCap);
+        // Change the push direction to still move the player 
+        tempPlayerMovementMod.tempPush = Quaternion.Euler(0, 0, rotationAngle) * Vector2.up;
+    }*/
 }
