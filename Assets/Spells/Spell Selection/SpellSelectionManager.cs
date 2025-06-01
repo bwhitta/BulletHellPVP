@@ -32,7 +32,21 @@ public class SpellSelectionManager : MonoBehaviour
         }
     }
 
-    public static byte CurrentCharacterIndex { get; private set; }
+    // At least for now, in online play the lobby host is always on the left.
+    private byte _currentCharacterIndex;
+    private byte CurrentCharacterIndex
+    {
+        get
+        {
+            if (MultiplayerManager.IsOnline)
+            {
+                if (lobbyManager.IsLobbyHost) _currentCharacterIndex = 0;
+                else _currentCharacterIndex = 1;
+            }
+            return _currentCharacterIndex;
+        }
+        set => _currentCharacterIndex = value;
+    }
 
     private Spellbook CurrentEditedBook
     {
@@ -50,12 +64,9 @@ public class SpellSelectionManager : MonoBehaviour
         if (MultiplayerManager.IsOnline)
         {
             lobbyManager = FindFirstObjectByType<LobbyManager>();
-
-            // Figures out who is currently selecting spells (in this case, it should be the local client since spells are selected individually when online)
-            if (lobbyManager.IsLobbyHost) CurrentCharacterIndex = 0;
-            else CurrentCharacterIndex = 1;
         }
 
+        // what happens if I start the game when in the battle scene? how does this get started?
         SpellbookLogic.EquippedBooks = new Spellbook[GameSettings.Used.MaxCharacters][];
         for (int i = 0; i < GameSettings.Used.MaxCharacters; i++)
         {
@@ -115,6 +126,7 @@ public class SpellSelectionManager : MonoBehaviour
         for (byte i = 0; i < GameSettings.Used.SpellSlots; i++)
         {
             Vector2 offsetSlotPosition = slotPositions[i] + (Vector2)equippedSpellsParent.transform.position;
+            Debug.Log($"offsetSlotPosition: {offsetSlotPosition}, spellPosition: {spell.transform.position}");
             if (Vector2.Distance(spell.transform.position, offsetSlotPosition) <= slotSnapDistance)
             {
                 CurrentEditedBook.SetIndexes[i] = spell.setIndex;
