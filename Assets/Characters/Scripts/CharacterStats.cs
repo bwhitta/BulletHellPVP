@@ -4,9 +4,11 @@ using UnityEngine;
 public class CharacterStats : NetworkBehaviour
 {
     // Fields
+    [SerializeField] private CharacterManager characterManager;
     [SerializeField] private BarLogic healthBar;
     [SerializeField] private BarLogic manaBar;
     private float remainingInvincibilityTime = 0;
+
 
     // Health
     private float _currentHealth;
@@ -154,7 +156,7 @@ public class CharacterStats : NetworkBehaviour
         }
         if (collision.TryGetComponent<Spell>(out var spell))
         {
-            if (remainingInvincibilityTime <= 0 && spell.Module.DealsDamage)
+            if (remainingInvincibilityTime <= 0 && spell.Module.DealsDamage && spell.TargetId == characterManager.CharacterIndex)
             {
                 DamageDealt(spell);
             }

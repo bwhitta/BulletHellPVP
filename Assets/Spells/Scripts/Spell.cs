@@ -4,7 +4,7 @@ using UnityEngine;
 public class Spell : NetworkBehaviour
 {
     // Fields
-    public SpellModule Module;
+    [HideInInspector] public SpellModule Module;
     public byte ModuleObjectIndex;
     public byte TargetId;
     
@@ -14,8 +14,30 @@ public class Spell : NetworkBehaviour
     private int ticksSincePositionUpdate;
     private readonly NetworkVariable<Vector2> serverSidePosition = new();
 
-    // probably should be set in a different way at some point, but this works for now
     private const float outOfBoundsDistance = 15f;
+
+    // Properties
+    private Vector2 _spellLocalPosition;
+    private Vector2 SpellLocalPosition
+    {
+        get
+        {
+            return _spellLocalPosition;
+        }
+        set
+        {
+            _spellLocalPosition = value;
+            if (Module.PlayerAttached)
+            {
+                Vector2 targetPosition = CharacterManager.CharacterTransforms[TargetId].position;
+                transform.position = _spellLocalPosition + targetPosition;
+            }
+            else
+            {
+                transform.position = _spellLocalPosition;
+            }
+        }
+    }
 
     // Methods
     void Start()
@@ -39,6 +61,9 @@ public class Spell : NetworkBehaviour
 
         // Set up collision
         EnableCollider();
+        
+        // Set up player local position tracking
+        SpellLocalPosition = transform.position;
 
         // Set up networking
         if (MultiplayerManager.IsOnline)
@@ -55,14 +80,7 @@ public class Spell : NetworkBehaviour
         }
         void SetupSpellNetworking()
         {
-            if (IsServer)
-            {
-                // will add stuff here soon
-
-                // should either have this here or in the SpellSpawner script.
-                //ModuleDataClientRpc(SetIndex, SpellIndex, ModuleIndex, ModuleObjectIndex, OwnerId, CursorLocationOnCast);
-            }
-            else
+            if (!IsServer)
             {
                 serverSidePosition.OnValueChanged += ServerPositionChanged;
             }
@@ -94,14 +112,18 @@ public class Spell : NetworkBehaviour
             movement += spellMovement.Move(transform.eulerAngles.z, ModuleObjectIndex);
         }
         distanceMoved += movement.magnitude * Time.fixedDeltaTime;
-        transform.localPosition += (Vector3)movement * Time.fixedDeltaTime;
+        // not 100% positive that this += will work with properties well
+        SpellLocalPosition += movement * Time.fixedDeltaTime;
     }
     private void ScaleSpell()
     {
+        // Sometimes this array can be null when empty, probably some sort of ScriptableObject compiler jank. It's best to just check to make sure that doesn't happen
+        if (Module.SpellScalings == null) return;
+        
         float scale = Module.StartingScale;
-        foreach (var spellScale in Module.SpellScalings)
+        foreach(var spellScaling in Module.SpellScalings)
         {
-            scale *= spellScale.Scale(distanceMoved, lifespan);
+            scale *= spellScaling.Scale(distanceMoved, lifespan);
         }
         transform.localScale = new Vector3(scale, scale, 1);
     }
@@ -133,15 +155,14 @@ public class Spell : NetworkBehaviour
     // Networking
     void ServerPositionChanged(Vector2 oldValue, Vector2 newValue)
     {
-        Debug.Log($"checking server position");
-        transform.position = Calculations.DiscrepancyCheck(transform.position, newValue, GameSettings.Used.NetworkLocationDiscrepancyLimit);
+        SpellLocalPosition = Calculations.DiscrepancyCheck(SpellLocalPosition, newValue, GameSettings.Used.NetworkLocationDiscrepancyLimit);
     }
     void ServerDiscrepancyCheckTick()
     {
         ticksSincePositionUpdate++;
         if (ticksSincePositionUpdate >= GameSettings.Used.NetworkDiscrepancyCheckFrequency)
         {
-            serverSidePosition.Value = transform.position;
+            serverSidePosition.Value = SpellLocalPosition;
             ticksSincePositionUpdate = 0;
         }
     }
@@ -169,7 +190,6 @@ public class Spell : NetworkBehaviour
             return;
         }
 
-        Debug.Log($"SETTING MODULE INFO!!!");
         SetModuleData(moduleInfo, moduleObjectIndex, targetId);
 
         /*Only deduct Mana Awaiting if this is the first SpellModuleBehavior

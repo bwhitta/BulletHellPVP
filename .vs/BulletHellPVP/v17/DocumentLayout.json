@@ -1,12 +1,90 @@
 {
   "Version": 1,
   "WorkspaceRootPath": "C:\\Users\\hotdo\\Documents\\Unity Projects\\BulletHellPVP\\",
-  "Documents": [],
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{EDBA41E5-982B-ECD1-F4CD-8DE2A1328FA1}|Assembly-CSharp.csproj|c:\\users\\hotdo\\documents\\unity projects\\bullethellpvp\\assets\\spells\\spell selection\\spellselectionmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{EDBA41E5-982B-ECD1-F4CD-8DE2A1328FA1}|Assembly-CSharp.csproj|solutionrelative:assets\\spells\\spell selection\\spellselectionmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{EDBA41E5-982B-ECD1-F4CD-8DE2A1328FA1}|Assembly-CSharp.csproj|c:\\users\\hotdo\\documents\\unity projects\\bullethellpvp\\assets\\spells\\spell data\\scripts\\spelldata.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{EDBA41E5-982B-ECD1-F4CD-8DE2A1328FA1}|Assembly-CSharp.csproj|solutionrelative:assets\\spells\\spell data\\scripts\\spelldata.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{EDBA41E5-982B-ECD1-F4CD-8DE2A1328FA1}|Assembly-CSharp.csproj|c:\\users\\hotdo\\documents\\unity projects\\bullethellpvp\\assets\\spells\\spellbook\\spellbooklogic.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{EDBA41E5-982B-ECD1-F4CD-8DE2A1328FA1}|Assembly-CSharp.csproj|solutionrelative:assets\\spells\\spellbook\\spellbooklogic.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{EDBA41E5-982B-ECD1-F4CD-8DE2A1328FA1}|Assembly-CSharp.csproj|c:\\users\\hotdo\\documents\\unity projects\\bullethellpvp\\assets\\spells\\spellbook\\spellbook.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{EDBA41E5-982B-ECD1-F4CD-8DE2A1328FA1}|Assembly-CSharp.csproj|solutionrelative:assets\\spells\\spellbook\\spellbook.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
   "DocumentGroupContainers": [
     {
       "Orientation": 1,
       "VerticalTabListWidth": 256,
-      "DocumentGroups": []
+      "DocumentGroups": [
+        {
+          "DockedHeight": 200,
+          "SelectedChildIndex": 2,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Spellbook.cs",
+              "DocumentMoniker": "C:\\Users\\hotdo\\Documents\\Unity Projects\\BulletHellPVP\\Assets\\Spells\\Spellbook\\Spellbook.cs",
+              "RelativeDocumentMoniker": "Assets\\Spells\\Spellbook\\Spellbook.cs",
+              "ToolTip": "C:\\Users\\hotdo\\Documents\\Unity Projects\\BulletHellPVP\\Assets\\Spells\\Spellbook\\Spellbook.cs",
+              "RelativeToolTip": "Assets\\Spells\\Spellbook\\Spellbook.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAiAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-01T16:09:58.053Z",
+              "IsPinned": true,
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "SpellbookLogic.cs",
+              "DocumentMoniker": "C:\\Users\\hotdo\\Documents\\Unity Projects\\BulletHellPVP\\Assets\\Spells\\Spellbook\\SpellbookLogic.cs",
+              "RelativeDocumentMoniker": "Assets\\Spells\\Spellbook\\SpellbookLogic.cs",
+              "ToolTip": "C:\\Users\\hotdo\\Documents\\Unity Projects\\BulletHellPVP\\Assets\\Spells\\Spellbook\\SpellbookLogic.cs",
+              "RelativeToolTip": "Assets\\Spells\\Spellbook\\SpellbookLogic.cs",
+              "ViewState": "AgIAABkAAAAAAAAAAAAQwCUAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-01T16:10:00.075Z",
+              "IsPinned": true,
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "SpellSelectionManager.cs",
+              "DocumentMoniker": "C:\\Users\\hotdo\\Documents\\Unity Projects\\BulletHellPVP\\Assets\\Spells\\Spell Selection\\SpellSelectionManager.cs",
+              "RelativeDocumentMoniker": "Assets\\Spells\\Spell Selection\\SpellSelectionManager.cs",
+              "ToolTip": "C:\\Users\\hotdo\\Documents\\Unity Projects\\BulletHellPVP\\Assets\\Spells\\Spell Selection\\SpellSelectionManager.cs",
+              "RelativeToolTip": "Assets\\Spells\\Spell Selection\\SpellSelectionManager.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABUAAAAmAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-01T16:11:57.954Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "SpellData.cs",
+              "DocumentMoniker": "C:\\Users\\hotdo\\Documents\\Unity Projects\\BulletHellPVP\\Assets\\Spells\\Spell Data\\Scripts\\SpellData.cs",
+              "RelativeDocumentMoniker": "Assets\\Spells\\Spell Data\\Scripts\\SpellData.cs",
+              "ToolTip": "C:\\Users\\hotdo\\Documents\\Unity Projects\\BulletHellPVP\\Assets\\Spells\\Spell Data\\Scripts\\SpellData.cs",
+              "RelativeToolTip": "Assets\\Spells\\Spell Data\\Scripts\\SpellData.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAeAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-01T16:10:28.052Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
     }
   ]
 }

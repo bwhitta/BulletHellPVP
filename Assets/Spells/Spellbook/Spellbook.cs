@@ -1,6 +1,6 @@
 using UnityEngine;
-[System.Serializable]
-public class Spellbook
+
+public class Spellbook // could turn into a struct and inherit INetworkSerializeByMemcpy
 {
     // Fields
     public byte[] SetIndexes;

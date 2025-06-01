@@ -100,7 +100,7 @@ public class SpellSpawner : NetworkBehaviour
     public void CreateSpellObject(SpellModule.ModuleInfo moduleInfo, byte targetId, byte moduleObjectIndex)
     {
         SpellModule module = moduleInfo.Module;
-        Spell spellObject = Instantiate(modulePrefab, ModuleParent()).GetComponent<Spell>();
+        Spell spellObject = Instantiate(modulePrefab).GetComponent<Spell>();
 
         // Starting location
         Vector2 startingPosition = module.StartingPosition.GetPosition(moduleObjectIndex, cursorMovement.Location, targetId);
@@ -116,19 +116,6 @@ public class SpellSpawner : NetworkBehaviour
             NetworkObject spellNetworkObject = spellObject.GetComponent<NetworkObject>();
             spellNetworkObject.Spawn(true);
             spellObject.ModuleDataClientRpc(moduleInfo, moduleObjectIndex, targetId);
-        }
-
-        // Local Methods
-        Transform ModuleParent()
-        {
-            if (module.PlayerAttached)
-            {
-                return CharacterManager.CharacterTransforms[targetId];
-            }
-            else
-            {
-                return null;
-            }
         }
     }
     public bool CooldownAndManaAvailable(SpellData spellData, byte spellbookSlot)

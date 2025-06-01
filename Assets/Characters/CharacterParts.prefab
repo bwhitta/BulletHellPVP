@@ -642,6 +642,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 917941745e2aa8f47b9c2c6e3bad1959, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  characterManager: {fileID: 5324122265146412018}
   healthBar: {fileID: 7124641555871300263}
   manaBar: {fileID: 1483302033742889200}
   ManaAwaitingCountdown: 0
