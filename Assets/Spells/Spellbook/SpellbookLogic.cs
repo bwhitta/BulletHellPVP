@@ -1,12 +1,13 @@
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using Unity.Netcode;
 using UnityEngine.UI;
 
 public class SpellbookLogic : NetworkBehaviour
 {
     // Fields
     public static Spellbook[][] EquippedBooks;
+    private NetworkVariable<Spellbook.CharacterSpellbooks> equippedBooks;
 
     [SerializeField] private CharacterManager characterManager;
     [SerializeField] private Image[] spellDisplays;
@@ -28,9 +29,22 @@ public class SpellbookLogic : NetworkBehaviour
     // Methods
     private void Start()
     {
-        if (MultiplayerManager.IsOnline && !IsServer)
+        if (MultiplayerManager.IsOnline)
         {
-            ServerBookIndex.OnValueChanged += ServerBookIndexUpdated;
+            Debug.Log($"setting equippedBooks value, both players should have registered for events by now I hope");
+            if (IsOwner)
+            {
+                equippedBooks.Value = new Spellbook.CharacterSpellbooks(EquippedBooks[SpellSelectionManager.CurrentCharacterIndex]);
+            }
+            equippedBooks.OnValueChanged += LocalEquippedBookChanged;
+            if (equippedBooks != null)
+            {
+                LocalEquippedBookChanged(new(), equippedBooks.Value);
+            }
+            if (!IsServer)
+            {
+                ServerBookIndex.OnValueChanged += ServerBookIndexUpdated;
+            }
         }
         
         // Starting position
@@ -43,7 +57,7 @@ public class SpellbookLogic : NetworkBehaviour
         RefreshBookUi();
         SetupCooldownUi();
         EnableControls();
-        
+
         // Local Methods
         void ServerBookIndexUpdated(byte oldValue, byte newValue)
         {
@@ -122,6 +136,12 @@ public class SpellbookLogic : NetworkBehaviour
         }
     }
 
+    // Networking
+    void LocalEquippedBookChanged(Spellbook.CharacterSpellbooks oldValue, Spellbook.CharacterSpellbooks newValue)
+    {
+        Debug.Log($"LocalEquippedBookChanged, deleteme");
+        EquippedBooks[characterManager.CharacterIndex] = newValue.Spellbooks;
+    }
     [ServerRpc]
     private void NextBookInputServerRpc()
     {

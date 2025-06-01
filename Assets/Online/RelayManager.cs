@@ -28,14 +28,10 @@ public class RelayManager : MonoBehaviour
         {
             // Create the relay
             allocation = await RelayService.Instance.CreateAllocationAsync(maxPlayers - 1);
-
-            // Find its join code
             string joinCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
-            Debug.Log($"joinCode: {joinCode}");
-
-            // Store information on this instance then load the gameplay scene
             IsHost = true;
-
+            
+            Debug.Log($"Relay created with code {joinCode}");
             return joinCode;
         }
         catch (RelayServiceException e)
@@ -48,13 +44,11 @@ public class RelayManager : MonoBehaviour
     {
         try
         {
-            Debug.Log($"Joining relay with {joinCode}");
+            // Join the relay
             joinAllocation = await RelayService.Instance.JoinAllocationAsync(joinCode);
-
             IsHost = false;
 
-            Debug.Log($"relay joined, not host,, delete me later");
-
+            Debug.Log($"Relay with code {joinCode} joined as non-host client");
             return joinAllocation;
         }
         catch (RelayServiceException e)
