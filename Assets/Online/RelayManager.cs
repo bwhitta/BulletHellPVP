@@ -53,7 +53,7 @@ public class RelayManager : MonoBehaviour
 
             IsHost = false;
 
-            Debug.Log($"relay joined, not host,, delete me later");
+            Debug.Log($"relay joined, not host, delete me later");
 
             return joinAllocation;
         }

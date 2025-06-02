@@ -88,11 +88,20 @@ public static class Calculations
     /// </summary>
     public static int SquareSideAtPosition(float squareWidth, float locationAroundSquare)
     {
-        int sideNumber = (int)Mathf.Floor(Calculations.Modulo(locationAroundSquare, squareWidth * 4f) / squareWidth);
+        int sideNumber = (int)Mathf.Floor(Modulo(locationAroundSquare, squareWidth * 4f) / squareWidth);
 
         // Floating points can create a bug when the value is a really small negative number (e.g. -1e^-8). If that happens, this will fix it.
         if (sideNumber >= 4) sideNumber = 0;
 
         return sideNumber;
+    }
+
+    public static T[] Populate<T>(this T[] array, T value)
+    {
+        for (int i = 0; i < array.Length; i++)
+        {
+            array[i] = value;
+        }
+        return array;
     }
 }

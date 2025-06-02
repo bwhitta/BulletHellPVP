@@ -1,71 +1,51 @@
-using Unity.Netcode;
 using UnityEngine;
 
-public struct Spellbook : INetworkSerializeByMemcpy
+public struct Spellbook
 {
+    // not sure if this should be a struct or a class
+
     // Constructors
     public Spellbook(byte slots)
     {
-        SetIndexes = new byte[slots];
-        SpellIndexes = new byte[slots];
+        SpellInfos = new SpellData.SpellInfo[slots];
+    }
+    public Spellbook(SpellData.SpellInfo[] spellInfos)
+    {
+        SpellInfos = spellInfos;
     }
 
     // Fields
-    public byte[] SetIndexes;
-    public byte[] SpellIndexes;
-
-
+    public SpellData.SpellInfo[] SpellInfos;
 
     // Methods
+    public readonly string SpellNames()
+    {
+        string spellNames = "";
+        foreach (var spellInfo in SpellInfos)
+        {
+            spellNames += spellInfo.Spell.name + ", ";
+        }
+        return spellNames;
+    }
     public static Spellbook[] CreateBooks(byte numberOfBooks, byte slots)
     {
         if (numberOfBooks == 0 || slots == 0) Debug.LogError($"invalid number of books or slots per book when creating books! numberOfBooks: {numberOfBooks}, slots: {slots}");
 
         Spellbook[] books = new Spellbook[numberOfBooks];
-        for (int i = 0; i < books.Length; i++)
-        {
-            books[i] = new Spellbook(slots);
-        }
+        books.Populate(new Spellbook(slots));
 
         return books;
     }
     public static Spellbook[] CreateBooks(byte numberOfBooks, byte slots, Spellbook firstBookOverride)
     {
         if (numberOfBooks == 0 || slots == 0) Debug.LogError($"invalid number of books or slots per book when creating books! numberOfBooks: {numberOfBooks}, slots: {slots}");
-
+        
         Spellbook[] books = new Spellbook[numberOfBooks];
-        for (int i = 0; i < books.Length; i++)
-        {
-            books[i] = new Spellbook(slots);
-        }
+        books.Populate(new Spellbook(slots));
 
         Debug.Log($"Overriding first book");
         books[0] = firstBookOverride;
 
         return books;
-    }
-    public static SpellData GetSpellData(byte setIndex, byte spellIndex)
-    {
-        SpellSet set = GameSettings.Used.SpellSets[setIndex];
-        return set.spellsInSet[spellIndex];
-    }
-    public SpellData SpellInSlot(byte slotIndex)
-    {
-        byte setIndex = SetIndexes[slotIndex];
-        byte spellIndex = SpellIndexes[slotIndex];
-
-        SpellSet set = GameSettings.Used.SpellSets[setIndex];
-        return set.spellsInSet[spellIndex];
-    }
-
-    // used for sending through networkvariable
-    public struct CharacterSpellbooks : INetworkSerializeByMemcpy
-    {
-        public CharacterSpellbooks(Spellbook[] spellbooks)
-        {
-            Spellbooks = spellbooks;
-        }
-
-        public Spellbook[] Spellbooks;
     }
 }

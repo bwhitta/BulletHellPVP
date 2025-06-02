@@ -1,13 +1,14 @@
+using System;
+using Unity.Collections.LowLevel.Unsafe;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using Unity.Netcode;
 using UnityEngine.UI;
 
 public class SpellbookLogic : NetworkBehaviour
 {
     // Fields
     public static Spellbook[][] EquippedBooks;
-    private NetworkVariable<Spellbook.CharacterSpellbooks> equippedBooks;
 
     [SerializeField] private CharacterManager characterManager;
     [SerializeField] private Image[] spellDisplays;
@@ -27,35 +28,30 @@ public class SpellbookLogic : NetworkBehaviour
     public Spellbook CurrentBook => CharacterBooks[currentBookIndex];
 
     // Methods
-    private void Start()
+    public override void OnNetworkSpawn()
     {
-        if (MultiplayerManager.IsOnline)
+        // moved for now, maybe this fixes it?
+        if (IsOwner)
         {
-            // janky code that needs to be rewritten, but should theoretically synchronize books
-            Debug.Log($"setting equippedBooks value, both players should have registered for events by now I hope");
-            
-            if (IsOwner)
-            {
-                //equippedBooks.Value = new Spellbook.CharacterSpellbooks(EquippedBooks[SpellSelectionManager.CurrentCharacterIndex]);
-            }
-            else
-            {
-                if (equippedBooks != null)
-                {
-                    LocalEquippedBookChanged(new(), equippedBooks.Value);
-                }
-                else
-                {
-                    equippedBooks.OnValueChanged += LocalEquippedBookChanged;
-
-                }
-            }
-            if (!IsServer)
-            {
-                ServerBookIndex.OnValueChanged += ServerBookIndexUpdated;
-            }
+            SendEquippedBooks();
+            NetworkManager.OnClientConnectedCallback += SendEquippedBooks;
         }
 
+        if (!IsServer)
+        {
+            ServerBookIndex.OnValueChanged += ServerBookIndexUpdated;
+        }
+
+        // Local Methods
+        void ServerBookIndexUpdated(byte oldValue, byte newValue)
+        {
+            Debug.Log($"Book index updated to {newValue}");
+            currentBookIndex = newValue;
+        }
+    }
+
+    private void Start()
+    {
         // Starting position
         GetComponent<RectTransform>().localPosition = spellbookPositions[characterManager.CharacterIndex];
 
@@ -66,13 +62,8 @@ public class SpellbookLogic : NetworkBehaviour
         RefreshBookUi();
         SetupCooldownUi();
         EnableControls();
-        
+
         // Local Methods
-        void ServerBookIndexUpdated(byte oldValue, byte newValue)
-        {
-            Debug.Log($"Book index updated to {newValue}");
-            currentBookIndex = newValue;
-        }
         void SetupCooldownUi()
         {
             SpellCooldowns = new float[GameSettings.Used.SpellSlots];
@@ -101,7 +92,7 @@ public class SpellbookLogic : NetworkBehaviour
             if (SpellCooldowns[i] > 0)
             {
                 SpellCooldowns[i] -= Mathf.Max(Time.fixedDeltaTime, 0);
-                DisplayCooldown(i, SpellCooldowns[i] / CurrentBook.SpellInSlot(i).SpellCooldown);
+                DisplayCooldown(i, SpellCooldowns[i] / CurrentBook.SpellInfos[i].Spell.SpellCooldown);
             }
         }
     }
@@ -111,7 +102,7 @@ public class SpellbookLogic : NetworkBehaviour
         GameObject topBar = bottomBar.transform.GetChild(0).gameObject;
         topBar.GetComponent<Image>().fillAmount = percentFilled;
     }
-    
+
     private void NextBookInputPerformed()
     {
         if (!MultiplayerManager.IsOnline || IsServer)
@@ -138,19 +129,43 @@ public class SpellbookLogic : NetworkBehaviour
     private void RefreshBookUi()
     {
         bookNumber.text = (currentBookIndex + 1).ToString();
-        
+
         for (byte i = 0; i < spellDisplays.Length; i++)
         {
-            spellDisplays[i].sprite = CurrentBook.SpellInSlot(i).Icon;
+            spellDisplays[i].sprite = CurrentBook.SpellInfos[i].Spell.Icon;
         }
     }
 
     // Networking
-    void LocalEquippedBookChanged(Spellbook.CharacterSpellbooks oldValue, Spellbook.CharacterSpellbooks newValue)
+    private void SendEquippedBooks(ulong test = 0)
     {
-        Debug.Log($"LocalEquippedBookChanged, deleteme");
-        EquippedBooks[characterManager.CharacterIndex] = newValue.Spellbooks;
+        // Each book is sent through a serverRpc which then calls a clientRpc
+        for (byte i = 0; i < EquippedBooks[SpellSelectionManager.CurrentCharacterIndex].Length; i++)
+        {
+            Spellbook equippedBook = EquippedBooks[SpellSelectionManager.CurrentCharacterIndex][i];
+
+            // Debug.Log($"sending equipped book {i}, spellInfos contents: {equippedBook.SpellNames()} deleteme");
+
+            EquippedBooksServerRpc(equippedBook.SpellInfos, i);
+        }
     }
+    [Rpc(SendTo.Server)]
+    private void EquippedBooksServerRpc(SpellData.SpellInfo[] spellInfos, byte index)
+    {
+        EquippedBooksClientRpc(spellInfos, index);
+    }
+    [Rpc(SendTo.NotOwner)]
+    private void EquippedBooksClientRpc(SpellData.SpellInfo[] spellInfos, byte index)
+    {
+        // the owner is the one respon
+        if(IsOwner) return;
+
+        // Debug.Log($"Equipped books ClientRpc recived! spellInfos contents:  {new Spellbook(spellInfos).SpellNames()} deleteme");
+        
+        EquippedBooks[characterManager.CharacterIndex][index] = new Spellbook(spellInfos);
+        RefreshBookUi();
+    }
+
     [ServerRpc]
     private void NextBookInputServerRpc()
     {

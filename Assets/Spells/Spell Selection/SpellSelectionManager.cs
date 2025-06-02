@@ -31,23 +31,7 @@ public class SpellSelectionManager : MonoBehaviour
             return _bookIndexText;
         }
     }
-
-    // At least for now, in online play the lobby host is always on the left.
-    private byte _currentCharacterIndex;
-    private byte CurrentCharacterIndex
-    {
-        get
-        {
-            if (MultiplayerManager.IsOnline)
-            {
-                if (lobbyManager.IsLobbyHost) _currentCharacterIndex = 0;
-                else _currentCharacterIndex = 1;
-            }
-            return _currentCharacterIndex;
-        }
-        set => _currentCharacterIndex = value;
-    }
-
+    public static byte CurrentCharacterIndex { get; private set; }
     private Spellbook CurrentEditedBook
     {
         get => SpellbookLogic.EquippedBooks[CurrentCharacterIndex][currentBookIndex];
@@ -64,6 +48,8 @@ public class SpellSelectionManager : MonoBehaviour
         if (MultiplayerManager.IsOnline)
         {
             lobbyManager = FindFirstObjectByType<LobbyManager>();
+            if (lobbyManager.IsLobbyHost) CurrentCharacterIndex = 0;
+            else CurrentCharacterIndex = 1;
         }
 
         // what happens if I start the game when in the battle scene? how does this get started?
@@ -113,7 +99,8 @@ public class SpellSelectionManager : MonoBehaviour
             GameObject instantiatedDisplay = Instantiate(equippedSpellPrefab, equippedSpellsParent.transform);
 
             Spellbook book = SpellbookLogic.EquippedBooks[CurrentCharacterIndex][currentBookIndex];
-            Sprite icon = book.SpellInSlot(i).Icon;
+            
+            Sprite icon = book.SpellInfos[i].Spell.Icon;
 
             instantiatedDisplay.GetComponent<Image>().sprite = icon;
             instantiatedDisplay.transform.localPosition = slotPositions[i];
@@ -126,11 +113,10 @@ public class SpellSelectionManager : MonoBehaviour
         for (byte i = 0; i < GameSettings.Used.SpellSlots; i++)
         {
             Vector2 offsetSlotPosition = slotPositions[i] + (Vector2)equippedSpellsParent.transform.position;
-            Debug.Log($"offsetSlotPosition: {offsetSlotPosition}, spellPosition: {spell.transform.position}");
             if (Vector2.Distance(spell.transform.position, offsetSlotPosition) <= slotSnapDistance)
             {
-                CurrentEditedBook.SetIndexes[i] = spell.setIndex;
-                CurrentEditedBook.SpellIndexes[i] = spell.spellIndex;
+                CurrentEditedBook.SpellInfos[i].SetIndex = spell.setIndex;
+                CurrentEditedBook.SpellInfos[i].SpellIndex = spell.spellIndex;
                 UpdateBookDisplays();
                 return;
             }

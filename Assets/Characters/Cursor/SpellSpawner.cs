@@ -30,7 +30,7 @@ public class SpellSpawner : NetworkBehaviour
                 return;
             }
 
-            SpellData spellData = spellbookLogic.CurrentBook.SpellInSlot(spellbookSlot);
+            SpellData spellData = spellbookLogic.CurrentBook.SpellInfos[spellbookSlot].Spell;
 
             // Checks mana and cooldown on client first before sending attempt to server
             if (CooldownAndManaAvailable(spellData, spellbookSlot))
@@ -45,10 +45,7 @@ public class SpellSpawner : NetworkBehaviour
     }
     public void AttemptSpell(byte slot)
     {
-        //SpellData spellData = spellbookLogic.CurrentBook.SpellInSlot(spellbookSlot);
-        byte setIndex = spellbookLogic.CurrentBook.SetIndexes[slot];
-        byte spellIndex = spellbookLogic.CurrentBook.SpellIndexes[slot];
-        SpellData.SpellInfo spellInfo = new(setIndex, spellIndex);
+        SpellData.SpellInfo spellInfo = spellbookLogic.CurrentBook.SpellInfos[slot];
 
         // Check cooldown and mana
         if (!CooldownAndManaAvailable(spellInfo.Spell, slot))
