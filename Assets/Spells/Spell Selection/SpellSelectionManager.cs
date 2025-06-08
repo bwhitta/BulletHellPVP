@@ -52,7 +52,6 @@ public class SpellSelectionManager : MonoBehaviour
             else CurrentCharacterIndex = 1;
         }
 
-        // what happens if I start the game when in the battle scene? how does this get started?
         SpellbookLogic.EquippedBooks = new Spellbook[GameSettings.Used.MaxCharacters][];
         for (int i = 0; i < GameSettings.Used.MaxCharacters; i++)
         {

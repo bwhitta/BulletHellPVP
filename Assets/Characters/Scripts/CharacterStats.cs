@@ -1,3 +1,4 @@
+using Unity.Collections.LowLevel.Unsafe;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -8,7 +9,6 @@ public class CharacterStats : NetworkBehaviour
     [SerializeField] private BarLogic healthBar;
     [SerializeField] private BarLogic manaBar;
     private float remainingInvincibilityTime = 0;
-
 
     // Health
     private float _currentHealth;
@@ -36,7 +36,6 @@ public class CharacterStats : NetworkBehaviour
             healthBar.StatValue = _currentHealth;
         }
     }
-    private readonly NetworkVariable<float> ServerSideHealth = new();
 
     // Mana
     private float _currentMana;
@@ -50,13 +49,18 @@ public class CharacterStats : NetworkBehaviour
             else
                 _currentMana = value;
 
+            // probably better eventually to make a ManaChanged event, and then the stat bars are updated based on that event. do the same for health too.
             manaBar.StatValue = _currentMana;
         }
     }
-    private readonly NetworkVariable<float> ServerSideMana = new();
-    [HideInInspector] public int ManaAwaitingCountdown = 0;
-    [HideInInspector] public float ManaAwaiting;
-    private float manaScalingTime;
+    private float NonAwaitingMana
+    {
+        get
+        {
+            return CurrentMana - ManaAwaiting;
+        }
+    }
+
     private float _maxMana;
     public float MaxMana
     {
@@ -68,44 +72,24 @@ public class CharacterStats : NetworkBehaviour
         }
     }
 
-    // Network
+    [HideInInspector] public float ManaAwaiting;
+    
+    private float manaScalingTime;
+
+    // Online
     private byte ticksSinceUpdate;
     
     // Methods
     private void Start()
     {
+        // Set up stat bar maximums
         healthBar.StatMax = GameSettings.Used.MaxHealth;
-        MaxMana = GameSettings.Used.StartingMaxMana;
         manaBar.StatMax = GameSettings.Used.StartingMaxMana;
-
+        
+        // Set up health and mana
+        MaxMana = GameSettings.Used.StartingMaxMana;
         CurrentHealth = GameSettings.Used.MaxHealth;
         CurrentMana = GameSettings.Used.StartingMaxMana;
-        
-        if (MultiplayerManager.IsOnline)
-        {
-            if (!IsServer)
-            {
-                ServerSideHealth.OnValueChanged += ServerHealthUpdate;
-                ServerSideMana.OnValueChanged += ServerManaUpdate;
-            }
-        }
-
-        void ServerHealthUpdate(float oldValue, float newValue)
-        {
-            CurrentHealth = Calculations.DiscrepancyCheck(CurrentHealth, newValue, GameSettings.Used.NetworkStatBarDiscrepancyLimit);
-        }
-        void ServerManaUpdate(float oldValue, float newValue)
-        {
-            // If a spell has mana deducted on client-side but has yet to reach the server, the client-side mana should treat the server-side mana as though it were that much lower.
-            // Otherwise, the mana will rubber band up on one server mana tick then rubber band back down the next.
-            float adjustedServerMana = newValue - ManaAwaiting;
-
-            if (Mathf.Abs(CurrentMana - adjustedServerMana) > GameSettings.Used.NetworkStatBarDiscrepancyLimit)
-            {
-                Debug.LogWarning($"Discepancy: setting CurrentMana to {newValue}, CurrentMana: {CurrentMana}, ManaAwaiting: {ManaAwaiting}");
-                CurrentMana = adjustedServerMana;
-            }
-        }
     }
     private void FixedUpdate()
     {
@@ -114,7 +98,7 @@ public class CharacterStats : NetworkBehaviour
         if (remainingInvincibilityTime > 0) InvincibilityTick();
         ManaScalingTick();
         ManaRegenTick();
-        ManaAwaitingTick();
+        //ManaAwaitingTick();
         if (IsServer) ServerDiscrepancyTick();
 
         void ServerDiscrepancyTick()
@@ -123,12 +107,12 @@ public class CharacterStats : NetworkBehaviour
             ticksSinceUpdate++;
             if (ticksSinceUpdate >= GameSettings.Used.NetworkDiscrepancyCheckFrequency)
             {
-                ServerSideHealth.Value = CurrentHealth;
-                ServerSideMana.Value = CurrentMana;
+                ServerHealthUpdateRpc(CurrentHealth);
+                ServerManaUpdateRpc(CurrentMana);
                 ticksSinceUpdate = 0;
             }
         }
-        void ManaAwaitingTick()
+        /*void ManaAwaitingTick()
         {
             if (ManaAwaiting <= 0)
             {
@@ -144,7 +128,7 @@ public class CharacterStats : NetworkBehaviour
                     Debug.Log("Countdown complete!");
                 }
             }
-        }
+        }*/
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -208,5 +192,17 @@ public class CharacterStats : NetworkBehaviour
         {
             child.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, alpha);
         }
+    }
+
+    // Networking
+    [Rpc(SendTo.NotServer)]
+    private void ServerHealthUpdateRpc(float newValue)
+    {
+        CurrentHealth = Calculations.DiscrepancyCheck(CurrentHealth, newValue, GameSettings.Used.NetworkStatBarDiscrepancyLimit);
+    }
+    [Rpc(SendTo.NotServer)]
+    private void ServerManaUpdateRpc(float newValue)
+    {
+        CurrentMana = Calculations.DiscrepancyCheck(NonAwaitingMana, newValue, GameSettings.Used.NetworkStatBarDiscrepancyLimit);
     }
 }

@@ -37,33 +37,58 @@ public static class Calculations
     /// <summary>
     /// Checks for a discrepancy between an existing and a compared float. If the discrepancy is within the limit, it is unmodified, otherwise it becomes the compared value.
     /// </summary>
-    public static float DiscrepancyCheck(float existingValue, float valueToCompare, float discrepancyLimit)
+    public static float DiscrepancyCheck(float existingValue, float valueToCompare, float discrepancyLimit, out bool discrepancyFound, bool warnOnDiscrepancy = true)
     {
         if (Mathf.Abs(existingValue - valueToCompare) > discrepancyLimit)
         {
-            Debug.LogWarning($"Discrepancy of {Mathf.Abs(existingValue - valueToCompare)} (existingValue: {existingValue}, valueToCompare: {valueToCompare}) detected, over limit of {discrepancyLimit}.");
+            if (warnOnDiscrepancy)
+            {
+                Debug.LogWarning($"Discrepancy of {Mathf.Abs(existingValue - valueToCompare)} (existingValue: {existingValue}, valueToCompare: {valueToCompare}) detected, over limit of {discrepancyLimit}.");
+            }
+            discrepancyFound = true;
             return valueToCompare;
         }
         else
         {
+            discrepancyFound = false;
+            return existingValue;
+        }
+    }
+    /// <summary>
+    /// Checks for a discrepancy between an existing and a compared float. If the discrepancy is within the limit, it is unmodified, otherwise it becomes the compared value.
+    /// </summary>
+    public static float DiscrepancyCheck(float existingValue, float valueToCompare, float discrepancyLimit, bool warnOnDiscrepancy = true)
+    {
+        return DiscrepancyCheck(existingValue, valueToCompare, discrepancyLimit, out _, warnOnDiscrepancy);
+    }
+
+    /// <summary>
+    /// Checks for a discrepancy between an existing and a compared Vector2. If the discrepancy is within the limit, it is unmodified, otherwise it becomes the compared value.
+    /// </summary>
+    public static Vector2 DiscrepancyCheck(Vector2 existingValue, Vector2 valueToCompare, float discrepancyLimit, out bool discrepancyFound, bool warnOnDiscrepancy = true)
+    {
+        Vector2 discrepancyVector = existingValue - valueToCompare;
+        if (discrepancyVector.magnitude > discrepancyLimit)
+        {
+            if (warnOnDiscrepancy)
+            {
+                Debug.LogWarning($"Discrepancy of {discrepancyVector.magnitude} (existingValue: {existingValue}, valueToCompare: {valueToCompare}) detected, over limit of {discrepancyLimit}.");
+            }
+            discrepancyFound = true;
+            return valueToCompare;
+        }
+        else
+        {
+            discrepancyFound = false;
             return existingValue;
         }
     }
     /// <summary>
     /// Checks for a discrepancy between an existing and a compared Vector2. If the discrepancy is within the limit, it is unmodified, otherwise it becomes the compared value.
     /// </summary>
-    public static Vector2 DiscrepancyCheck(Vector2 existingValue, Vector2 valueToCompare, float discrepancyLimit)
+    public static Vector2 DiscrepancyCheck(Vector2 existingValue, Vector2 valueToCompare, float discrepancyLimit, bool warnOnDiscrepancy = true)
     {
-        Vector2 discrepancyVector = existingValue - valueToCompare;
-        if (discrepancyVector.magnitude > discrepancyLimit)
-        {
-            Debug.LogWarning($"Discrepancy of {discrepancyVector.magnitude} (existingValue: {existingValue}, valueToCompare: {valueToCompare}) detected, over limit of {discrepancyLimit}.");
-            return valueToCompare;
-        }
-        else
-        {
-            return existingValue;
-        }
+        return DiscrepancyCheck(existingValue, valueToCompare, discrepancyLimit, out _, warnOnDiscrepancy);
     }
 
     /// <summary>

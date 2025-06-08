@@ -20,7 +20,7 @@ public class SpellSpawner : NetworkBehaviour
         castingAction.performed += context => CastingInputPerformed((byte)(castingAction.ReadValue<float>() - 1f));
     }
     
-    private void CastingInputPerformed(byte spellbookSlot)
+    private void CastingInputPerformed(byte slot)
     {
         if (MultiplayerManager.IsOnline)
         {
@@ -30,46 +30,63 @@ public class SpellSpawner : NetworkBehaviour
                 return;
             }
 
-            SpellData spellData = spellbookLogic.CurrentBook.SpellInfos[spellbookSlot].Spell;
+            SpellData spellData = spellbookLogic.CurrentBook.SpellInfos[slot].Spell;
 
             // Checks mana and cooldown on client first before sending attempt to server
-            if (CooldownAndManaAvailable(spellData, spellbookSlot))
+            if (CooldownAndManaAvailable(spellData, slot))
             {
-                AttemptSpellServerRpc(spellbookSlot);
+                Debug.Log($"Asking server to attempt spell, frame {Time.frameCount}");
+                
+                if (!IsServer)
+                {
+                    // if the spell gets cancelled just take it directly off cooldown
+                    spellbookLogic.SpellCooldowns[slot] = spellData.SpellCooldown;
+                    // marks down mana that has been deducted but is waiting on actually being cast from the server
+                    characterStats.ManaAwaiting += spellData.ManaCost;
+                    characterStats.CurrentMana -= spellData.ManaCost;
+                }
+
+                AttemptSpellServerRpc(slot);
             }
         }
         else
         {
-            AttemptSpell(spellbookSlot);
+            AttemptSpell(slot);
         }
     }
-    public void AttemptSpell(byte slot)
+    private void AttemptSpell(byte slot)
     {
+        Debug.Log($"Attempting spell");
         SpellData.SpellInfo spellInfo = spellbookLogic.CurrentBook.SpellInfos[slot];
 
         // Check cooldown and mana
         if (!CooldownAndManaAvailable(spellInfo.Spell, slot))
         {
             Debug.Log($"Skipped casting spell - there is not enough mana or the spell is on cooldown.");
+            // If a non-host client cast the spell, tell them that it was cancelled
+            if ( !IsOwnedByServer )
+            {
+                CancelSpellRpc(spellInfo, slot);
+            }
             return;
         }
 
-        // not entirely sure what this does. I think its for if you cast when you are the non-host client?
-        /* REMOVED FOR RESTRUCTURING
-        if (MultiplayerManager.IsOnline && !IsServer)
+        // Deduct mana and put spell on cooldown
+        characterStats.CurrentMana -= spellInfo.Spell.ManaCost;
+        spellbookLogic.SpellCooldowns[slot] = spellInfo.Spell.SpellCooldown;
+        
+        // Tell the non-host client to deduct their mana as well
+        if (MultiplayerManager.IsOnline)
         {
-            Debug.Log("Deducting mana!");
-            spellbookLogic.SpellCooldowns[slot] = spellData.SpellCooldown;
-            characterStats.CurrentMana -= spellData.ManaCost;
-
-            characterStats.ManaAwaiting += spellData.ManaCost;
-            characterStats.ManaAwaitingCountdown = GameSettings.Used.ManaAwaitingTimeLimit;
-        } */
-
+            // Tell the non-host client that a spell has been cast
+            DeductManaRpc(spellInfo);
+        }
+        
         CastSpell(spellInfo);
     }
     
-    public void CastSpell(SpellData.SpellInfo spellInfo)
+    // could merge CastSpell with AttemptSpell
+    private void CastSpell(SpellData.SpellInfo spellInfo)
     {
         // Summon each module
         for (byte i = 0; i < spellInfo.Spell.UsedModules.Length; i++)
@@ -94,7 +111,7 @@ public class SpellSpawner : NetworkBehaviour
             };
         }
     }
-    public void CreateSpellObject(SpellModule.ModuleInfo moduleInfo, byte targetId, byte moduleObjectIndex)
+    private void CreateSpellObject(SpellModule.ModuleInfo moduleInfo, byte targetId, byte moduleObjectIndex)
     {
         SpellModule module = moduleInfo.Module;
         Spell spellObject = Instantiate(modulePrefab).GetComponent<Spell>();
@@ -115,7 +132,7 @@ public class SpellSpawner : NetworkBehaviour
             spellObject.ModuleDataClientRpc(moduleInfo, moduleObjectIndex, targetId);
         }
     }
-    public bool CooldownAndManaAvailable(SpellData spellData, byte spellbookSlot)
+    private bool CooldownAndManaAvailable(SpellData spellData, byte spellbookSlot)
     {
         bool cooldownAvailable = spellbookLogic.SpellCooldowns[spellbookSlot] == 0;
         bool manaAvailable = spellData.ManaCost < characterStats.CurrentMana;
@@ -123,10 +140,31 @@ public class SpellSpawner : NetworkBehaviour
     }
 
     // Networking
-    [ServerRpc]
-    public void AttemptSpellServerRpc(byte slotIndex)
+    [Rpc(SendTo.Server)]
+    private void AttemptSpellServerRpc(byte slot)
     {
-        Debug.Log($"ServerRpc recieved, attempting spell in slot {slotIndex} server-side");
-        AttemptSpell(slotIndex);
+        Debug.Log($"ServerRpc recieved, attempting spell in slot {slot} server-side. frame {Time.frameCount}");
+        AttemptSpell(slot);
+    }
+    // delete if I end up not using ManaAwaiting
+    [Rpc(SendTo.NotServer)]
+    private void DeductManaRpc(SpellData.SpellInfo spellInfo)
+    {
+        Debug.Log($"Deducting cooldown and mana! frame {Time.frameCount}");
+        // Remove spent mana from ManaAwaiting if this client was responsible for casting the spell
+        if (IsOwner)
+        {
+            characterStats.ManaAwaiting -= spellInfo.Spell.ManaCost;
+        }
+        // Deduct the mana
+        characterStats.CurrentMana -= spellInfo.Spell.ManaCost;
+    }
+    [Rpc(SendTo.NotServer)]
+    private void CancelSpellRpc(SpellData.SpellInfo spellInfo, byte slot)
+    {
+        Debug.LogWarning($"Spell cancelled, didn't have enough mana or spell was on cooldown on server. Refunding mana and taking spell off cooldown.");
+        characterStats.CurrentMana += spellInfo.Spell.ManaCost;
+        characterStats.ManaAwaiting -= spellInfo.Spell.ManaCost;
+        spellbookLogic.SpellCooldowns[slot] = 0;
     }
 }

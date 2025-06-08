@@ -1,3 +1,4 @@
+using NUnit.Framework;
 using System;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Netcode;
@@ -15,7 +16,6 @@ public class SpellbookLogic : NetworkBehaviour
     [SerializeField] private Text bookNumber;
     [SerializeField] private string nextBookActionName;
     [SerializeField] private Vector2[] spellbookPositions;
-    [SerializeField] private bool overrideFirstBook;
     [SerializeField] private Spellbook overrideBook;
 
     [HideInInspector] public float[] SpellCooldowns;
@@ -30,13 +30,14 @@ public class SpellbookLogic : NetworkBehaviour
     // Methods
     public override void OnNetworkSpawn()
     {
-        // moved for now, maybe this fixes it?
+        // Send equipped books to everyone else
         if (IsOwner)
         {
             SendEquippedBooks();
             NetworkManager.OnClientConnectedCallback += SendEquippedBooks;
         }
 
+        // Sync changed spellbooks
         if (!IsServer)
         {
             ServerBookIndex.OnValueChanged += ServerBookIndexUpdated;
@@ -47,9 +48,9 @@ public class SpellbookLogic : NetworkBehaviour
         {
             Debug.Log($"Book index updated to {newValue}");
             currentBookIndex = newValue;
+            // RefreshBookUi(); might be all I need to get this working again
         }
     }
-
     private void Start()
     {
         // Starting position
@@ -91,7 +92,9 @@ public class SpellbookLogic : NetworkBehaviour
         {
             if (SpellCooldowns[i] > 0)
             {
-                SpellCooldowns[i] -= Mathf.Max(Time.fixedDeltaTime, 0);
+                SpellCooldowns[i] -= Time.fixedDeltaTime;
+                SpellCooldowns[i] = Mathf.Max(SpellCooldowns[i], 0f);
+
                 DisplayCooldown(i, SpellCooldowns[i] / CurrentBook.SpellInfos[i].Spell.SpellCooldown);
             }
         }
@@ -157,11 +160,6 @@ public class SpellbookLogic : NetworkBehaviour
     [Rpc(SendTo.NotOwner)]
     private void EquippedBooksClientRpc(SpellData.SpellInfo[] spellInfos, byte index)
     {
-        // the owner is the one respon
-        if(IsOwner) return;
-
-        // Debug.Log($"Equipped books ClientRpc recived! spellInfos contents:  {new Spellbook(spellInfos).SpellNames()} deleteme");
-        
         EquippedBooks[characterManager.CharacterIndex][index] = new Spellbook(spellInfos);
         RefreshBookUi();
     }

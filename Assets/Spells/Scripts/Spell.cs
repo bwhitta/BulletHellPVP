@@ -185,10 +185,7 @@ public class Spell : NetworkBehaviour
     [ClientRpc]
     public void ModuleDataClientRpc(SpellModule.ModuleInfo moduleInfo, byte moduleObjectIndex, byte targetId)
     {
-        if (IsHost)
-        {
-            return;
-        }
+        if (IsHost) return;
 
         SetModuleData(moduleInfo, moduleObjectIndex, targetId);
 

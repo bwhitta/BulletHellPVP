@@ -12,6 +12,7 @@ public class SpellData : ScriptableObject
     public SpellModule[] UsedModules;
 
     // Value type that can be used to get a spell (so that it can be sent through networking)
+    [System.Serializable]
     public struct SpellInfo : INetworkSerializeByMemcpy
     {
         // Constructor

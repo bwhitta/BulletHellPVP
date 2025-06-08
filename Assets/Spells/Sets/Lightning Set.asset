@@ -16,7 +16,7 @@ MonoBehaviour:
   spellsInSet:
   - {fileID: 11400000, guid: 1c21101c32748b945bbd912842cdb0ab, type: 2}
   - {fileID: 11400000, guid: 0ac8e34202f3aea4c82a25d8c2cf568f, type: 2}
-  - {fileID: 11400000, guid: 1f7e3902536dd8f488ca7172e7b6e65f, type: 2}
+  - {fileID: 11400000, guid: 0ac8e34202f3aea4c82a25d8c2cf568f, type: 2}
   - {fileID: 11400000, guid: 1c21101c32748b945bbd912842cdb0ab, type: 2}
   - {fileID: 11400000, guid: 1c21101c32748b945bbd912842cdb0ab, type: 2}
   - {fileID: 11400000, guid: 0ac8e34202f3aea4c82a25d8c2cf568f, type: 2}

@@ -158,12 +158,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UiScaleMode: 0
+  m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 800, y: 600}
+  m_ReferenceResolution: {x: 1920, y: 1080}
   m_ScreenMatchMode: 0
-  m_MatchWidthOrHeight: 0
+  m_MatchWidthOrHeight: 1
   m_PhysicalUnit: 3
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
@@ -195,7 +195,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6011438829117927443}
-  - component: {fileID: 2581057074851943160}
   - component: {fileID: 3678924995168424655}
   - component: {fileID: 2314111171781213388}
   m_Layer: 0
@@ -225,61 +224,6 @@ RectTransform:
   m_AnchoredPosition: {x: -54, y: -1.5}
   m_SizeDelta: {x: 20.48, y: 20.48}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!212 &2581057074851943160
-SpriteRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2581057074851943166}
-  m_Enabled: 1
-  m_CastShadows: 0
-  m_ReceiveShadows: 0
-  m_DynamicOccludee: 1
-  m_StaticShadowCaster: 0
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 0
-  m_RayTraceProcedural: 0
-  m_RayTracingAccelStructBuildFlagsOverride: 0
-  m_RayTracingAccelStructBuildFlags: 1
-  m_SmallMeshCulling: 1
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 0
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 0ef3078fd4fda6c4c9ca7f362316ffc9, type: 3}
-  m_Color: {r: 0.9137255, g: 0.9137255, b: 0.9137255, a: 1}
-  m_FlipX: 0
-  m_FlipY: 0
-  m_DrawMode: 0
-  m_Size: {x: 20.48, y: 20.48}
-  m_AdaptiveModeThreshold: 0.5
-  m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
-  m_MaskInteraction: 0
-  m_SpriteSortPoint: 0
 --- !u!222 &3678924995168424655
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -447,6 +391,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 380446329d796424b9a24125730e1f4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
   characterManager: {fileID: 5324122265146412018}
   spellDisplays:
   - {fileID: 9097261446782226172}
@@ -461,10 +406,22 @@ MonoBehaviour:
   spellbookPositions:
   - {x: -470, y: -460}
   - {x: 470, y: -460}
-  overrideFirstBook: 1
   overrideBook:
-    SetIndexes: 00000100000000
-    SpellIndexes: 00010000000000
+    SpellInfos:
+    - SetIndex: 0
+      SpellIndex: 0
+    - SetIndex: 0
+      SpellIndex: 1
+    - SetIndex: 1
+      SpellIndex: 0
+    - SetIndex: 0
+      SpellIndex: 0
+    - SetIndex: 0
+      SpellIndex: 0
+    - SetIndex: 0
+      SpellIndex: 0
+    - SetIndex: 0
+      SpellIndex: 0
   SpellCooldowns: []
 --- !u!1 &5860716669837191705
 GameObject:
@@ -519,6 +476,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e8d0727d5ae3244e3b569694d3912374, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
   TransitionStateInfoList: []
   m_Animator: {fileID: 5860716669837191711}
 --- !u!95 &5860716669837191711
@@ -619,6 +577,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4d5f79528ac06b41a12b1066e076982, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
   animatorTreeParameterX: FacingX
   animatorTreeParameterY: FacingY
   movementAction:
@@ -642,11 +601,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 917941745e2aa8f47b9c2c6e3bad1959, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
   characterManager: {fileID: 5324122265146412018}
   healthBar: {fileID: 7124641555871300263}
   manaBar: {fileID: 1483302033742889200}
-  ManaAwaitingCountdown: 0
-  ManaAwaiting: 0
 --- !u!114 &5324122265146412018
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -659,6 +617,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3c63ed0b7e70eb47b05713a4640292c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
   healthBar: {fileID: 7124641555871300265}
   manaBar: {fileID: 1483302033742889214}
   characterParentObjectName:
@@ -1059,6 +1018,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 687ff52990f4f674d9aa09fc307e8307, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
   characterManager: {fileID: 5324122265146412018}
   spellbookLogic: {fileID: 2581057075624382118}
   characterStats: {fileID: 5860716669837191715}
@@ -1076,6 +1036,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6fe3db9c16f8e6f4aa701b8453fab269, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
   characterManager: {fileID: 5324122265146412018}
   Location: 0
 --- !u!1 &8676365494037463687
@@ -1125,8 +1086,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1170615219
+  GlobalObjectIdHash: 2673926047
   InScenePlacedSourceGlobalObjectIdHash: 0
+  DeferredDespawnTick: 0
+  Ownership: 1
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
@@ -1134,6 +1097,8 @@ MonoBehaviour:
   SpawnWithObservers: 1
   DontDestroyWithOwner: 0
   AutoObjectParentSync: 1
+  SyncOwnerTransformWhenParented: 1
+  AllowOwnerToParent: 0
 --- !u!1001 &473220735307436535
 PrefabInstance:
   m_ObjectHideFlags: 0

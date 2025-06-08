@@ -39,11 +39,11 @@ public class GameSettings : ScriptableObject
     [Header("Online")]
     [SerializeField][Range(10, 30)] private int NetworkDiscrepancyCheckHz; // reasonable rate is between 30 and 10Hz
     public int NetworkDiscrepancyCheckFrequency => Mathf.CeilToInt (1 / (NetworkDiscrepancyCheckHz * Time.fixedDeltaTime)); // Converts from Hz to number of ticks
+    /* I think this was originally for syncing movement stuff, I'm not entirely sure though. leaving it here since it's decently likely I'll want to use it again.
     [SerializeField] private int NetworkTickRateHz; // reasonable rate is probably 50hz
-    public int NetworkTickFrequency => Mathf.CeilToInt(1 / (NetworkTickRateHz * Time.fixedDeltaTime)); // Converts from Hz to number of ticks
+    public int NetworkTickFrequency => Mathf.CeilToInt(1 / (NetworkTickRateHz * Time.fixedDeltaTime)); // Converts from Hz to number of ticks I*/
     public float NetworkLocationDiscrepancyLimit;
     public float NetworkStatBarDiscrepancyLimit;
-    public int ManaAwaitingTimeLimit;
 
     [Header("GUI")]
     [SerializeField] private UIPositioning uiPositioning;
