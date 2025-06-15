@@ -91,7 +91,7 @@ public class Spell : NetworkBehaviour
     {
         if (MultiplayerManager.IsOnline && IsServer)
         {
-            ServerDiscrepancyCheckTick(); // rename probably
+            DiscrepancyCheckTick(); // rename probably
         }
 
         MoveSpell();
@@ -157,11 +157,12 @@ public class Spell : NetworkBehaviour
     {
         SpellLocalPosition = Calculations.DiscrepancyCheck(SpellLocalPosition, newValue, GameSettings.Used.NetworkLocationDiscrepancyLimit);
     }
-    void ServerDiscrepancyCheckTick()
+    void DiscrepancyCheckTick()
     {
         ticksSincePositionUpdate++;
         if (ticksSincePositionUpdate >= GameSettings.Used.NetworkDiscrepancyCheckFrequency)
         {
+            // could just as easily make this do a clientRpc that checks for discrepancies.
             serverSidePosition.Value = SpellLocalPosition;
             ticksSincePositionUpdate = 0;
         }

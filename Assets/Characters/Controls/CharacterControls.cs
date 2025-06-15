@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -15,15 +14,13 @@ public class CharacterControls : NetworkBehaviour
     private CharacterManager characterManager;
 
     // Methods
-    private void Awake()
-    {
-        characterAnimator = GetComponent<Animator>();
-        characterManager = GetComponent<CharacterManager>();
-    }
     private void Start()
     {
         Debug.Log($"interpolation is currently removed! probably should re-add, delete me later.");
-        
+        // References
+        characterAnimator = GetComponent<Animator>();
+        characterManager = GetComponent<CharacterManager>();
+
         // Enable movement
         InputActionMap controlsMap = ControlsManager.GetActionMap(characterManager.InputMapName);
         movementAction = controlsMap.FindAction(GameSettings.InputNames.Movement, true);
@@ -31,40 +28,28 @@ public class CharacterControls : NetworkBehaviour
 
         // Starting position
         transform.position = GameSettings.Used.CharacterStartPositions[characterManager.CharacterIndex];
-        if (IsServer) LocationUpdateClientRpc(transform.position);
     }
     private void FixedUpdate()
     {
         MovementTick();
-        if (IsServer && IsOwner)
-        {
-            LocationUpdateClientRpc(transform.position);
-        }
     }
     private void MovementTick()
     {
         Vector2 movementInput = movementAction.ReadValue<Vector2>();
 
-        if (MultiplayerManager.IsOnline == false)
+        if (!MultiplayerManager.IsOnline)
         {
             MoveCharacter(movementInput);
         }
         else if (IsOwner)
         {
-            OwnerMovementTick();
-        }
-
-
-        // Local Methods
-        void OwnerMovementTick()
-        {
-            if (IsHost)
+            MoveCharacter(movementInput);
+            if (IsServer)
             {
-                MoveCharacter(movementInput);
+                LocationUpdateClientRpc(transform.position);
             }
-            else if (IsClient)
+            else
             {
-                MoveCharacter(movementInput);
                 MoveCharacterServerRpc(movementInput, transform.position);
             }
         }
@@ -77,17 +62,15 @@ public class CharacterControls : NetworkBehaviour
 
         characterAnimator.SetFloat(animatorTreeParameterX, movementInput.x);
         characterAnimator.SetFloat(animatorTreeParameterY, movementInput.y);
-
     }
 
-    // Rpcs
-    [ClientRpc]
+    // Networking
+    [Rpc(SendTo.NotServer)]
     private void LocationUpdateClientRpc(Vector2 pos)
     {
-        if (IsHost) return;
         transform.position = pos;
     }
-    [ServerRpc]
+    [Rpc(SendTo.Server)]
     private void MoveCharacterServerRpc(Vector2 inputVector, Vector2 clientPosition)
     {
         MoveCharacter(inputVector);
@@ -95,7 +78,7 @@ public class CharacterControls : NetworkBehaviour
         Vector2 discrepancy = clientPosition - (Vector2)transform.position;
         if (discrepancy.magnitude >= GameSettings.Used.NetworkLocationDiscrepancyLimit)
         {
-            Debug.Log($"{name} has a discrepancy of {discrepancy}");
+            Debug.LogWarning($"{name} has a discrepancy of {discrepancy}");
             FixDiscrepancyClientRpc(discrepancy);
         }
     }
