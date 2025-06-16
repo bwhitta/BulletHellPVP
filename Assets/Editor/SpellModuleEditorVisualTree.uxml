@@ -13,7 +13,9 @@
             <uie:PropertyField binding-path="SpellScalings" name="SpellScalings" />
             <ui:VisualElement name="Spacer" class="spacer" />
             <uie:PropertyField name="PlayerAttached" binding-path="PlayerAttached" />
-            <ui:VisualElement name="PlayerAttachedHides" class="indented" />
+            <ui:VisualElement name="PlayerAttachedHides" class="indented">
+                <uie:PropertyField binding-path="EffectsWhenAttached" name="EffectsWhenAttached" />
+            </ui:VisualElement>
             <ui:VisualElement name="Spacer" class="spacer" />
             <uie:PropertyField binding-path="LimitedLifespan" name="LimitedLifespan" />
             <ui:VisualElement name="LimitedLifespanHides" class="indented">

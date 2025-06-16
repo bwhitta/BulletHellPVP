@@ -19,13 +19,14 @@ public class SpellModule
     public SpellScaling[] SpellScalings;
 
     public bool PlayerAttached;
+
+    public StatusEffect[] EffectsWhenAttached; // can have a seperate EffectsOnCollision
     /*public bool PushesPlayer;
-    public float PlayerPushSpeed;
-    public bool SpriteFacingPush;
+    public float PlayerPushSpeed;*/
+
+    /*public bool SpriteFacingPush;
     public bool AngleAfterStart;
-    public float AngleChangeSpeed;
-    public bool AffectsPlayerMovement;
-    public float PlayerMovementMod;*/
+    public float AngleChangeSpeed;*/
 
     public bool LimitedLifespan;
     public float Lifespan;
@@ -36,7 +37,7 @@ public class SpellModule
     public bool UsesCollider;
     public Vector2[] ColliderPath;
 
-    public bool DealsDamage; // maybe change out for something like a ScriptableObject[] called EffectsOnCollision? could have inheretied SOs like DealsDamage and MovesCharacter and such. the SOs could also just be called Effects, with EffectsOnCollision being a list of effects.
+    public bool DealsDamage;
     public float Damage;
 
     public bool SpellUsesSprite;

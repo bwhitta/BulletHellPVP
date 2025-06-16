@@ -142,7 +142,6 @@ public class SpellSpawner : NetworkBehaviour
     [Rpc(SendTo.Server)]
     private void AttemptSpellServerRpc(byte slot)
     {
-        Debug.Log($"ServerRpc recieved, attempting spell in slot {slot} server-side. frame {Time.frameCount}");
         AttemptSpell(slot);
     }
     [Rpc(SendTo.NotServer)]

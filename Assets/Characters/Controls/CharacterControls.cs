@@ -12,6 +12,9 @@ public class CharacterControls : NetworkBehaviour
     
     private Animator characterAnimator;
     private CharacterManager characterManager;
+    private CharacterStatusEffects characterStatusEffects;
+
+    private int ticksSinceDiscrepancyCheck;
 
     // Methods
     private void Start()
@@ -20,6 +23,7 @@ public class CharacterControls : NetworkBehaviour
         // References
         characterAnimator = GetComponent<Animator>();
         characterManager = GetComponent<CharacterManager>();
+        characterStatusEffects = GetComponent<CharacterStatusEffects>();
 
         // Enable movement
         InputActionMap controlsMap = ControlsManager.GetActionMap(characterManager.InputMapName);
@@ -56,8 +60,8 @@ public class CharacterControls : NetworkBehaviour
     }
     private void MoveCharacter(Vector2 movementInput)
     {
-        Vector3 movement = GameSettings.Used.CharacterMovementSpeed * movementInput.normalized;
-
+        Vector3 movement = GameSettings.Used.CharacterMovementSpeed * characterStatusEffects.MoveSpeedModifier * movementInput.normalized;
+        
         transform.position += movement * Time.fixedDeltaTime;
 
         characterAnimator.SetFloat(animatorTreeParameterX, movementInput.x);
@@ -75,20 +79,18 @@ public class CharacterControls : NetworkBehaviour
     {
         MoveCharacter(inputVector);
 
-        Vector2 discrepancy = clientPosition - (Vector2)transform.position;
+        // could make it so that this only checks every few fixedupdate frames, but I shouldn't need to
+        Vector2 discrepancy = (Vector2)transform.position - clientPosition;
         if (discrepancy.magnitude >= GameSettings.Used.NetworkLocationDiscrepancyLimit)
         {
-            Debug.LogWarning($"{name} has a discrepancy of {discrepancy}");
-            FixDiscrepancyClientRpc(discrepancy);
+            //Debug.LogWarning($"{name}'s client has a discrepancy of {discrepancy} - server pos {(Vector2)transform.position}, client pos {clientPosition}");
+            //FixDiscrepancyClientRpc(transform.position);
         }
     }
-    [ClientRpc]
-    private void FixDiscrepancyClientRpc(Vector2 discrepancy)
+    [Rpc(SendTo.Owner)]
+    private void FixDiscrepancyClientRpc(Vector2 position)
     {
-        Debug.Log($"Client location wrong (discrepancy {discrepancy}).");
-        if (IsOwner)
-        {
-            transform.position -= (Vector3)discrepancy;
-        }
+        Debug.LogWarning($"Client location wrong, new position is {position}");
+        transform.position = (Vector3)position;
     }
 }

@@ -28,6 +28,8 @@ MonoBehaviour:
     SpellTarget: 0
     SpellScalings: []
     PlayerAttached: 1
+    EffectsWhenAttached:
+    - {fileID: 11400000, guid: 4c62aac4ffac8c847ae65d015b6cf646, type: 2}
     LimitedLifespan: 1
     Lifespan: 12
     DestroyAfterDistanceMoved: 0
@@ -56,6 +58,7 @@ MonoBehaviour:
     SpellTarget: 0
     SpellScalings: []
     PlayerAttached: 1
+    EffectsWhenAttached: []
     LimitedLifespan: 1
     Lifespan: 50
     DestroyAfterDistanceMoved: 0

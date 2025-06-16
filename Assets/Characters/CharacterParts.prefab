@@ -439,6 +439,8 @@ GameObject:
   - component: {fileID: 5860716669837191708}
   - component: {fileID: 5860716669837191715}
   - component: {fileID: 5324122265146412018}
+  - component: {fileID: 2672487067291571986}
+  - component: {fileID: 6223001443318071745}
   m_Layer: 0
   m_Name: Character
   m_TagString: Untagged
@@ -605,6 +607,7 @@ MonoBehaviour:
   characterManager: {fileID: 5324122265146412018}
   healthBar: {fileID: 7124641555871300263}
   manaBar: {fileID: 1483302033742889200}
+  ManaAwaiting: 0
 --- !u!114 &5324122265146412018
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -624,6 +627,32 @@ MonoBehaviour:
   - LeftCharacter
   - RightCharacter
   CharacterIndex: 0
+--- !u!114 &2672487067291571986
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5860716669837191705}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25ba5407f1371ab4bb23ba3640f2f90c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &6223001443318071745
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5860716669837191705}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c35e6c470b2dbad4a8a8dbfb854f6d0e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MoveSpeedModifier: 1
+  StatusEffects: []
 --- !u!1 &5860716670533881872
 GameObject:
   m_ObjectHideFlags: 0

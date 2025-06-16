@@ -61,6 +61,12 @@ public class Spell : NetworkBehaviour
 
         // Set up collision
         EnableCollider();
+
+        // Set up effects
+        if (Module.PlayerAttached)
+        {
+            ApplyEffects(Module.EffectsWhenAttached);
+        }
         
         // Set up player local position tracking
         SpellLocalPosition = transform.position;
@@ -70,28 +76,13 @@ public class Spell : NetworkBehaviour
         {
             SetupSpellNetworking();
         }
-
-        // Local Methods
-        void EnableCollider()
-        {
-            PolygonCollider2D collider = GetComponent<PolygonCollider2D>();
-            collider.enabled = true;
-            collider.points = Module.ColliderPath;
-        }
-        void SetupSpellNetworking()
-        {
-            if (!IsServer)
-            {
-                serverSidePosition.OnValueChanged += ServerPositionChanged;
-            }
-        }
     }
 
     void FixedUpdate()
     {
         if (MultiplayerManager.IsOnline && IsServer)
         {
-            DiscrepancyCheckTick(); // rename probably
+            DiscrepancyCheckTick();
         }
 
         MoveSpell();
@@ -104,6 +95,12 @@ public class Spell : NetworkBehaviour
         TickLifespan();
     }
 
+    private void EnableCollider()
+    {
+        PolygonCollider2D collider = GetComponent<PolygonCollider2D>();
+        collider.enabled = true;
+        collider.points = Module.ColliderPath;
+    }
     private void MoveSpell()
     {
         Vector2 movement = new();
@@ -151,13 +148,30 @@ public class Spell : NetworkBehaviour
             DestroySelfNetworkSafe();
         }
     }
+    private void ApplyEffects(StatusEffect[] statusEffects)
+    {
+        var targetStatusEffects = CharacterManager.CharacterTransforms[TargetId].GetComponent<CharacterStatusEffects>();
+        foreach (var statusEffect in statusEffects)
+        {
+            var statusEffectInstance = new StatusEffectInstance(statusEffect);
+            targetStatusEffects.StatusEffects.Add(statusEffectInstance);
+        }
+    }
+
 
     // Networking
-    void ServerPositionChanged(Vector2 oldValue, Vector2 newValue)
+    void SetupSpellNetworking()
+    {
+        if (!IsServer)
+        {
+            serverSidePosition.OnValueChanged += ServerPositionChanged;
+        }
+    }
+    private void ServerPositionChanged(Vector2 oldValue, Vector2 newValue)
     {
         SpellLocalPosition = Calculations.DiscrepancyCheck(SpellLocalPosition, newValue, GameSettings.Used.NetworkLocationDiscrepancyLimit);
     }
-    void DiscrepancyCheckTick()
+    private void DiscrepancyCheckTick()
     {
         ticksSincePositionUpdate++;
         if (ticksSincePositionUpdate >= GameSettings.Used.NetworkDiscrepancyCheckFrequency)
@@ -167,7 +181,7 @@ public class Spell : NetworkBehaviour
             ticksSincePositionUpdate = 0;
         }
     }
-    public void DestroySelfNetworkSafe()
+    private void DestroySelfNetworkSafe()
     {
         if (!MultiplayerManager.IsOnline)
         {

@@ -8,16 +8,21 @@ public class CharacterStats : NetworkBehaviour
     [SerializeField] private CharacterManager characterManager;
     [SerializeField] private BarLogic healthBar;
     [SerializeField] private BarLogic manaBar;
-    private float remainingInvincibilityTime = 0;
+    public delegate void OnStatChanged(float change);
 
     // Health
+    // could make this into a custom type called Stat, which has a current value and max value, and automatically calls an event when it changes.
+    public OnStatChanged HealthChanged;
     private float _currentHealth;
-    private float CurrentHealth
+    public float CurrentHealth
     {
         get => _currentHealth;
         set
         {
+            // Trigger event
+            HealthChanged?.Invoke(value - _currentHealth);
 
+            // Limit current health to max health
             if (value > GameSettings.Used.MaxHealth)
             {
                 _currentHealth = GameSettings.Used.MaxHealth;
@@ -33,9 +38,11 @@ public class CharacterStats : NetworkBehaviour
                 _currentHealth = value;
             }
 
+            // could make updating the healthbar subscribed to the OnHealthChanged event as well
             healthBar.StatValue = _currentHealth;
         }
     }
+    
 
     // Mana
     private float _currentMana;
@@ -86,7 +93,7 @@ public class CharacterStats : NetworkBehaviour
         healthBar.StatMax = GameSettings.Used.MaxHealth;
         manaBar.StatMax = GameSettings.Used.StartingMaxMana;
         
-        // Set up health and mana
+        // Set starting values
         MaxMana = GameSettings.Used.StartingMaxMana;
         CurrentHealth = GameSettings.Used.MaxHealth;
         CurrentMana = GameSettings.Used.StartingMaxMana;
@@ -95,67 +102,14 @@ public class CharacterStats : NetworkBehaviour
     {
         if (!MultiplayerManager.GameStarted) return;
 
-        if (remainingInvincibilityTime > 0) InvincibilityTick();
         ManaScalingTick();
         ManaRegenTick();
         //ManaAwaitingTick();
         if (IsServer) ServerDiscrepancyTick();
 
-        void ServerDiscrepancyTick()
-        {
-            // Discrepancy check ticks
-            ticksSinceUpdate++;
-            if (ticksSinceUpdate >= GameSettings.Used.NetworkDiscrepancyCheckFrequency)
-            {
-                ServerHealthUpdateRpc(CurrentHealth);
-                ServerManaUpdateRpc(CurrentMana);
-                ticksSinceUpdate = 0;
-            }
-        }
-        /*void ManaAwaitingTick()
-        {
-            if (ManaAwaiting <= 0)
-            {
-                ManaAwaiting = 0;
-                ManaAwaitingCountdown = 0;
-            }
-            if (ManaAwaitingCountdown > 0)
-            {
-                ManaAwaitingCountdown--;
-                if (ManaAwaitingCountdown <= 0)
-                {
-                    ManaAwaiting = 0;
-                    Debug.Log("Countdown complete!");
-                }
-            }
-        }*/
+        
     }
-
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (gameObject.activeSelf == false)
-        {
-            Debug.Log($"gameObject is not active"); // temp log
-            return;
-        }
-        if (collision.TryGetComponent<Spell>(out var spell))
-        {
-            if (remainingInvincibilityTime <= 0 && spell.Module.DealsDamage && spell.TargetId == characterManager.CharacterIndex)
-            {
-                DamageDealt(spell);
-            }
-        }
-
-        // Local Methods
-        void DamageDealt(Spell spell)
-        {
-            remainingInvincibilityTime = GameSettings.Used.InvincibilityTime;
-            SetChildAlpha(GameSettings.Used.InvincibilityAlphaMod);
-
-            CurrentHealth -= spell.Module.Damage;
-            Debug.Log($"Damage dealt - total of {spell.Module.Damage} health lost.");
-        }
-    }
+    
     private void ManaScalingTick()
     {
         // Don't start scaling mana until both players have joined
@@ -175,26 +129,19 @@ public class CharacterStats : NetworkBehaviour
 
         CurrentMana += manaChangeRate * Time.fixedDeltaTime;
     }
-    private void InvincibilityTick()
-    {
-        remainingInvincibilityTime -= Time.fixedDeltaTime;
-
-        // Check if completed
-        if (remainingInvincibilityTime <= 0)
-        {
-            remainingInvincibilityTime = 0;
-            SetChildAlpha(1);
-        }
-    }
-    private void SetChildAlpha(float alpha)
-    {
-        foreach (Transform child in transform)
-        {
-            child.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, alpha);
-        }
-    }
 
     // Networking
+    private void ServerDiscrepancyTick()
+    {
+        // Discrepancy check ticks
+        ticksSinceUpdate++;
+        if (ticksSinceUpdate >= GameSettings.Used.NetworkDiscrepancyCheckFrequency)
+        {
+            ServerHealthUpdateRpc(CurrentHealth);
+            ServerManaUpdateRpc(CurrentMana);
+            ticksSinceUpdate = 0;
+        }
+    }
     [Rpc(SendTo.NotServer)]
     private void ServerHealthUpdateRpc(float newValue)
     {

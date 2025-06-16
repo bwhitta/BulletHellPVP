@@ -32,7 +32,6 @@ public class CharacterManager : NetworkBehaviour
             MultiplayerManager.NonHostClientJoined = true;
         }
     }
-
     private void Start()
     {
         CharacterTransforms[CharacterIndex] = transform;
