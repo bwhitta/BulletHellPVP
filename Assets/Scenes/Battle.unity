@@ -880,6 +880,7 @@ GameObject:
   - component: {fileID: 1290052347}
   - component: {fileID: 1290052346}
   - component: {fileID: 1290052345}
+  - component: {fileID: 1290052348}
   m_Layer: 0
   m_Name: NetworkManager
   m_TagString: Untagged
@@ -953,6 +954,7 @@ MonoBehaviour:
     NetworkTopology: 0
     UseCMBService: 0
     AutoSpawnPlayerPrefabClientSide: 1
+    NetworkMessageMetrics: 1
     NetworkProfilingMetrics: 1
     OldPrefabList:
     - Override: 0
@@ -982,6 +984,41 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1290052348
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1290052344}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98d9db9626104da59357651088226725, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_PresetAsset: {fileID: 0}
+  m_PresetReference:
+    rid: 2104969323797020673
+  m_Scenario:
+    rid: -2
+  m_IsScenarioSettingsFolded: 0
+  AutoRunScenario: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
+    - rid: 2104969323797020673
+      type: {class: NetworkSimulatorPreset, ns: Unity.Multiplayer.Tools.NetworkSimulator.Runtime, asm: Unity.Multiplayer.Tools.NetworkSimulator.Runtime}
+      data:
+        <Name>k__BackingField: Home Broadband with Congested Network
+        <Description>k__BackingField: Desktop and console platforms trough congested
+          networks (multiple downloads or streaming already using the network's maximum
+          capacity). Medium ping, bad jitter and little packet loss.
+        <PacketDelayMs>k__BackingField: 50
+        <PacketJitterMs>k__BackingField: 50
+        <PacketLossInterval>k__BackingField: 0
+        <PacketLossPercent>k__BackingField: 1
 --- !u!1 &1323493285
 GameObject:
   m_ObjectHideFlags: 0
@@ -1475,6 +1512,78 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2092729907
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2092729908}
+  - component: {fileID: 2092729909}
+  - component: {fileID: 2092729910}
+  m_Layer: 0
+  m_Name: SpellPredictiveSpawner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2092729908
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2092729907}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.21545, y: -0.20246, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2092729909
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2092729907}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 3420059073
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  DeferredDespawnTick: 0
+  Ownership: 1
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 0
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
+  SyncOwnerTransformWhenParented: 1
+  AllowOwnerToParent: 0
+--- !u!114 &2092729910
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2092729907}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 91b9457582a0f7841bb6296b49df04fd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  prefab: {fileID: 2276715914097845871, guid: a12a2eac476853e4184718ce4ef910dc, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -1484,3 +1593,4 @@ SceneRoots:
   - {fileID: 603654760}
   - {fileID: 2077876314}
   - {fileID: 1290052347}
+  - {fileID: 2092729908}

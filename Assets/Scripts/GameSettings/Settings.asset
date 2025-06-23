@@ -40,10 +40,8 @@ MonoBehaviour:
   InvincibilityAlphaMod: 0.25
   inputActions: {fileID: 11400000, guid: 2e5c84867fe3de248b56aad7e8670f44, type: 2}
   NetworkDiscrepancyCheckHz: 10
-  NetworkTickRateHz: 50
   NetworkLocationDiscrepancyLimit: 0.25
-  NetworkStatBarDiscrepancyLimit: 1
-  ManaAwaitingTimeLimit: 50
+  NetworkStatBarDiscrepancyLimit: 5
   uiPositioning: {fileID: 11400000, guid: 157d9cf26d737bf48914879064bc44d6, type: 2}
   StatLostVelocity: 1
   CursorMovementSpeed: 5

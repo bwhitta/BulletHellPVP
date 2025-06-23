@@ -189,7 +189,8 @@ public class Spell : NetworkBehaviour
         }
         else if (IsServer)
         {
-            NetworkObject.Despawn(gameObject);
+            // NetworkObject.Despawn(gameObject); CODE DISABLED WHILE WORKING ON PREDICTIVE SPAWNING
+            // could just have this individually delete on each client? (at least for the player attatched spells since they have limited lifespan and are the ones that will be synced online)
         }
         else
         {
@@ -200,6 +201,7 @@ public class Spell : NetworkBehaviour
     [ClientRpc]
     public void ModuleDataClientRpc(SpellModule.ModuleInfo moduleInfo, byte moduleObjectIndex, byte targetId)
     {
+        Debug.Log($"ModuleDataClientRpc(moduleInfo: {moduleInfo.ModuleSpellData}, moduleObjectIndex: {moduleObjectIndex}, targetId: {targetId})! deleteme");
         if (IsHost) return;
 
         SetModuleData(moduleInfo, moduleObjectIndex, targetId);

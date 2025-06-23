@@ -14,8 +14,6 @@ public class CharacterControls : NetworkBehaviour
     private CharacterManager characterManager;
     private CharacterStatusEffects characterStatusEffects;
 
-    private int ticksSinceDiscrepancyCheck;
-
     // Methods
     private void Start()
     {
@@ -84,7 +82,7 @@ public class CharacterControls : NetworkBehaviour
         if (discrepancy.magnitude >= GameSettings.Used.NetworkLocationDiscrepancyLimit)
         {
             //Debug.LogWarning($"{name}'s client has a discrepancy of {discrepancy} - server pos {(Vector2)transform.position}, client pos {clientPosition}");
-            //FixDiscrepancyClientRpc(transform.position);
+            FixDiscrepancyClientRpc(transform.position);
         }
     }
     [Rpc(SendTo.Owner)]

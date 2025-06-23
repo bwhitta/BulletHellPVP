@@ -652,7 +652,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MoveSpeedModifier: 1
-  StatusEffects: []
 --- !u!1 &5860716670533881872
 GameObject:
   m_ObjectHideFlags: 0
@@ -1053,6 +1052,7 @@ MonoBehaviour:
   characterStats: {fileID: 5860716669837191715}
   modulePrefab: {fileID: 1062348163457161292, guid: a12a2eac476853e4184718ce4ef910dc, type: 3}
   cursorMovement: {fileID: 7623185581945276681}
+  predictiveSpawner: {fileID: 0}
 --- !u!114 &7623185581945276681
 MonoBehaviour:
   m_ObjectHideFlags: 0

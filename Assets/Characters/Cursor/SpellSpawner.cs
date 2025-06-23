@@ -46,13 +46,46 @@ public class SpellSpawner : NetworkBehaviour
                 spellbookLogic.SpellCooldowns[slot] = spellData.SpellCooldown;
                 characterStats.ManaAwaiting += spellData.ManaCost;
                 characterStats.CurrentMana -= spellData.ManaCost;
-            }
 
+                // probably will want to reorganize this script a bit later on.
+                Debug.Log($"predictive spawning spell");
+                SpellData.SpellInfo spellInfo = spellbookLogic.CurrentBook.SpellInfos[slot];
+
+                // Summon each module
+                for (byte i = 0; i < spellInfo.Spell.UsedModules.Length; i++)
+                {
+                    Debug.Log($"predictive spawning object {i}");
+                    SpellModule.ModuleInfo moduleInfo = new(spellInfo, i);
+
+                    byte targetId = GetModuleTargetId(moduleInfo.Module);
+                    for (byte moduleObjectIndex = 0; moduleObjectIndex < moduleInfo.Module.InstantiationQuantity; moduleObjectIndex++)
+                    {
+                        Debug.Log($"spawning spell object (moduleObjectIndex: {moduleObjectIndex}");
+                        Vector2 startingPosition = moduleInfo.Module.StartingPosition.GetPosition(moduleObjectIndex, cursorMovement.Location, targetId);
+                        Quaternion startingRotation = moduleInfo.Module.StartingRotation.GetRotation(startingPosition, cursorMovement.Location, targetId);
+                        GameObject spellGameObject = SpellPredictiveSpawner.Instance.SpawnSpellObject(startingPosition, startingRotation);
+                        var spellObject = spellGameObject.GetComponent<Spell>();
+                        spellObject.SetModuleData(moduleInfo, moduleObjectIndex, targetId);
+                    }
+                }
+            }
+            
             AttemptSpellServerRpc(slot);
         }
         else
         {
             AttemptSpell(slot);
+        }
+
+        // this method is directly from CastSpell, probably will merge them when restructuring
+        byte GetModuleTargetId(SpellModule module)
+        {
+            return module.SpellTarget switch
+            {
+                SpellModule.SpellTargets.Owner => characterManager.CharacterIndex,
+                SpellModule.SpellTargets.Opponent => characterManager.OpponentCharacterIndex,
+                _ => throw new ArgumentException("Invalid spell target!")
+            };
         }
     }
     private void AttemptSpell(byte slot)
@@ -113,12 +146,26 @@ public class SpellSpawner : NetworkBehaviour
     private void CreateSpellObject(SpellModule.ModuleInfo moduleInfo, byte targetId, byte moduleObjectIndex)
     {
         SpellModule module = moduleInfo.Module;
-        Spell spellObject = Instantiate(modulePrefab).GetComponent<Spell>();
-
-        // Starting location
+        // Spell spellObject = Instantiate(modulePrefab).GetComponent<Spell>(); OLD SPAWNING CODE
         Vector2 startingPosition = module.StartingPosition.GetPosition(moduleObjectIndex, cursorMovement.Location, targetId);
         Quaternion startingRotation = module.StartingRotation.GetRotation(startingPosition, cursorMovement.Location, targetId);
-        spellObject.transform.SetLocalPositionAndRotation(startingPosition, startingRotation);
+        /*GameObject spellGameObject;
+        if (MultiplayerManager.IsOnline)
+        {
+            //Debug.LogWarning($"I think I know what the problem is here - this script assumes that the owner should always be the one calling for the object to be created, and so when the server (who is not the owner of the non-host client's character) tries to spawn the spell for that client it gets all weird.");
+            spellGameObject = SpellPredictiveSpawner.Instance.SpawnSpellObject(startingPosition, startingRotation); // should probably only be predictive spawned if its player attatched, not sure how possible that is.
+        }
+        else
+        {
+            spellGameObject = Instantiate(modulePrefab, startingPosition, startingRotation);
+        }*/
+        GameObject spellGameObject = Instantiate(modulePrefab, startingPosition, startingRotation);
+        Spell spellObject = spellGameObject.GetComponent<Spell>();
+
+        // Starting location ALL OLD SPAWNING CODE
+        //Vector2 startingPosition = module.StartingPosition.GetPosition(moduleObjectIndex, cursorMovement.Location, targetId);
+        //Quaternion startingRotation = module.StartingRotation.GetRotation(startingPosition, cursorMovement.Location, targetId);
+        //spellObject.transform.SetLocalPositionAndRotation(startingPosition, startingRotation);
 
         // Send info
         spellObject.SetModuleData(moduleInfo, moduleObjectIndex, targetId);
@@ -127,8 +174,8 @@ public class SpellSpawner : NetworkBehaviour
         if (MultiplayerManager.IsOnline)
         {
             NetworkObject spellNetworkObject = spellObject.GetComponent<NetworkObject>();
-            spellNetworkObject.Spawn(true);
-            spellObject.ModuleDataClientRpc(moduleInfo, moduleObjectIndex, targetId);
+            //spellNetworkObject.Spawn(true); OLD SPAWNING CODE
+            spellObject.ModuleDataClientRpc(moduleInfo, moduleObjectIndex, targetId); // might not be necessary (or at least might need to be reworked) given new predictive spawning code
         }
     }
     private bool CooldownAndManaAvailable(SpellData spellData, byte spellbookSlot)

@@ -5,22 +5,23 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 0
-    path: 
-    guid: 00000000000000000000000000000000
   - enabled: 1
     path: Assets/Scenes/Main Menu.unity
     guid: 38c7b6a75a969f34495eab30a414114c
   - enabled: 1
-    path: Assets/Scenes/Battle.unity
-    guid: 44f82c99264aca243bb5ab7dbe9b99f2
+    path: Assets/Scenes/Lobby Setup.unity
+    guid: d3f6458663c8f22419cf7058719fc141
   - enabled: 1
     path: Assets/Scenes/Spell Selection.unity
     guid: 807d58eb77a47ec4e86973bafa2bb521
   - enabled: 1
-    path: Assets/Scenes/Lobby Setup.unity
-    guid: d3f6458663c8f22419cf7058719fc141
+    path: Assets/Scenes/Battle.unity
+    guid: 44f82c99264aca243bb5ab7dbe9b99f2
+  - enabled: 0
+    path: Assets/Scenes/Predictive Spawner Test.unity
+    guid: 295b0320eba237445b34d814dcf95308
   - enabled: 0
     path: Assets/Scenes/Test Loader.unity
     guid: 02f63fd603b26e64081a9860c47b25e1
   m_configObjects: {}
+  m_UseUCBPForAssetBundles: 0
