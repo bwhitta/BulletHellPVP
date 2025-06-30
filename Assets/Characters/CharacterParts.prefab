@@ -1050,9 +1050,9 @@ MonoBehaviour:
   characterManager: {fileID: 5324122265146412018}
   spellbookLogic: {fileID: 2581057075624382118}
   characterStats: {fileID: 5860716669837191715}
-  modulePrefab: {fileID: 1062348163457161292, guid: a12a2eac476853e4184718ce4ef910dc, type: 3}
+  spellPrefab: {fileID: 1062348163457161292, guid: a12a2eac476853e4184718ce4ef910dc, type: 3}
+  predictedSpellPrefab: {fileID: 6890700408303859375, guid: 772ad44c2c0a80f4f8b13dcaf70c59bd, type: 3}
   cursorMovement: {fileID: 7623185581945276681}
-  predictiveSpawner: {fileID: 0}
 --- !u!114 &7623185581945276681
 MonoBehaviour:
   m_ObjectHideFlags: 0

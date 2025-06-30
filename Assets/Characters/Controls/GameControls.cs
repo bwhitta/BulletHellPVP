@@ -104,7 +104,7 @@ public partial class @GameControls: IInputActionCollection2, IDisposable
                     ""name"": ""CursorMovement"",
                     ""type"": ""Value"",
                     ""id"": ""b36df7a7-7d4e-4255-b078-fe31823de22c"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
@@ -113,7 +113,7 @@ public partial class @GameControls: IInputActionCollection2, IDisposable
                     ""name"": ""AccelerateCursorMovement"",
                     ""type"": ""Button"",
                     ""id"": ""c1a37c90-1b0e-4af9-ad5c-90e11346f242"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
@@ -344,7 +344,7 @@ public partial class @GameControls: IInputActionCollection2, IDisposable
                     ""name"": ""CursorMovement"",
                     ""type"": ""Value"",
                     ""id"": ""e43cdcb8-a677-4753-9c00-6a7bc20a0366"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
@@ -353,7 +353,7 @@ public partial class @GameControls: IInputActionCollection2, IDisposable
                     ""name"": ""AccelerateCursorMovement"",
                     ""type"": ""Button"",
                     ""id"": ""18f13d3d-493a-4f4b-a165-4098abd30f18"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
@@ -371,7 +371,7 @@ public partial class @GameControls: IInputActionCollection2, IDisposable
                     ""name"": ""NextBook"",
                     ""type"": ""Button"",
                     ""id"": ""38cb4baa-57cf-4a92-a8ee-6d5b8e17bd44"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false

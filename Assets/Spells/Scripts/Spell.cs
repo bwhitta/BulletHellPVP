@@ -145,6 +145,7 @@ public class Spell : NetworkBehaviour
         lifespan++;
         if (Module.LimitedLifespan && lifespan >= Module.Lifespan)
         {
+            
             DestroySelfNetworkSafe();
         }
     }
@@ -183,13 +184,14 @@ public class Spell : NetworkBehaviour
     }
     private void DestroySelfNetworkSafe()
     {
+        Debug.Log($"destroying self network safe!");
         if (!MultiplayerManager.IsOnline)
         {
             Destroy(gameObject);
         }
         else if (IsServer)
         {
-            // NetworkObject.Despawn(gameObject); CODE DISABLED WHILE WORKING ON PREDICTIVE SPAWNING
+            NetworkObject.Despawn(gameObject);
             // could just have this individually delete on each client? (at least for the player attatched spells since they have limited lifespan and are the ones that will be synced online)
         }
         else

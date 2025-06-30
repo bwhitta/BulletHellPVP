@@ -26,53 +26,38 @@ public class SpellPredictiveSpawner : NetworkBehaviour, INetworkPrefabInstanceHa
             Destroy(this);
         }
     }
+    
     public override void OnNetworkSpawn()
     {
-        // handles deletion
         NetworkManager.PrefabHandler.AddHandler(prefab, this);
-
-        // if objects were created before this client joined, spawn them (I think)
-        /*List<NetworkObject> offlineInstances = queuedInstances.ToList();
-        foreach (NetworkObject instance in offlineInstances)
-        {
-            SpawnServerRPC(NetworkManager.LocalClientId, instance.transform.position);
-        }*/
     }
     public override void OnNetworkDespawn()
     {
         NetworkManager.PrefabHandler.RemoveHandler(prefab);
     }
 
-    public GameObject  SpawnSpellObject(Vector3 position, Quaternion rotation)
+    public GameObject ClientSpawnSpellObject(Vector3 position, Quaternion rotation)
     {
-        // Spawns an object locally and asks the server to spawn it
-        Debug.Log($"spawn time");
+        Debug.Log($"predictive spawning spell");
         NetworkObject spawnedObject = Instantiate(prefab, position, rotation);
         spawnedObject.SetSceneObjectStatus(false);
-        Debug.Log($"enqueuing");
         queuedInstances.Enqueue(spawnedObject);
-        Debug.Log($"calling spawn server rpc. queuedInstances: [{string.Join<NetworkObject>(',', queuedInstances.ToArray())}]. gameObject: {gameObject}", gameObject);
-        SpawnServerRPC(NetworkManager.LocalClientId, position, rotation);
-
+        return spawnedObject.gameObject;
+    }
+    public GameObject ServerSpawnSpellObject(ulong clientId, Vector3 position, Quaternion rotation)
+    {
+        Debug.Log($"spawning spell on server");
+        NetworkObject spawnedObject = NetworkManager.SpawnManager.InstantiateAndSpawn(prefab, clientId, true, false, false, position, rotation);
         return spawnedObject.gameObject;
     }
 
-    //[ServerRpc(RequireOwnership = false)]
-    [Rpc(SendTo.Server, RequireOwnership = false)]
-    private void SpawnServerRPC(ulong clientId, Vector3 position, Quaternion rotation)
-    {
-        Debug.Log($"Spawning object");
-        NetworkManager.SpawnManager.InstantiateAndSpawn(prefab, clientId, false, false, false, position, rotation);
-    }
-
     // I assume these are called when a networkObject is created or destroyed
-    // this modifies the base network prefab spawning behavior. previously it would just 
     NetworkObject INetworkPrefabInstanceHandler.Instantiate(ulong ownerClientId, Vector3 position, Quaternion rotation)
     {
+        Debug.Log("handling instantiation!");
         NetworkObject instantiatedObject;
         if (NetworkManager.LocalClientId == ownerClientId)
         {
-            Debug.Log($"dequeuing! queuedInstances: [{string.Join<NetworkObject>(',', queuedInstances.ToArray())}]. gameObject: {gameObject}", gameObject);
             instantiatedObject = queuedInstances.Dequeue();
         }
         else
@@ -86,6 +71,6 @@ public class SpellPredictiveSpawner : NetworkBehaviour, INetworkPrefabInstanceHa
     void INetworkPrefabInstanceHandler.Destroy(NetworkObject networkObject)
     {
         Debug.Log($"Destroying object");
-        Destroy(networkObject);
+        Destroy(networkObject.gameObject);
     }
 }

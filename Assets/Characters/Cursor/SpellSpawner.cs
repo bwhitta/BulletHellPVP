@@ -9,7 +9,7 @@ public class SpellSpawner : NetworkBehaviour
     [SerializeField] private CharacterManager characterManager;
     [SerializeField] private SpellbookLogic spellbookLogic;
     [SerializeField] private CharacterStats characterStats;
-    [SerializeField] private GameObject modulePrefab;
+    [SerializeField] private GameObject spellPrefab;
     [SerializeField] private CursorMovement cursorMovement;
 
     // Methods
@@ -26,78 +26,25 @@ public class SpellSpawner : NetworkBehaviour
     {
         if (MultiplayerManager.IsOnline)
         {
-            SpellData spellData = spellbookLogic.CurrentBook.SpellInfos[slot].Spell;
-
-            // Make sure this client can actually cast spells
             if (!IsOwner)
             {
                 Debug.Log($"Can't cast spell, not owner.");
                 return;
             }
-            else if (!CooldownAndManaAvailable(spellData, slot))
-            {
-                Debug.Log($"Skipped casting spell - client does not have enough mana or the spell is on cooldown.");
-                return;
-            }
-
-            // Put the spell on cooldown and mark down mana as awaiting being cast
-            if (!IsServer)
-            {
-                spellbookLogic.SpellCooldowns[slot] = spellData.SpellCooldown;
-                characterStats.ManaAwaiting += spellData.ManaCost;
-                characterStats.CurrentMana -= spellData.ManaCost;
-
-                // probably will want to reorganize this script a bit later on.
-                Debug.Log($"predictive spawning spell");
-                SpellData.SpellInfo spellInfo = spellbookLogic.CurrentBook.SpellInfos[slot];
-
-                // Summon each module
-                for (byte i = 0; i < spellInfo.Spell.UsedModules.Length; i++)
-                {
-                    Debug.Log($"predictive spawning object {i}");
-                    SpellModule.ModuleInfo moduleInfo = new(spellInfo, i);
-
-                    byte targetId = GetModuleTargetId(moduleInfo.Module);
-                    for (byte moduleObjectIndex = 0; moduleObjectIndex < moduleInfo.Module.InstantiationQuantity; moduleObjectIndex++)
-                    {
-                        Debug.Log($"spawning spell object (moduleObjectIndex: {moduleObjectIndex}");
-                        Vector2 startingPosition = moduleInfo.Module.StartingPosition.GetPosition(moduleObjectIndex, cursorMovement.Location, targetId);
-                        Quaternion startingRotation = moduleInfo.Module.StartingRotation.GetRotation(startingPosition, cursorMovement.Location, targetId);
-                        GameObject spellGameObject = SpellPredictiveSpawner.Instance.SpawnSpellObject(startingPosition, startingRotation);
-                        var spellObject = spellGameObject.GetComponent<Spell>();
-                        spellObject.SetModuleData(moduleInfo, moduleObjectIndex, targetId);
-                    }
-                }
-            }
-            
-            AttemptSpellServerRpc(slot);
         }
-        else
-        {
-            AttemptSpell(slot);
-        }
-
-        // this method is directly from CastSpell, probably will merge them when restructuring
-        byte GetModuleTargetId(SpellModule module)
-        {
-            return module.SpellTarget switch
-            {
-                SpellModule.SpellTargets.Owner => characterManager.CharacterIndex,
-                SpellModule.SpellTargets.Opponent => characterManager.OpponentCharacterIndex,
-                _ => throw new ArgumentException("Invalid spell target!")
-            };
-        }
+        AttemptSpell(slot);
     }
     private void AttemptSpell(byte slot)
     {
         SpellData.SpellInfo spellInfo = spellbookLogic.CurrentBook.SpellInfos[slot];
+        SpellData spell = spellInfo.Spell;
 
         // Check cooldown and mana
-        if (!CooldownAndManaAvailable(spellInfo.Spell, slot))
+        if (!CooldownAndManaAvailable(spell, slot))
         {
             Debug.Log($"Skipped casting spell - there is not enough mana or the spell is on cooldown.");
             // If a non-host client cast the spell, tell them that it was cancelled
-            if ( !IsOwnedByServer )
+            if ( MultiplayerManager.IsOnline && IsServer && !IsOwnedByServer)
             {
                 CancelSpellRpc(spellInfo, slot);
             }
@@ -105,19 +52,30 @@ public class SpellSpawner : NetworkBehaviour
         }
 
         // Deduct mana and put spell on cooldown
-        characterStats.CurrentMana -= spellInfo.Spell.ManaCost;
-        spellbookLogic.SpellCooldowns[slot] = spellInfo.Spell.SpellCooldown;
+        characterStats.CurrentMana -= spell.ManaCost;
+        spellbookLogic.SpellCooldowns[slot] = spell.SpellCooldown;
         
-        // Tell the non-host client that a spell has been cast
         if (MultiplayerManager.IsOnline)
         {
-            VerifySpellCastRpc(spellInfo, slot);
+            if (IsServer)
+            {
+                // Tell the non-host client that a spell has been cast
+                VerifySpellCastRpc(spellInfo, slot);
+            }
+            else
+            {
+                // Tell server to try casting the spell too
+                Debug.Log($"attempting spell as non-server, sending serverRpc");
+                AttemptSpellServerRpc(slot);
+
+                // Mark down mana as awaiting being cast
+                characterStats.ManaAwaiting += spell.ManaCost;
+            }
         }
         
+
         CastSpell(spellInfo);
     }
-    
-    // could merge CastSpell with AttemptSpell
     private void CastSpell(SpellData.SpellInfo spellInfo)
     {
         // Summon each module
@@ -146,37 +104,46 @@ public class SpellSpawner : NetworkBehaviour
     private void CreateSpellObject(SpellModule.ModuleInfo moduleInfo, byte targetId, byte moduleObjectIndex)
     {
         SpellModule module = moduleInfo.Module;
-        // Spell spellObject = Instantiate(modulePrefab).GetComponent<Spell>(); OLD SPAWNING CODE
         Vector2 startingPosition = module.StartingPosition.GetPosition(moduleObjectIndex, cursorMovement.Location, targetId);
         Quaternion startingRotation = module.StartingRotation.GetRotation(startingPosition, cursorMovement.Location, targetId);
-        /*GameObject spellGameObject;
+
+
+        GameObject spellGameObject = null;
         if (MultiplayerManager.IsOnline)
         {
-            //Debug.LogWarning($"I think I know what the problem is here - this script assumes that the owner should always be the one calling for the object to be created, and so when the server (who is not the owner of the non-host client's character) tries to spawn the spell for that client it gets all weird.");
-            spellGameObject = SpellPredictiveSpawner.Instance.SpawnSpellObject(startingPosition, startingRotation); // should probably only be predictive spawned if its player attatched, not sure how possible that is.
+            bool canPredictiveSpawn = !(IsServer && IsOwner);
+            bool usesPredictiveSpawning = canPredictiveSpawn && module.PlayerAttached && (module.SpellTarget == SpellModule.SpellTargets.Owner);
+            
+            if (usesPredictiveSpawning)
+            {
+                if (IsClient && !IsServer)
+                {
+                    spellGameObject = SpellPredictiveSpawner.Instance.ClientSpawnSpellObject(startingPosition, startingRotation);
+                }
+                else if (IsServer && !IsOwner)
+                {
+                    spellGameObject = SpellPredictiveSpawner.Instance.ServerSpawnSpellObject(OwnerClientId, startingPosition, startingRotation);
+                }
+                else
+                {
+                    Debug.Log($"predictive spawning shouldn't be possible in this state");
+                }
+            }
+            else if (IsServer)
+            {
+                spellGameObject = Instantiate(spellPrefab, startingPosition, startingRotation);
+                NetworkObject spellNetworkObject = spellGameObject.GetComponent<NetworkObject>();
+                spellNetworkObject.Spawn(true);
+                spellGameObject.GetComponent<Spell>().ModuleDataClientRpc(moduleInfo, moduleObjectIndex, targetId);
+            }
         }
         else
         {
-            spellGameObject = Instantiate(modulePrefab, startingPosition, startingRotation);
-        }*/
-        GameObject spellGameObject = Instantiate(modulePrefab, startingPosition, startingRotation);
-        Spell spellObject = spellGameObject.GetComponent<Spell>();
-
-        // Starting location ALL OLD SPAWNING CODE
-        //Vector2 startingPosition = module.StartingPosition.GetPosition(moduleObjectIndex, cursorMovement.Location, targetId);
-        //Quaternion startingRotation = module.StartingRotation.GetRotation(startingPosition, cursorMovement.Location, targetId);
-        //spellObject.transform.SetLocalPositionAndRotation(startingPosition, startingRotation);
-
-        // Send info
-        spellObject.SetModuleData(moduleInfo, moduleObjectIndex, targetId);
-
-        // Spawn online
-        if (MultiplayerManager.IsOnline)
-        {
-            NetworkObject spellNetworkObject = spellObject.GetComponent<NetworkObject>();
-            //spellNetworkObject.Spawn(true); OLD SPAWNING CODE
-            spellObject.ModuleDataClientRpc(moduleInfo, moduleObjectIndex, targetId); // might not be necessary (or at least might need to be reworked) given new predictive spawning code
+            spellGameObject = Instantiate(spellPrefab, startingPosition, startingRotation);
         }
+
+        Spell spellObject = spellGameObject.GetComponent<Spell>();
+        spellObject.SetModuleData(moduleInfo, moduleObjectIndex, targetId);
     }
     private bool CooldownAndManaAvailable(SpellData spellData, byte spellbookSlot)
     {
@@ -184,7 +151,7 @@ public class SpellSpawner : NetworkBehaviour
         bool manaAvailable = spellData.ManaCost < characterStats.CurrentMana;
         return cooldownAvailable && manaAvailable;
     }
-
+    
     // Networking
     [Rpc(SendTo.Server)]
     private void AttemptSpellServerRpc(byte slot)
@@ -199,10 +166,11 @@ public class SpellSpawner : NetworkBehaviour
         {
             characterStats.ManaAwaiting -= spellInfo.Spell.ManaCost;
         }
-        // Deduct the mana and put the spell on cooldown
-        characterStats.CurrentMana -= spellInfo.Spell.ManaCost;
-        spellbookLogic.SpellCooldowns[slot] = spellInfo.Spell.SpellCooldown;
 
+        // Deduct the mana and put the spell on cooldown
+        // wait why does this deduct the mana upon confirmation even though it was already deducted before? disabling this for now.
+        /*characterStats.CurrentMana -= spellInfo.Spell.ManaCost;
+        spellbookLogic.SpellCooldowns[slot] = spellInfo.Spell.SpellCooldown;*/
     }
     [Rpc(SendTo.NotServer)]
     private void CancelSpellRpc(SpellData.SpellInfo spellInfo, byte slot)

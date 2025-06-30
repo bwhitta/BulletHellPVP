@@ -935,7 +935,8 @@ MonoBehaviour:
     NetworkTransport: {fileID: 1290052345}
     PlayerPrefab: {fileID: 8676365494037463687, guid: 56c8312f078bdc649832db376f677028, type: 3}
     Prefabs:
-      NetworkPrefabsLists: []
+      NetworkPrefabsLists:
+      - {fileID: 11400000, guid: 593dbb90a8e57e34cbcb73a7ca91140e, type: 2}
     TickRate: 30
     ClientConnectionBufferTimeout: 10
     ConnectionApproval: 0
@@ -956,17 +957,7 @@ MonoBehaviour:
     AutoSpawnPlayerPrefabClientSide: 1
     NetworkMessageMetrics: 1
     NetworkProfilingMetrics: 1
-    OldPrefabList:
-    - Override: 0
-      Prefab: {fileID: 8676365494037463687, guid: 56c8312f078bdc649832db376f677028, type: 3}
-      SourcePrefabToOverride: {fileID: 2971767381870167636, guid: ea266f9c11996f44d9ae68d1b56f64c5, type: 3}
-      SourceHashToOverride: 0
-      OverridingTargetPrefab: {fileID: 0}
-    - Override: 0
-      Prefab: {fileID: 1062348163457161292, guid: a12a2eac476853e4184718ce4ef910dc, type: 3}
-      SourcePrefabToOverride: {fileID: 2971767381870167636, guid: ea266f9c11996f44d9ae68d1b56f64c5, type: 3}
-      SourceHashToOverride: 0
-      OverridingTargetPrefab: {fileID: 0}
+    OldPrefabList: []
   RunInBackground: 1
   LogLevel: 1
 --- !u!4 &1290052347
@@ -998,7 +989,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_PresetAsset: {fileID: 0}
   m_PresetReference:
-    rid: 2104969323797020673
+    rid: 2104969479453671980
   m_Scenario:
     rid: -2
   m_IsScenarioSettingsFolded: 0
@@ -1008,7 +999,7 @@ MonoBehaviour:
     RefIds:
     - rid: -2
       type: {class: , ns: , asm: }
-    - rid: 2104969323797020673
+    - rid: 2104969479453671980
       type: {class: NetworkSimulatorPreset, ns: Unity.Multiplayer.Tools.NetworkSimulator.Runtime, asm: Unity.Multiplayer.Tools.NetworkSimulator.Runtime}
       data:
         <Name>k__BackingField: Home Broadband with Congested Network
@@ -1583,7 +1574,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  prefab: {fileID: 2276715914097845871, guid: a12a2eac476853e4184718ce4ef910dc, type: 3}
+  prefab: {fileID: 5658230367203084428, guid: 772ad44c2c0a80f4f8b13dcaf70c59bd, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
